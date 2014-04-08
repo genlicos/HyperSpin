@@ -1,0 +1,477 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: Controls
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="Controls">Controls</a></h1>
+
+<ul>
+<li><a href="#BTN_1">BTN_1</a> &mdash; Song selection number buttons.
+<li><a href="#BTN_A">BTN_A</a> &mdash; Song selection letter buttons.
+<li><a href="#BTN_BACKSPACE">BTN_BACKSPACE</a> 
+<li><a href="#BTN_CLEAR">BTN_CLEAR</a> 
+<li><a href="#BTN_CLEARALL">BTN_CLEARALL</a> 
+<li><a href="#BTN_CLEARQUEUE">BTN_CLEARQUEUE</a> 
+<li><a href="#BTN_COIN1">BTN_COIN1</a> &mdash; Adds credits to the jukebox.
+<li><a href="#BTN_COIN2">BTN_COIN2</a> &mdash; Adds credits to the jukebox.
+<li><a href="#BTN_COIN3">BTN_COIN3</a> &mdash; Adds credits to the jukebox.
+<li><a href="#BTN_COIN4">BTN_COIN4</a> &mdash; Adds credits to the jukebox.
+<li><a href="#BTN_EXIT">BTN_EXIT</a> 
+<li><a href="#BTN_FIRSTPG">BTN_FIRSTPG</a> &mdash; Change to first or last page.
+<li><a href="#BTN_FREEPLAY">BTN_FREEPLAY</a> 
+<li><a href="#BTN_FREEPLAY_OFF">BTN_FREEPLAY_OFF</a> 
+<li><a href="#BTN_FREEPLAY_ON">BTN_FREEPLAY_ON</a> 
+<li><a href="#BTN_GUI_DOWN">BTN_GUI_DOWN</a> 
+<li><a href="#BTN_GUI_LEFT">BTN_GUI_LEFT</a> 
+<li><a href="#BTN_GUI_NEXT">BTN_GUI_NEXT</a> 
+<li><a href="#BTN_GUI_PREV">BTN_GUI_PREV</a> 
+<li><a href="#BTN_GUI_RIGHT">BTN_GUI_RIGHT</a> 
+<li><a href="#BTN_GUI_SELECT">BTN_GUI_SELECT</a> 
+<li><a href="#BTN_GUI_UP">BTN_GUI_UP</a> 
+<li><a href="#BTN_LASTPG">BTN_LASTPG</a> &mdash; Change to first or last page.
+<li><a href="#BTN_LOOP">BTN_LOOP</a> 
+<li><a href="#BTN_LOOP_OFF">BTN_LOOP_OFF</a> 
+<li><a href="#BTN_LOOP_ON">BTN_LOOP_ON</a> 
+<li><a href="#BTN_NEXTALPHA">BTN_NEXTALPHA</a> &mdash; Change to previous or next artist in the alphabet.
+<li><a href="#BTN_NEXTPG">BTN_NEXTPG</a> &mdash; Page change buttons.
+<li><a href="#BTN_PAUSE">BTN_PAUSE</a> &mdash; Toggles pause off and on for the currently playing song.
+<li><a href="#BTN_PAUSE_OFF">BTN_PAUSE_OFF</a> &mdash; Unpauses the currently playing song.
+<li><a href="#BTN_PAUSE_ON">BTN_PAUSE_ON</a> &mdash; Pauses the currently playing song.
+<li><a href="#BTN_PLAYSTIMULATOR">BTN_PLAYSTIMULATOR</a> &mdash; Toggles the PlayStimulator timer on and off.
+<li><a href="#BTN_PLAYSTIMULATOR_OFF">BTN_PLAYSTIMULATOR_OFF</a> &mdash; Turns the PlayStimulator timer off.
+<li><a href="#BTN_PLAYSTIMULATOR_ON">BTN_PLAYSTIMULATOR_ON</a> &mdash; Turns the PlayStimulator timer on.
+<li><a href="#BTN_POPULAR">BTN_POPULAR</a> &mdash; Displays list of most popular songs.
+<li><a href="#BTN_PREVALPHA">BTN_PREVALPHA</a> &mdash; Change to previous or next artist in the alphabet.
+<li><a href="#BTN_PREVPG">BTN_PREVPG</a> &mdash; Page change buttons.
+<li><a href="#BTN_RADIO">BTN_RADIO</a> &mdash; Toggles radio mode on and off
+<li><a href="#BTN_RADIO_OFF">BTN_RADIO_OFF</a> &mdash; Turns radio mode off
+<li><a href="#BTN_RADIO_ON">BTN_RADIO_ON</a> &mdash; Turns radio mode on
+<li><a href="#BTN_RANDOM">BTN_RANDOM</a> &mdash; Selects a random song.
+<li><a href="#BTN_SCREENSAVER">BTN_SCREENSAVER</a> &mdash; Toggles the screen saver on and off
+<li><a href="#BTN_SCREENSAVER_OFF">BTN_SCREENSAVER_OFF</a> &mdash; Turns the screen saver off
+<li><a href="#BTN_SCREENSAVER_ON">BTN_SCREENSAVER_ON</a> &mdash; Turns the screen saver on
+<li><a href="#BTN_SCREENSHOT">BTN_SCREENSHOT</a> &mdash; Saves a screenshot to disk
+<li><a href="#BTN_SELECT">BTN_SELECT</a> &mdash; Selects the song entered.
+<li><a href="#BTN_SHUFFLE">BTN_SHUFFLE</a> &mdash; Randomizes the order of the songs in the queue.
+<li><a href="#BTN_SKIN_1">BTN_SKIN_1</a> 
+<li><a href="#BTN_SKIN_10">BTN_SKIN_10</a> 
+<li><a href="#BTN_SKIN_2">BTN_SKIN_2</a> 
+<li><a href="#BTN_SKIN_3">BTN_SKIN_3</a> 
+<li><a href="#BTN_SKIN_4">BTN_SKIN_4</a> 
+<li><a href="#BTN_SKIN_5">BTN_SKIN_5</a> 
+<li><a href="#BTN_SKIN_6">BTN_SKIN_6</a> 
+<li><a href="#BTN_SKIN_7">BTN_SKIN_7</a> 
+<li><a href="#BTN_SKIN_8">BTN_SKIN_8</a> 
+<li><a href="#BTN_SKIN_9">BTN_SKIN_9</a> 
+<li><a href="#BTN_SKIN_NEXT">BTN_SKIN_NEXT</a> 
+<li><a href="#BTN_SKIN_PREV">BTN_SKIN_PREV</a> 
+<li><a href="#BTN_SKIP">BTN_SKIP</a> 
+<li><a href="#BTN_SKIPLAST">BTN_SKIPLAST</a> 
+<li><a href="#BTN_TOPTUNE">BTN_TOPTUNE</a> &mdash; Selects the most popular song.
+</ul>
+
+<p>
+The jukebox is designed to emulate a real, physical jukebox, not a media
+player or video jukebox. thus, it is designed to use physical buttons on
+a control panel rather than a mouse or keyboard. The standard way to do
+this is through a keyboard encoder such as a KeyWiz or I-Pac, or by
+hacking a keyboard or game controller. All jukebox functions can be
+mapped to any keyboard key, or to the two main axes or buttons on a
+gamepad.
+<br><center><h2><a name="Configuring the Control Panel">Configuring the Control Panel</a></h2></center><p>
+
+<p>
+Control information is stored in a separate configuration file.  The
+default control map file is controls.ini; however, you can select a
+different file by changing the Controls setting in the Controls section 
+in jukebox.ini.
+
+<p>
+In controls.ini, physical keys or gamepad buttons are mapped to jukebox 
+functions.  This allows more than one key or button to provide the same 
+function.  The jukebox can read any key on a standard PC keyboard, 
+including the Shift, Ctrl, Alt, Lock, and Windows keys, and it can read 
+up to 14 buttons and the 4 main directions on the first two axes of the
+first four gamepads or joysticks in the system.  (DOS users will be
+limited to two buttons on two gamepads or four buttons on one gamepad
+due to limitations on the DOS PC gameport.) Mouse buttons can be mapped 
+as well; however, mouse button 1 always controls the user interface, so 
+mouse button1 should only remapped for skins with no clickable icons.
+
+<p>
+The default controls.ini file includes every mappable key and button for
+demonstration purposes; however, you are only required to include keys 
+or buttons that you are actually using.
+
+<p>
+Some buttons are required for basic jukebox operation, such as controls
+to change pages or select songs.  Others represent optional functions 
+such as displaying a list of the most popular songs, volume control, 
+etc.
+
+<p>
+<br><center><h2><a name="Required Buttons:">Required Buttons:</a></h2></center><p>
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_A">BTN_A</a>, BTN_B, etc.</b></div><br>
+These are the letters used by jukeboxes that use either one letter and
+one number or just one letter to select a song. BTN_A through BTN_Z are
+available. The default controls.ini maps BTN_A through BTN_J to their PC
+keyboard counterparts. The default skin uses BTN_A through BTN_D for
+song selection and ignores higher letters.
+
+<p>
+If you are using a skin with a numeric selection method, the letter 
+keys will jump directly to the first page starting with an artist with
+a name starting with that letter.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#BTN_SELECT" title="Selects the song entered.">BTN_SELECT</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_1">BTN_1</a>, BTN_2, etc.</b></div><br>
+These are the number buttons on the jukebox; they are used in all
+control setups except those that use just a single letter to select a
+song. BTN_1 through BTN_25 are available. Note that BTN_10 through
+BTN_25 represent a single button with the two-digit number on its face
+and not two separate buttons. In addition, if the skin file is designed
+to use a zero, BTN_0 will also be used. The default skin uses BTN_1 
+through BTN_4 for song selection and ignores higher numbers.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#BTN_SELECT" title="Selects the song entered.">BTN_SELECT</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_PREVPG">BTN_PREVPG</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_NEXTPG">BTN_NEXTPG</a></b></div><br>
+
+<p>
+These buttons page through the available songs.
+By default, they are mapped to the Page Up and Page Down keys.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#BTN_PREVALPHA" title="Change to previous or next artist in the alphabet.">BTN_PREVALPHA</a>,
+<a class="xref" href="#BTN_NEXTALPHA" title="Change to previous or next artist in the alphabet.">BTN_NEXTALPHA</a>,
+<a class="xref" href="#BTN_FIRSTPG" title="Change to first or last page.">BTN_FIRSTPG</a>,
+<a class="xref" href="#BTN_LASTPG" title="Change to first or last page.">BTN_LASTPG</a>.</blockquote>
+<br><center><h2><a name="Optional Buttons">Optional Buttons</a></h2></center><p>
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_SELECT">BTN_SELECT</a></b></div><br>
+Selects the song entered. This button is optional is the AutoSelect
+option is enabled in jukebox.ini; otherwise it is required. By default,
+for the default skin, the user should press a letter button and a number
+button followed by the Select button to start a song. If you would
+prefer the song to be started immediately rather than requiring the
+Select button, enable the AutoSelect option in jukebox.ini. By default,
+it is mapped to both Enter keys on the keyboard.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked006.html#AutoSelect" title="Automatically enters the selected song without having to press a Select button.">AutoSelect</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_FIRSTPG">BTN_FIRSTPG</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_LASTPG">BTN_LASTPG</a></b></div><br>
+These buttons will jump to the first or last pages of the available 
+songs.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#BTN_PREVPG" title="Page change buttons.">BTN_PREVPG</a>,
+<a class="xref" href="#BTN_NEXTPG" title="Page change buttons.">BTN_NEXTPG</a>,
+<a class="xref" href="#BTN_PREVALPHA" title="Change to previous or next artist in the alphabet.">BTN_PREVALPHA</a>,
+<a class="xref" href="#BTN_NEXTALPHA" title="Change to previous or next artist in the alphabet.">BTN_NEXTALPHA</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_PREVALPHA">BTN_PREVALPHA</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_NEXTALPHA">BTN_NEXTALPHA</a></b></div><br>
+These buttons skip to the next or previous page where the first letter
+of the artist is different (not counting the word "THE"). This allows
+paging through large collections quickly. By default, these functions
+are mapped to the comma and period keys (think of < and > as arrows
+pointing to the next character in the alphabet).
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#BTN_PREVPG" title="Page change buttons.">BTN_PREVPG</a>,
+<a class="xref" href="#BTN_NEXTPG" title="Page change buttons.">BTN_NEXTPG</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_POPULAR">BTN_POPULAR</a></b></div><br>
+BTN_POPULAR temporarily changes the Coming Up display to show the most
+popular songs rather than the song queue. Pressing this button again
+will show the next page of popular songs. After a few seconds, the
+display will return to showing the upcoming song queue. (The exact
+number of seconds the popular song list is displayed can be set in
+jukebox.ini via the MostPopularDisplayTime setting, which defaults to 5
+seconds.) This button is mapped to the F7 key on the keyboard by 
+default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_RADIO">BTN_RADIO</a></b></div><br>
+BTN_RADIO toggles "radio mode" on and off where random songs will be
+continually played. Pressing BTN_RADIO again will stop radio mode.
+BTN_RADIO is mapped to the F3 key by default.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked003.html#MSG_RADIO" title="">MSG_RADIO</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_RADIO_ON">BTN_RADIO_ON</a></b></div><br>
+BTN_RADIO_ON turns "radio mode" on if it is currently disabled; 
+otherwise it has no effect.  It is not mapped by default.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked003.html#MSG_RADIO" title="">MSG_RADIO</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_RADIO_OFF">BTN_RADIO_OFF</a></b></div><br>
+BTN_RADIO_OFF turns "radio mode" off if it is currently enabled; 
+otherwise it has no effect.  It is not mapped by default.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked003.html#MSG_RADIO" title="">MSG_RADIO</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_PLAYSTIMULATOR">BTN_PLAYSTIMULATOR</a></b></div><br>
+BTN_PLAYSTIMULATOR toggles the PlayStimulator on and off. If no time was
+specified for the PlayStimulator, it is set to 10 minutes when enabled.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked003.html#MSG_PLAYSTIMULATOR" title="">MSG_PLAYSTIMULATOR</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_PLAYSTIMULATOR_ON">BTN_PLAYSTIMULATOR_ON</a></b></div><br>
+BTN_PLAYSTIMULATOR_ON turns the PlayStimulator on if it was disabled; 
+otherwise it has no effect. If no time was specified for the 
+PlayStimulator, it is set to 10 minutes when enabled.  This button is
+not mapped by default.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked003.html#MSG_PLAYSTIMULATOR" title="">MSG_PLAYSTIMULATOR</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_PLAYSTIMULATOR_OFF">BTN_PLAYSTIMULATOR_OFF</a></b></div><br>
+BTN_PLAYSTIMULATOR_OFF turns the PlayStimulator of if it was ensabled; 
+otherwise it has no effect. This button is not mapped by default.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked003.html#MSG_PLAYSTIMULATOR" title="">MSG_PLAYSTIMULATOR</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_RANDOM">BTN_RANDOM</a></b></div><br>
+This selects a random song and adds it to the queue. As this is a
+selection button, it requires a credit if credits are required.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_SHUFFLE">BTN_SHUFFLE</a></b></div><br>
+BTN_SHUFFLE reorganizes the songs in the queue, placing them in a random
+order.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_TOPTUNE">BTN_TOPTUNE</a></b></div><br>
+BTN_TOPTUNE selects the most-played song on the popularity list. If that
+song is already playing or already in the queue, the next most popular
+song will be played, etc. As this is a selection button, it requires a
+credit if credits are required.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#BTN_POPULAR" title="Displays list of most popular songs.">BTN_POPULAR</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_COIN1">BTN_COIN1</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_COIN2">BTN_COIN2</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_COIN3">BTN_COIN3</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_COIN4">BTN_COIN4</a></b></div><br>
+The BTN_COIN buttons represent the coin slots on a jukebox that requires
+credits to play. Up to 4 individual coin slots can be defined. Coins are
+only required if RequireCredits is enabled in jukebox.ini. By default,
+BTN_COIN1 is mapped to the Insert key. Credits are added to the jukebox 
+based on the Coin<i>X</i>Credit settings in jukebox.ini.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked010.html#Coin1Credit" title="">Coin1Credit</a>,
+<a class="xref" href="juked010.html#Coin2Credit" title="">Coin2Credit</a>,
+<a class="xref" href="juked010.html#Coin3Credit" title="">Coin3Credit</a>,
+<a class="xref" href="juked010.html#Coin4Credit" title="">Coin4Credit</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_PAUSE">BTN_PAUSE</a></b></div><br>
+BTN_PAUSE will pause the currently playing song, or restart it if the 
+song is paused. It is by default mapped to the F8 key.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_PAUSE_ON">BTN_PAUSE_ON</a></b></div><br>
+BTN_PAUSE_ON will pause the currently playing song; if the song is already 
+paused it will have no effect. It is not mapped by default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_PAUSE_OFF">BTN_PAUSE_OFF</a></b></div><br>
+BTN_PAUSE_OFF will unpause the current song, if the song is already 
+paused.  If the song is not paused or no song is playing it will have no 
+effect. It is not mapped by default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_SCREENSAVER">BTN_SCREENSAVER</a></b></div><br>
+BTN_SCREENSAVER will force the screensaver to be activated or deactivated 
+right away, rather than waiting for the timeout.  It is not mapped by
+default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_SCREENSAVER_ON">BTN_SCREENSAVER_ON</a></b></div><br>
+BTN_SCREENSAVER_ON will force the screensaver to be activated if it 
+is currently not active; otherwise it will have no efferct. It is not 
+mapped by default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_SCREENSAVER_OFF">BTN_SCREENSAVER_OFF</a></b></div><br>
+BTN_SCREENSAVER_OFF will force the screensaver to be deactivated if it 
+is currently active; otherwise it will have no efferct. It is not 
+mapped by default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_SCREENSHOT">BTN_SCREENSHOT</a></b></div><br>
+BTN_SCREENSHOT will save a snapshot of the jukebox to a file. In higher
+resolutions, it may take several seconds to save the screenshot, during
+which the music will probably repeatedly loop a short section of music.
+BTN_SCREENSHOT is mapped to the F12 key by default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_EXIT">BTN_EXIT</a></b></div><br>
+Exits the jukebox.  BTN_EXIT is mapped to the Escape key by default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_BACKSPACE">BTN_BACKSPACE</a></b></div><br>
+Clears the last entered button.  By default, this is mapped to the 
+Backspace key on the keyboard.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_CLEAR">BTN_CLEAR</a></b></div><br>
+Clears all currently entered buttons. This button is not mapped by 
+default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_LOOP">BTN_LOOP</a></b></div><br>
+Toggles LoopMode, where as soon as a song finishes playing it is
+re-added to the queue. Songs removed with MSG_SKIP are not looped. Songs
+added to the queue through this method do not consume a credit, but they
+do increase the play count. Useful at parties or holiday occasions to
+keep a particular set of songs on continuous play. It is mapped to the
+F5 key by default.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked003.html#MSG_LOOP" title="">MSG_LOOP</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_LOOP_ON">BTN_LOOP_ON</a></b></div><br>
+Enables LoopMode, if it is not already enabled; otherwise it has no 
+effect.  It is not mapped by default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_LOOP_OFF">BTN_LOOP_OFF</a></b></div><br>
+Disables LoopMode, if it is already enabled; otherwise it has no effect.  
+It is not mapped by default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_SKIP">BTN_SKIP</a></b></div><br>
+Cancels the currently playing song and starts the next song in the
+queue. As this action does not restore credit to the credits counter, it
+should probably not be included on a jukebox that is set up to use
+credits. By default, it is mapped to the Delete key.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#BTN_SKIPLAST" title="">BTN_SKIPLAST</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_CLEARQUEUE">BTN_CLEARQUEUE</a></b></div><br>
+Cancels all of the songs in the queue. If credits are enabled, a number
+of credits equal to the number of songs waiting in the queue will be
+added. By default, it is mapped to the F1 key.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#BTN_CLEARALL" title="">BTN_CLEARALL</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_CLEARALL">BTN_CLEARALL</a></b></div><br>
+Cancels all of the songs in the queue, including the
+currently playing song.  If credits are enabled, a number of credits 
+equal to the number of songs waiting in the queue will be added.
+Credit is not returned for the currently playing song.  This button
+is not mapped by default.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#BTN_CLEARQUEUE" title="">BTN_CLEARQUEUE</a>.</blockquote>
+<div class="al-api"><b> <a name="BTN_FREEPLAY">BTN_FREEPLAY</a></b></div><br>
+Toggles between free play and credits required modes.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_FREEPLAY_ON">BTN_FREEPLAY_ON</a></b></div><br>
+Turns free play mode on if credits are currently required; otherwise it
+has no effect. It is not mapped by default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_FREEPLAY_OFF">BTN_FREEPLAY_OFF</a></b></div><br>
+Turns free play mode off if it is currently enabled; otherwise it has no
+effect. It is not mapped by default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_SKIPLAST">BTN_SKIPLAST</a></b></div><br>
+Deletes the last song in the queue.  Note that you cannot
+skip the currently playing song this way.  This button can only be used
+during the time specified by SkipLastTimeLimit in jukebox.ini. If  
+SkipLastTimeLimit is set to 0, this button can be used at any time
+to remove the most recent addition.  If SkipLastTimeLimit is set to
+any value higher than 0, BTN_SKIPLAST can only remove the single most
+recent addition, unless LimitSkipLastToMostRecent is set to False.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#BTN_SKIP" title="">BTN_SKIP</a>,
+<a class="xref" href="juked010.html#SkipLastTimeLimit" title="">SkipLastTimeLimit</a>,
+<a class="xref" href="juked010.html#LimitSkipLastToMostRecent" title="">LimitSkipLastToMostRecent</a>.</blockquote>
+<br><center><h2><a name="GUI Navigation Buttons">GUI Navigation Buttons</a></h2></center><p>
+
+<p>
+On a control panel with very limited controls, such as a single 4-way 
+joystick with one button, the jukebox can be navigated as a GUI.  This
+is not the recommended way to use the jukebox, but it is available for
+those who need it. Navigating off the left or right sides of the screen
+will cause the page to turn without explicitly having to select a page
+change button. The available GUI controls are:
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_GUI_LEFT">BTN_GUI_LEFT</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_GUI_RIGHT">BTN_GUI_RIGHT</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_GUI_UP">BTN_GUI_UP</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_GUI_DOWN">BTN_GUI_DOWN</a></b></div><br>
+Moves the GUI focus in the appropriate direction.  The control with 
+focus will be marked with a dotted line.  These buttons are mapped 
+to the cursor keys by default.  The directions are relative to the
+screen rotation.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_GUI_SELECT">BTN_GUI_SELECT</a></b></div><br>
+Selects the control that currently has focus, i.e. "clicks" the button.
+By default, this is mapped to the spacebar.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_GUI_NEXT">BTN_GUI_NEXT</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_GUI_PREV">BTN_GUI_PREV</a></b></div><br>
+Moves the focus to the next or previous control. By default, 
+BTN_GUI_NEXT is mapped to the Tab key; BTN_GUI_PREV is not mapped by 
+default.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_SKIN_PREV">BTN_SKIN_PREV</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_SKIN_NEXT">BTN_SKIN_NEXT</a></b></div><br>
+Switches to the next or previous skin. By default, BTN_SKIN_NEXT is 
+mapped to the F10 key; BTN_SKIN_PREV is mapped to the F9 key.
+
+<p><br>
+<div class="al-api"><b> <a name="BTN_SKIN_1">BTN_SKIN_1</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_SKIN_2">BTN_SKIN_2</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_SKIN_3">BTN_SKIN_3</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_SKIN_4">BTN_SKIN_4</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_SKIN_5">BTN_SKIN_5</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_SKIN_6">BTN_SKIN_6</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_SKIN_7">BTN_SKIN_7</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_SKIN_8">BTN_SKIN_8</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_SKIN_9">BTN_SKIN_9</a></b></div><br>
+<div class="al-api-cont"><b> <a name="BTN_SKIN_10">BTN_SKIN_10</a></b></div><br>
+Switches directly to a specific skin. None of these buttons are 
+mapped by default.
+
+
+<p><br>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

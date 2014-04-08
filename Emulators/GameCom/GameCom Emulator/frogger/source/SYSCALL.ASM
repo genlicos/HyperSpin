@@ -1,0 +1,568 @@
+        title   System Call
+	type	8521
+			
+
+        include frogger.tmp
+
+        program
+
+System_Call     equ     20f1h
+sp_control      equ     0a8h
+
+UARTISR_RP      EQU     28H
+UART_new_ibank  equ     0a5h
+UART_new_isr    equ     100h
+
+;ASB        global          init_new_uart
+        global          restore_uart
+        global          Fi_graph
+        global          Fi_patt
+        GLOBAL          disable_pause,enable_pause
+	GLOBAL		Disp_setup
+        global          Dsp_ch
+;        global          Dsp_ch_i
+        global          Ch_abs
+        GLOBAL          Ch_abs_i
+;        global          D_str,D_str_n,D_str_i
+;       GLOBAL          D_str_i_n
+        global          Str_abs
+;        global          Str_abs_n,Str_abs_i_n
+        GLOBAL          Str_abs_i
+;        global          On_cur,Off_cur,Cur_ctrl
+;       global          Line_n,Cls_line,Cls_eol
+        global          Set_win
+        global          Cur_pos
+;	GLOBAL		Cls_win,Cls_eow
+	global		Cls_scn,Sel_font
+        GLOBAL          Set_colr
+        global          Def_font
+        GLOBAL          Scn_colr
+;	GLOBAL		Scroll_h
+;	GLOBAL		Scroll_v
+;        GLOBAL          Blk_mov
+        GLOBAL          Blk_rev
+	GLOBAL		Blk_cls
+;	GLOBAL		Pan_h
+;	GLOBAL		Pan_v
+	GLOBAL		Draw_line_v
+	GLOBAL		Draw_line_h
+       GLOBAL          clear_A
+       GLOBAL          clear_B
+	GLOBAL		Dsp_ch_sp
+;	GLOBAL		Inc_cur_pos
+        GLOBAL          Select_mode
+;        GLOBAL          Text_back_colr
+        GLOBAL          Fill_blk_colr
+	GLOBAL		SCAN_KEY
+	GLOBAL		CTRL_KBD
+	GLOBAL		SET_TMR
+	GLOBAL		CTRL_TMR
+	GLOBAL		SND_ADDR
+        GLOBAL          CTRL_SP,CTRL_SPX
+        GLOBAL          READTIME
+;	GLOBAL		READDATE
+;	GLOBAL		WR_TIME
+;	GLOBAL		WR_DATE
+;	GLOBAL		ALM_CTRL
+;	GLOBAL		ALMALERT
+;	GLOBAL		SETALARM
+       GLOBAL          UART_setup
+       GLOBAL          UART_enable
+       GLOBAL          Reset_UART_queue
+       GLOBAL          Send_a_byte
+       GLOBAL          Receive_a_byte
+
+;       GLOBAL          Modem_control
+;	GLOBAL		Modem_status
+;	GLOBAL		X_JUMP
+;	GLOBAL		X_CALL
+        GLOBAL          Switch_bank
+;	GLOBAL		X_READ
+;	GLOBAL		X_READ_N
+	GLOBAL		Setup_Melody
+	GLOBAL		Control_Melody
+;	GLOBAL		Melody_Stop0
+;        GLOBAL          Melody_Stop1
+        GLOBAL          MemoryBlkReq
+;        GLOBAL          MemoryBlkCreate
+	GLOBAL		Short_Beep
+	GLOBAL		Speech_Stop
+	GLOBAL		Check_Timer
+	GLOBAL		Delay_Timer
+
+	GLOBAL	disp_tmrovr
+;	GLOBAL	Normal_colr
+       GLOBAL  Active_page_B
+       GLOBAL  Active_page_A
+	GLOBAL	Fi_graph2
+	global	Swap_page
+        global  Blk_mov_2
+;	global	text_2_pixel
+;	global	Cur_blinking
+;	global	Blk_mov_swap_pg
+;	global	Blk_mov_ab
+;	global	set_timer
+;	global	Chk_timer
+;	global	check_font16
+;	global	vramast1
+;	global	vramast
+;	global	Init_intnet
+;	global	End_intnet
+;	global	Fi_graph7
+;	global	end_display7
+;	global	init_display
+;	global	ret_cur
+;	global	save_cur
+	
+;        global  Cls_from_line
+;        global  Cls_from_start
+;        global  Cart_open
+
+        global  Text_in_A
+        global  Text_in_B
+	
+;        global  OFF_UNIT
+;        global  Setup_vector
+;        global  Int_lda,Int_sta
+	global	SysKeyHandler
+	global	quit_box
+;        global  Output_scan
+        global  Return_line
+	global	enable_timeout
+	global	disable_timeout
+	global	call_appl
+	global	restart_timeout
+	global	Req_RAM_Block
+;        global  Scheme_B_start
+;        global  WGSpeechStart
+	global	yn_box
+
+
+	global	Output_scan
+
+Output_scan:
+	pushw	rr6
+	mov	r7,#7ah
+	jmp	System_Call
+
+Return_line:
+	pushw	rr6
+	mov	r7,#7bh
+	jmp	System_Call
+
+Active_page_B:
+	pushw	rr6
+	mov	r7,#54h
+	jmp	System_Call
+Active_page_A:
+	pushw	rr6
+	mov	r7,#55h
+	jmp	System_Call
+
+
+Str_abs_i:
+	pushw	rr6
+	mov	r7,#0bh
+        br      System_Call1
+
+Ch_abs_i:
+	pushw	rr6
+	mov	r7,#4
+        br      System_Call1
+
+Fill_blk_colr:
+        pushw   rr6
+        mov     r7,#2eh
+        br      System_Call1
+Disp_setup:
+	pushw	rr6
+	mov	r7,#0
+	br	System_Call1
+Dsp_ch:
+       pushw   rr6
+       mov     r7,#1
+       br      System_Call1
+
+Ch_abs:
+       pushw   rr6
+       mov     r7,#3
+       br      System_Call1
+
+Str_abs:
+       pushw   rr6
+       mov     r7,#9
+       br      System_Call1
+
+Cur_pos:
+       pushw   rr6
+       mov     r7,#10h
+       br      System_Call1
+Set_win:
+       pushw   rr6
+       mov     r7,#11h
+
+System_Call1:
+	jmp	System_Call
+
+Cls_scn:
+	pushw	rr6
+	mov	r7,#17h
+	br	System_Call2
+Sel_font:
+	pushw	rr6
+	mov	r7,#18h
+	br	System_Call2
+Set_colr:
+       pushw   rr6
+       mov     r7,#19h
+       br      System_Call2
+Def_font:
+       pushw   rr6
+       mov     r7,#1ah
+       br      System_Call2
+Scn_colr:
+	pushw	rr6
+	mov	r7,#1bh
+	br	System_Call2
+
+Fi_patt:
+       pushw   rr6
+       mov     r7,#1ch
+       br      System_Call2
+
+Fi_graph:
+        pushw   rr6
+        mov     r7,#1dh
+        br      System_Call2
+
+set_line_color:
+	pushw	rr6
+	mov	r7,#21h
+	br	System_Call2
+Blk_rev:
+       pushw   rr6
+       mov     r7,#22h
+       br      System_Call2
+Blk_cls:
+	pushw	rr6
+	mov	r7,#23h
+System_Call2:
+        br     System_Call1
+
+Draw_line_v:
+	pushw	rr6
+	mov	r7,#26h
+	br	System_Call3
+Draw_line_h:
+	pushw	rr6
+	mov	r7,#27h
+	br	System_Call3
+clear_A:
+       pushw   rr6
+       mov     r7,#28h
+       br      System_Call3
+clear_B:
+       pushw   rr6
+       mov     r7,#29h
+       br      System_Call3
+Dsp_ch_sp:
+	pushw	rr6
+	mov	r7,#2ah
+	br	System_Call3
+
+Select_mode:
+        pushw   rr6
+        mov     r7,#2ch
+        br      System_Call3
+
+SCAN_KEY:
+	pushw	rr6
+	mov	r7,#2fh
+	br	System_Call3
+CTRL_KBD:
+	pushw	rr6
+	mov	r7,#30h
+	br	System_Call3
+SET_TMR:
+	pushw	rr6
+	mov	r7,#31h
+	br	System_Call3
+CTRL_TMR:
+	pushw	rr6
+	mov	r7,#32h
+System_Call3:
+	jmp	System_Call
+SND_ADDR:
+	pushw	rr6
+	mov	r7,#33h
+	br	System_Call4
+
+CTRL_SPX:
+;-----------------------------------
+       ;(26/3_)
+       ;check if it is START speech
+        ;
+
+        pushw   rr0
+        and     r0,#3h
+        cmp     r0,#1
+        br      ne,not_start
+
+is_start:
+        bbs     0bch,#5,delay_200
+
+;        mov     sgda,r0
+;        mov     sgc,#88h
+        mov     4eh,r0
+        mov     40h,#88h
+        inc     r0
+        pushw   rr0
+        popw    rr0
+        pushw   rr0
+        popw    rr0
+        pushw   rr0
+        popw    rr0
+        pushw   rr0
+        popw    rr0
+        bbc     r0,#7,is_start          ;ramp_up
+
+delay_200:
+        movw    rr0,#0f000h             ;6
+delay_200ms:
+        decw    rr0                     ;8
+        br      nz,delay_200ms          ;8
+not_start:
+        popw    rr0
+
+;----------------------------------------
+CTRL_SP:
+;	bbc	r0,#0,ctrl_sp1
+;	jmp	start_speech1
+
+ctrl_sp1:
+        pushw   rr6
+	mov	r7,#34h
+	br	System_Call4
+READTIME:
+       pushw   rr6
+       mov     r7,#35h
+System_Call4:
+	jmp	System_Call
+
+Switch_bank:
+       pushw   rr6
+       mov     r7,#45h
+       br      System_Call5
+
+Setup_Melody:
+	pushw	rr6
+	mov	r7,#48h
+	br	System_Call5
+Control_Melody:
+	pushw	rr6
+	mov	r7,#49h
+	br	System_Call5
+
+MemoryBlkReq:
+	pushw	rr6
+	mov	r7,#4ch
+	br	System_Call5
+
+Short_Beep:
+	pushw	rr6
+	mov	r7,#4eh
+	br	System_Call5
+Speech_Stop:
+	pushw	rr6
+	mov	r7,#4fh
+	br	System_Call5
+Check_Timer:
+	pushw	rr6
+	mov	r7,#50h
+	br	System_Call5
+Delay_Timer:
+	pushw	rr6
+	mov	r7,#51h
+System_Call5:
+	jmp	System_Call
+
+disp_tmrovr:
+	pushw	rr6
+	mov	r7,#52h
+	br	System_Call5
+
+Fi_graph2:
+	pushw	rr6
+	mov	r7,#56h
+	br	System_Call5
+
+Swap_page:
+	pushw	rr6
+	mov	r7,#57h
+	br	System_Call5
+
+Blk_mov_2:
+        pushw   rr6
+        mov     r7,#58h
+        br      System_Call5
+
+Text_in_A:
+        pushw   rr6
+        mov     r7,#6ch
+System_Call6:
+        jmp     System_Call
+
+Text_in_B:
+        pushw   rr6
+        mov     r7,#6dh
+        br	System_Call6
+
+;Alt_fi_graph2:
+;        pushw   rr6
+;        mov     r7,#70h
+;        br      System_Call6
+;
+;Alt_fi_graph:
+;        pushw   rr6
+;        mov     r7,#71h
+;        br      System_Call6
+;
+;Toggle_cart:
+;        pushw   rr6
+;        mov     r7,#72h
+;        br      System_Call6
+;
+;Alt_cart_disp:
+;        pushw   rr6
+;        mov     r7,#73h
+;        br      System_Call6
+
+;Pre_fi_graph:
+;        pushw   rr6
+;        mov     r7,#74h
+;        br      System_Call6
+;
+;Post_fi_graph:
+;        pushw   rr6
+;        mov     r7,#75h
+;        br      System_Call6
+
+SysKeyHandler:
+	pushw	rr6
+	mov	r7,#78h
+	br	System_Call6	
+
+quit_box:
+	pushw	rr6
+	mov	r7,#79h
+	br	System_Call6
+
+enable_timeout:
+;        pushw   rr6
+;        mov     r7,#7ch
+;        br      System_Call7
+        bclr    sp_control,#5           ;enable time_out
+        ret
+
+disable_timeout:
+;        pushw   rr6
+;        mov     r7,#7dh
+;        br      System_Call7
+        bset    sp_control,#5           ;disable time_out
+        ret
+
+
+call_appl:
+	pushw	rr6
+	mov	r7,#7eh
+System_Call7:
+        jmp     System_Call
+
+restart_timeout:
+	pushw	rr6
+	mov	r7,#7fh
+	br	System_Call7
+Req_RAM_Block:
+	pushw	rr6
+	mov	r7,#80h
+	br	System_Call7
+
+yn_box:
+	pushw	rr6
+	mov	r7,#81h
+	br	System_Call7	
+	
+enable_pause:
+	pushw	rr6
+	mov	r7,#82h
+	br	System_Call7	
+	
+disable_pause:
+	pushw	rr6
+	mov	r7,#83h
+	br	System_Call7	
+
+UART_setup:
+        pushw   rr6
+        mov     r7,#3ch
+        br      System_Call7
+UART_enable:
+        pushw   rr6
+        mov     r7,#3dh
+        br      System_Call7
+Reset_UART_queue:
+        pushw   rr6
+        mov     r7,#3eh
+        br      System_Call7
+Send_a_byte:
+        pushw   rr6
+        mov     r7,#3fh
+        br      System_Call7
+Receive_a_byte:
+        pushw   rr6
+        mov     r7,#40h
+        br      System_Call7
+
+
+;ASBinit_new_uart:
+;ASB        push    ps1
+;ASB        di
+;ASB        push    ps0
+;ASB        movm    ps0,#7,#UARTISR_RP
+;ASB        movw    rr10,UART_new_isr
+;ASB        mov     r9,UART_new_ibank
+;ASB        movw    rr0,#new_uartisr
+;ASB        movw    UART_new_isr,rr0
+;ASB        mov     r0,mmu2
+;ASB        mov     UART_new_ibank,r0
+;ASB        POP     PS0
+;ASB        POP     PS1
+;ASB        RET
+
+
+
+restore_uart:
+	push	ps1
+	di
+	push	ps0
+	movm	ps0,#7,#UARTISR_RP
+	mov	UART_new_ibank,r9
+	movw	UART_new_isr,rr10
+	pop	ps0
+	pop	ps1
+	ret
+
+
+;ASBnew_uartisr:
+;ASB        push    ps0
+;ASB        movm    ps0,#7,#UARTISR_RP
+;ASB        mov     r7,uarts
+;ASB;//        mov     0d0h,r7
+;ASB        mov     uart_ram,r7
+;ASB        movw    rr2,rr10
+;ASB        addw    rr2,#8
+;ASB        jmp     @rr2
+
+
+	end
+

@@ -1,0 +1,295 @@
+# DOSCab/WinCab Jukebox Skin File
+# Version 3.0
+# By Chris La Mantia
+
+# Notes:
+# - Supported image formats at this time are BMP, LBM, PCX, and TGA.
+# - Colors may be specified as hexadecimal RGB codes (FFA0CC) or by name.
+#   A reference to named colors can be found in docs/colors.htm.
+
+[skin]
+# All of the dimensions of objects in this file are relative to 
+# this image.
+
+background=cdbg1-ws.jpg
+
+
+# Display definitions
+#
+# There are four displays: the Now Playing display, the Coming Up/Most 
+# Popular Songs display, the Selection display, and the Credit display.
+# Status messages appear on the Coming Up display.
+#
+# Displays have the following parameters:
+#
+# enabled - Set to True to enable the display, False to disable it.  
+# You may, for example, want to disable the Credit display if your
+# jukebox is not set to accept credits.
+#
+# x, y, w, and h - The position and size of the display.  These are all 
+# relative to the skin background image and not the screen resolution.
+#
+# lines - Sets the number of lines used by the Now Playing and Coming Up 
+# displays.  The size of the dot-matrix display font will automatically
+# be adjusted to fit the specified number of lines in the height of the 
+# display.  The Selection and Credit displays always show only one line.
+#
+# color and bgcolor - Sets the color of the font and the color of the 
+# display background.  See the note on how to specify colors above.
+
+[Selection]
+
+# SelectionMethod: Alphanumeric,Numeric,SingleLetter,SingleNumber
+SelectionMethod=Numeric
+UseZero=True
+HighNumber=9
+HighLetter=Z
+DiscAddress=absolute
+
+[Display1]
+# Now Playing display
+enabled=True
+x=28
+y=764
+w=916
+h=191
+lines=5
+color=palegreen
+bgcolor=black
+
+[Display2]
+# Song List display
+enabled=True
+x=974
+y=764
+w=916
+h=191
+lines=5
+color=palegreen
+bgcolor=black
+
+[Display3]
+# Selection display
+enabled=True
+x=1455
+y=1085
+w=220
+h=50
+color=orangered
+bgcolor=black
+
+[Display4]
+# Credit Display
+enabled=True
+x=1697
+y=1085
+w=80
+h=50
+color=orangered
+bgcolor=black
+
+[TitleStrips]
+# The background file is scaled and stretched to fit the Width and Height below
+
+# Background=jb45lb01.jpg
+
+# bgcolor is only seen if no title strip image is specified
+
+bgcolor=101010
+
+SongsPerStrip=CD
+Font=dvsans.ttf
+FontSize=14
+FontColor=white
+SmallFont=dvsansc.ttf
+SmallFontSize=12
+Width=608
+Height=300
+FontSmoothing=true
+DefaultAlbumArt=defcdart.jpg
+
+# If AddQuotes is set to True, song titles will be 
+# displayed in quotes.  This was a common practice on
+# old jukeboxes; it is less common today.
+
+AddQuotes=True
+
+
+# If ForceUpperCaseTitles or ForceUpperCaseArtists is set 
+# to True, song titles or artist names on the title strips
+# will always use uppercase.  This was a common practice 
+# on old jukeboxes; it is less common today.
+
+ForceUpperCaseTitles=False
+ForceUpperCaseArtists=True
+
+[StripGrid]
+x=32
+y=44
+rows=2
+cols=3
+rowspace=36
+colspace=16
+CoverArtSide=Left
+CoverArtSpace=4
+order=Horizontal
+
+[Icon1]
+x=155
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_PREVPG
+
+[Icon2]
+x=233
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_NEXTPG
+
+[Icon3]
+x=348
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_1
+
+[Icon4]
+x=428
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_2
+
+[Icon5]
+x=505
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_3
+
+[Icon6]
+x=585
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_4
+
+[Icon7]
+x=664
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_5
+
+[Icon8]
+x=742
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_6
+
+[Icon9]
+x=822
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_7
+
+[Icon10]
+x=899
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_8
+
+[Icon11]
+x=979
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_9
+
+[Icon12]
+x=1057
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_0
+
+[Icon13]
+x=1136
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_SELECT
+
+[Icon14]
+x=1214
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_POPULAR
+
+[Icon15]
+x=1294
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_CLEAR
+
+[Icon16]
+x=1370
+y=1063
+w=68
+h=96
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_RANDOM

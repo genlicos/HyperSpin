@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: [Controls] Section (JUKEBOX.INI)
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="[Controls] Section (JUKEBOX.INI)">[Controls] Section (JUKEBOX.INI)</a></h1>
+
+<ul>
+<li><a href="#AlphaToggle">AlphaToggle</a> &mdash; Sets one set of buttons to toggle between letters and numbers.
+<li><a href="#AutoSelect">AutoSelect</a> &mdash; Automatically enters the selected song without having to press a Select button.
+<li><a href="#Controls">Controls</a> &mdash; Sets the name of the control map file.
+<li><a href="#KeyRepeatRate">KeyRepeatRate</a> &mdash; Sets key repeat timer
+<li><a href="#Mouse">Mouse</a> &mdash; Sets whether the mouse is disabled, invisible, or visible.
+<li><a href="#ShowKeys">ShowKeys</a> &mdash; Displays key and button names on the screen.
+</ul>
+
+<p>
+The [Controls] section relates to input devices and how they are 
+interpreted by the jukebox engine.
+
+<p><br>
+<div class="al-api"><b>[Controls] <a name="AlphaToggle">AlphaToggle</a></b></div><br>
+AlphaToggle sets one set of buttons to toggle between letters and 
+numbers. If AlphaToggle is True, keys and joystick buttons mapped to 
+letters will toggle back and forth between letters and numbers.  
+This option only takes effect when the SelectionMethod is set to 
+ALPHANUMERIC. This allows skins designed for two separate sets
+of selection keys to be used with a control panel with fewer buttons.
+This is equivalent to the 4ButtonPanel option from version 2.x.
+
+<p>
+<b>Default value:</b> False
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#AutoSelect" title="Automatically enters the selected song without having to press a Select button.">AutoSelect</a>.</blockquote>
+<div class="al-api"><b>[Controls] <a name="AutoSelect">AutoSelect</a></b></div><br>
+AutoSelect automatically enters the selected song without having to press
+a Select button. If AutoSelect is true, a selection is made the moment
+the maximum number of selection buttons are pressed. If AutoSelect is 
+false, a Select button must be pressed to enter the selection.  
+When AutoSelect is enabled, it actually pushes a BTN_SELECT message 
+onto the message queue, so if there is an on-screen icon mapped to 
+BTN_SELECT it will appear to trigger as if it had actually been pressed.
+
+<p>
+<b>Default value:</b> False
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_SELECT" title="Selects the song entered.">BTN_SELECT</a>.</blockquote>
+<div class="al-api"><b>[Controls] <a name="Controls">Controls</a></b></div><br>
+Controls sets the name of the file that contains the control maps. 
+This file maps jukebox functions to physical keyboard keys or joystick or
+gamepad axes and buttons.  See the Control Map File chapter for more
+information.
+
+<p>
+<b>Default value:</b> CONTROLS.INI
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked022.html#Keyboard" title="">Keyboard</a>,
+<a class="xref" href="juked022.html#Joystick" title="">Joystick</a>.</blockquote>
+<div class="al-api"><b>[Controls] <a name="KeyRepeatRate">KeyRepeatRate</a></b></div><br>
+KeyRepeatRate sets the number of times per second a control will repeat 
+when held down, up to a maximum of 30.  This applies to all forms of 
+input: keyboard, gamepad, and on-screen icons. If KeyRepeatRate is set 
+to 0 or DISABLED, no controls will repeat.
+
+<p>
+<b>Default value:</b> 5
+
+<p><br>
+<div class="al-api"><b>[Controls] <a name="Mouse">Mouse</a></b></div><br>
+Mouse sets the mode of the mouse.  Mouse = Disabled will disable the 
+mouse, Mouse = Enabled will enable the mouse with a visible pointer, 
+and Mouse = Touchscreen will enable the mouse with an invisible pointer.
+(If you prefer, you can use Visible and Invisible in place of Enabled 
+and Touchscreen.)
+
+<p>
+Note that touchscreens are currently only supported under DOS and 
+Windows XP.
+
+<p>
+<b>Default value:</b> Disabled
+
+<p><br>
+<div class="al-api"><b>[Controls] <a name="ShowKeys">ShowKeys</a></b></div><br>
+If ShowKeys is enabled, it puts the name of the last key, joystick 
+button, or mouse button pressed in the upper left corner of the screen.  
+This is meant to help identify buttons on remote controls or keyboard 
+encoders when setting up CONTROLS.INI. 
+
+<p>
+<b>Default value:</b> Disabled
+
+
+<p><br>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

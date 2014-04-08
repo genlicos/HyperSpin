@@ -1,0 +1,417 @@
+
+PC Xformer 2.5 - The Atari 800XL Emulator For MS-DOS Compatible PCs
+===================================================================
+
+November 10, 1994.
+
+Branch Always Software
+14150 N.E. 20th Street
+Suite 302
+Bellevue, WA  98007
+U.S.A.
+
+Program by Darek Mihocka. Many thanks to Danny Miller and Bob Woolley for 
+their beta testing and technical help, to Greg Tibbets for the many Rana 
+drives, to Jan Gray for sharing cool programming tricks, to Bill Kendrick
+for writing the very cool manual for 3.0, and to Nick Kennedy for developing
+the SIO2PC cable which makes life so much easier. 
+
+
+Copy this program!
+------------------
+
+PC Xformer 2.5 is a free emulator for MS-DOS users who wish to run their old
+Atari 400/800 and Atari 800XL software on their PCs. The file XF25.ZIP may be
+freely redistributed under the condition that the contents of the ZIP file are
+not modified in any way, and that no fee is charged for the software other than
+reasonable long distance and online charges for downloads.
+
+These files must be present in the XF25.ZIP archive:
+
+    XF25.EXE     - an MS-DOS program that is the PC Xformer 2.5 emulator
+    XF25.DOC     - this documentation file
+    DOS25.XFD    - ST Xformer disk image containing Atari DOS 2.5 files
+    MYDOS45.ATR  - SIO2PC disk image containing MyDOS 4.5 files
+    ATARIOSB.ROM - Atari 800 operating system
+    ATARIXL.ROM  - Atari 800XL operating system
+    ATARIBAS.ROM - Atari Basic
+    DEMOS1.XFD   - disk image containing Atari 800XL BASIC demos
+    DEMOS2.XFD   - disk image containing Atari 800XL machine language demos
+
+
+Quick Start
+-----------
+
+If you have previously used PC Xformer 2.0, then using 2.5 is exactly the same!
+The only new key you have to learn is F12, describled below. Otherwise,
+everything will work as before, only better!
+
+To just quickly run PC Xformer 2.5, type XF25 from the DOS prompt. The familiar
+blue and white Atari Basic screen will appear with the READY prompt. Type in a
+small Basic program and you'll see it's just like an Atari 400/800 or 800XL!
+
+Use the F12 key on the PC's keyboard to switch between Atari 800XL mode and
+Atari 800 mode. The current mode is displayed at the bottom of the screen.
+
+Use the F10 key to "system reset". Press F10 while holding the Shift key to
+toggle Atari Basic on or off.
+
+In Atari 800XL mode you have access to the new graphics modes (GR.9 through
+GR.15), plus you can run the newer software designed for the 800XL. Switch
+back to Atari 800 mode to run older software.
+
+Press F5 to exit back to the DOS prompt. Then read the rest of this document!
+
+
+Hardware requirements
+---------------------
+
+PC Xformer 2.5 is a 16-bit MS-DOS application. It is designed to run on most
+PCs with minimum hardware requirements. It requires only a 286 compatible CPU,
+so it is compatible with all 286, 386, 486 and Pentium based PC, as well as any
+PC that can emulate the 286. For example, the Mac running SoftAT, the PowerMac
+running SoftWindows, and any Windows NT based RISC machine.
+
+PC Xformer 2.5 also requires a VGA compatible display, and about 300K of RAM.
+
+
+Installing Disks
+----------------
+
+PC Xformer 2.5 uses the same 90K, 130K, and 180K disk images used by our
+older ST Xformer 8-bit emulator, and it also supports reading and writing
+to SIO2PC generated disk images.
+
+If you don't know what SIO2PC is, call your Atari dealer and ask. It's a
+cool cable that you connect between your real Atari 800 computer and your
+PC which allows you to blast over all of your 8-bit disks to your PC and
+store them as disk images (the 90K, 130K, or 180K data files).
+
+If you specify virtual disk files and/or MS-DOS files after the XF25, those
+will be installed as Atari disk drives. For example, type:
+
+XF25 DOS25.XFD DEMOS1.XFD
+
+to boot up DOS 2.5 from D1: and then access demo files from D2:. Using the
+same example, once you are in Atari Basic type:
+
+RUN"D2:ATARI800.BAS"
+
+to run a demo program. Or type DOS to go to the DOS 2.5 file manager.
+Machine language programs (typically files ending with .OBJ or .COM) should
+be run with Basic disabled by pressing Shift+F10 to reboot without Basic.
+
+
+Features
+--------
+
+Many of the limitations of our old ST Xformer emulator and other clone Atari
+emulators have been eliminated in PC Xformer. PC Xformer is written mostly
+in machine language and takes full advantage of the PC hardware.
+
+Features common to both PC Xformer 2.5 and PC Xformer 3.0 include:
+
+    - 48K Atari 400/800 emulation
+
+    - 64K Atari 800XL emulation with "RAM under ROM" memory
+
+    - allows user installable patches to the OS and BASIC
+
+    - displays all ANTIC text and graphics modes, including GTIA modes
+
+    - 256 color GTIA color palette
+
+    - displays player missile graphics (no collision detection)
+
+    - horizontal and vertical fine scrolling
+
+    - supports display list interrupts, IRQ, and NMI interrupts
+
+    - reads and writes to ST Xformer and SIO2PC generated disk images
+
+    - reads MS-DOS files directly from within Atari DOS
+
+    - switch Atari BASIC on/off with one keystroke
+
+    - switch between Atari 400/800 and Atari 800XL emulation with one keystroke
+
+    - joystick emulation using the keyboard cursor keys
+
+    - full speed emulation on a 386/33 or faster
+
+    - slow and fast modes of emulation to take advantage of fast PCs
+
+    - compatible with all VGA cards
+
+
+In addition, PC Xformer 3.0 adds features including these:
+
+    - 130XE emulation with 256K of extended XE memory
+
+    - player missile graphics with full collision detection
+
+    - on-the-fly disk image swapping
+
+    - 4 voices of sound, printer, and modem support
+
+    - real joystick support
+
+    - 386 optimized code for faster speed
+
+    - over 1 megabyte of sample Atari 8-bit programs
+
+    - over 40 pages of 8-bit Atari reference documentation
+
+
+Below is a list of processors and the approximate speed of emulation relative
+to an Atari 800:
+
+    - 286/16     - 0.3
+    - 386SX/20   - 0.5
+    - 386DX/33   - 1.0
+    - 486DX/33   - 2.0
+    - 486DX2/66  - 4.0
+    - Pentium/90 - 8.0
+
+486 and Pentium users can use the slow/fast option to slow down the emulator
+to normal Atari 800 speed or let it run as fast as possible.
+
+
+Upgrading to PC Xformer 3.0
+---------------------------
+
+PC Xformer 3.0 can be ordered for $29.95 U.S. directly from Branch Always
+Software at the address above, or from these and other fine Atari dealers:
+
+    ACN (Holland and Germany)        phone: +31 23351100   fax: +31 23361444
+    B & C Computervisions (U.S.A.)   phone: 408-986-9960   fax: 408-986-9968
+    FaST Club (U.K.)                 phone: +44 602445250  fax: +44 602445305
+    Mid Cities Computers (U.S.A.)    phone: 310-867-0626   fax: 310-920-8933
+    Ordosoft (France)                phone: +33 47547942   fax: +33 47513726
+    Paragon Computers (Australia)    phone: +61 92213216   fax: +61 93258251
+    Rising Star Computers (U.S.A.)   phone: 800-252-2787   fax: 513-254-7970
+    Toad Computers (U.S.A.)          phone: 800-448-TOAD   fax: 410-544-1329
+
+
+The keyboard, cursor keys, and joystick emulation
+-------------------------------------------------
+
+All letter and number keys function as on the 800XL keyboard. Punctuation
+keys will give the characters shown on the PC keyboard, not the characters
+that appear on the Atari keyboard. i.e. Shift+2 gives the @ character, not ".
+
+If you are used to using the Atari keyboard and want keys to work as they
+do on the Atari keyboard, keep in mind that PC keyboards come in every style
+and layout and so it is impossible to do that. Simply spend a few minutes
+looking at they keys as you type and you will get used to your particular
+PC's keyboard layout.
+
+F1 F2 F3 F4 function as cursor keys (up, down, left, right), similar to the
+four function keys on a 1200XL.
+
+F5 exits back to DOS. Remember this when you want to exit PC Xformer!!
+
+F6 is the HELP key.
+
+F7 is the START key.
+
+F8 is the SELECT key.
+
+F9 is the OPTION key.
+
+F10 is RESET. Press Shift+F10 to reset and toggle Basic on or off.
+
+F12 switches between emulating an Atari 800XL and an Atari 400/800.
+
+Insert and Delete insert and delete a character.
+
+Shift+Insert and Shift+Delete insert and delete a line of text.
+
+Home is the CLEAR key.
+
+End is the BREAK key.
+
+The ` key is the Atari logo key used to toggle inverse text on/off.
+
+Page Up and Page Down are used to move the display window up or down a pixel
+at a time. This allows you to center the screen for programs whose display
+extends either too far up or too far down.
+
+The numeric keypad functions in two modes. When the Num Lock is set, the
+numeric keypad produces numbers. When Num Lock is not set, the keys 2 4 6 8
+function as a 4 direction joystick. 0 on the keypad is the fire button.
+
+If your keyboard has an "inverted T" set of cursor keys, those also function
+in two modes. By themselves they function as a 4 direction joystick. When
+pressed with the Ctrl key, they act as cursor keys (same as F1 F2 F3 F4).
+
+Due to differences in the layout of the Atari 800XL and PC keyboards,
+the keys + - = * do not function as cursor keys. You must use F1 F2 F3 F4 or
+the PC's cursor keys.
+
+Some PC keyboards have an 8-way set of cursor keys, containing the usual
+up down left and right cursor keys, plus four diagonal keys. Pressing those
+diagonal keys will generate diagonal joystick movements as expected.
+
+Pressing Ctrl and a letter key will give you the graphics characters as on
+the Atari 800XL. However, the two graphics characters produced by pressing
+Ctrl+, and Ctrl+. can be obtained on the PC keyboard by typing Ctrl+[ and
+Ctrl+].
+
+Caps Lock functions as the Atari's Caps key, not as a true Caps Lock. Press
+Caps Lock once to enter lower case mode, then press Shift+Caps Lock to go
+back to upper case mode.
+
+Scroll Lock toggles fast/slow mode. Scroll Lock on is the slow mode. Use this
+feature only on 486 and Pentium machine. On slower machines it will cause the
+emulator to slow down too much. See below.
+
+To pause a program or a listing, press the PC's Pause key instead of Ctrl+1.
+
+In place of Ctrl+3 press break.
+
+Ok, got that? Just spend a few minutes playing around with the PC's keyboard
+and things will start to make sense.
+
+
+Slow/Fast modes
+---------------
+
+Scroll Lock toggles the slow/fast speed of the emulator. By default the
+emulator is in fast mode, meaning it runs as fast as possible. On a 286 or
+386 based PC, PC Xformer 2.5 should run at or slightly below the speed of an
+8-bit Atari so leave it in the default setting. On a 486 or Pentium, the speed
+may be too fast for some games, although the faster speed may be just what is
+needed for some slow BASIC games. In any case, if you do need to slow down the
+emulator, activate Scroll Lock to place the emulator into slow speed mode.
+At this point the emulator "applies the brakes" and attempts to drop down to
+about normal speed. Press Scroll Lock again to switch back to fast mode.
+
+
+Disk drive emulation
+--------------------
+
+Now we come to what to some people is the most confusing part about using an
+emulator, whether PC Xformer, ST Xformer, DOS emulators on UNIX, or the many
+different Apple II emulators out there - disks. It's quite simple once you
+understand the concepts so let me try to explain.
+
+With Gemulator I lucked out. Both the Atari ST and most PCs use the exact same
+3.5 inch floppy disks and they even format the disks the exact same way. What
+that means to you is that you can take a disk from an Atari ST and just pop
+it into a PC and just read the files directly. No special cables, no special
+adjustments to your disk drive.
+
+Not so with most computers. A PC's 5.25" floppy disk drive can't directly
+read an Apple II's 5.25" floppy disks. An old Mac II can't directly read
+Atari ST disks. And of course, the bummer, a PC's 5.25" floppy disk drive 
+can't read Atari 8-bit floppy disks.
+
+So what to do? The same problem existed on the Atari ST with ST Xformer. I
+tried several different techniques. ST Xformer 1.0 emulated Atari DOS and
+faked up the D: device, so that whatever filename you specified actually
+accessed that file on the Atari ST's disk. ST Xformer II did the same thing
+but called it the F: device.
+
+Unfortunately most (well, a lot) of Atari 8-bit software bypasses Atari DOS
+and read sectors from the disk directly. So the F: thing doesn't work too well
+for them, or boot disk that don't use a DOS at all.
+
+So I did what all of the Apple II emulators and most other emulators do: use
+virtual disks. A virtual disk is just a large data file that contains all the
+information of a single floppy disk.
+
+A virtual disk containing all the information of an Atari 8-bit single density
+disk must hold all the information from the 720 sectors on that disk. At
+128 bytes per sector, 720*128 = 92160 bytes. And that is exactly how large
+ST Xformer virtual disk files are. 92160 bytes. Every byte in the file
+corresponds to a byte originally found on the disk.
+
+The question still remains how to create a virtual disk file. Shortly after
+releasing ST Xformer II, I realized that the Atari ST's parallel printer port
+is very much like the Atari 800's serial port. One has 25 pins, the other has
+13 pins. Big deal. What the pins do is very similar, and so I developed a
+cable known as the ST Xformer Cable (what else!) which allowed you to directly
+connect an Atari 810 or 1050 disk drive to the Atari ST. Then using some 
+software, the ST read each of the 720 sectors on the Atari 8-bit disk and
+stored those 92160 bytes into a file (usually with a .SD or .XFD extender).
+
+And that is how you create a virtual disk on the Atari ST. If you are an Atari
+ST user and have user ST Xformer II in the past, then all of your Atari 8-bit
+software is already in virtual disk format and ready for use on PC Xformer!
+
+If not, and you don't know any Atari ST users who have the ST Xformer Cable,
+don't despair. There are still plenty of ways to transfer a file to the PC.
+
+About 4 years ago an Atari user by the name of Nick Kennedy tackled exactly
+this problem. And he developed a cable called the SIO2PC cable, to directly
+connect an Atari 8-bit computer to the PC.
+
+Now of course he had no clue that 4 years later someone would come around and
+write an emulator, so the reason for his cable was to use a PC with its big
+PC hard disk to store Atari 8-bit files. Basically, using a PC as a very large
+hard disk for an Atari 800. By daisy chaining both a PC as well as a real
+Atari 8-bit disk drive onto the cable you are then able to copy files from
+the 8-bit disk drive to the PC.
+
+As it happens, guess how the SIO2PC software stores the 8-bit files on the PC
+once they're transfered over the cable? In virtual disks of course! In fact,
+virtual disks created by SIO2PC are almost identical to those created by
+the ST Xformer cable, and so PC Xformer 2.5 supports both types of virtual
+disk files. (The difference is an extra 16 byte header that SIO2PC uses).
+
+The SIO2PC cable has been around for 4 years and is fairly well known in
+the Atari 8-bit community, so this document will not describe how to build
+or use the SIO2PC cable. Contact your local Atari dealer, your user group,
+download files #5281 and #6414 from the Atari 8-bit roundtable on GEnie, or
+best yet, contact Nick Kennedy directly at 501-967-3843 or write to him at:
+
+Nick Kennedy
+300 South Vancouver St.
+Russellville, AR  72801
+
+There is one other very common way to transfer a file between any two
+computers, and that is to use a null modem cable or two modems. Whenever you
+call a BBS with your modem and download a file, you are transfering a file
+from one computer (whether it be a PC or Mac or ST) to another.
+
+There are thousands of public domain and shareware Atari 8-bit programs
+available for download from BBSs and online services. Download these files
+to your PC using whatever DOS or Windows based terminal software you normally
+used (that's most likely how you obtained this copy of PC Xformer 2.5)
+
+Once the file is on your PC, copy it to the same directory that you run
+PC Xformer 2.5 from. Then specify the file on the XF25 command line as the
+second file. For example, let's say you downloaded a file called BUDGET.BAS.
+Typing this:
+
+XF25 DOS25.XFD BUDGET.BAS
+
+causes PC Xformer 2.5 to boot up using DOS25.XFD as drive D1:, and the file
+BUDGET.BAS will appear as the only file on drive D2:. Then using DOS 2.5
+(or any other Atari DOS) copy the file from D2: to D1: so that it is now
+on a virtual disk. You want to eventually copy all your Atari 8-bit files into 
+virtual disk image files. 
+
+PC Xformer 2.5 allows for up to 8 files to be specified on the XF25 command
+line. The first file MUST be a virtual disk, since it must contain a valid
+DOS on it to install as drive D1:. The remaining 7 files may either specify
+other virtual disk files, or MS-DOS files which will automatically appear
+as virtual disks as described above.
+
+Note that by default DOS 2.5 will only access 2 disk drives (D1: and D2:).
+See you DOS manual on how to expand that, or use a different DOS (such as
+MyDOS 4.5) which supports up to 8 drives.
+
+Note that there is one other method to transfer 8-bit files to the PC. It
+seems that the PC's 5.25 inch floppy disk drive actually CAN read Atari disks
+if they are formatted double density and you run a special utility. I have not
+seen this work reliably, but people claim it works. So try it out if you can.
+
+And now you are set to run PC Xformer 2.5 to your heart's content! But don't
+forget to upgrade to PC Xformer 3.0 and have a complete 130XE emulator with
+40 pages of reference documentation.
+
+Darek Mihocka, Owner of Branch Always Software
+Creator of ST Xformer, Quick ST, PC Xformer, and Gemulator
+

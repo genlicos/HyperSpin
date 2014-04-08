@@ -1,0 +1,3 @@
+FDisplayBPP = 32
+FDisplayPitch = 1280
+Joystick device not found

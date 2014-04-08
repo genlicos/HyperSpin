@@ -1,0 +1,949 @@
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page    1
+
+
+      1                             title   Generalized Game.Com logo screen
+      2                             type    8521
+      3                 
+      4                 ;============================================================================
+      5                 ;
+      6                 ;           Includes and equates
+      7                 ;
+      8                 ;----------------------------------------------------------------------------
+      9                 
+     10                 	include frogger.tmp
+     10+                             data
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; Game Equates
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+     0008       MaxPlayers	equ	8
+     10+     000C       MaxLevels	equ	12
+     10+     0009       NumBands	equ	9
+     10+     0004       NumStrips	equ	4
+     10+     0008       NumAnims	equ	8
+     10+     0012       NumSAnims	equ	NumBands*2
+     10+     0013       NumSounds	equ	19
+     10+                
+     10+     4E00       TimerFull	equ	04e00h	;78*256 is full time per level
+     10+     0007       TimerDec	equ	7	;timer decrease per loop
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; Game Equates: Game.Com Control
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+     0000       ini_game        EQU     0   ; INITIAL
+     10+     0001       exe_game        EQU     1   ; EXECUTE
+     10+     0002       close_game      EQU     2   ; CLOSE GAME
+     10+     0003       reset_game      EQU     3   ; RESET
+     10+     0426       frogger_id      equ     0426h
+     10+                
+     10+     0000       override        equ     00h
+     10+     0001       composite       equ     01h
+     10+     0040       left_right      equ     40h
+     10+     0080       up_down         equ     80h
+     10+     00C0       lr_up           equ     0c0h
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; Game Equates: Scoring
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+     000A       SCORE_forward equ	10
+     10+     0032       SCORE_home	equ	50
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page    2
+
+
+     10+     03E8       SCORE_five	equ	1000
+     10+     00C8       SCORE_lady	equ	200
+     10+     00C8       SCORE_fly	equ	200
+     10+     000A       SCORE_time	equ	10
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; Game Equates: Home Bases
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+     000C       HomeBase1	equ	12
+     10+     0034       HomeBase2	equ	52
+     10+     005C       HomeBase3	equ	92
+     10+     0084       HomeBase4	equ	132
+     10+     00AC       HomeBase5	equ	172
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; Game Structures
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+                ; ROM
+     10+                
+     10+                	; Game Data
+     10+                                         ;                 struct      
+     10+     0000       GameLevel        equ 0   ;GameLevel        word    1   
+     10+     0002       GameMult         equ 2   ;GameMult         byte    1   
+     10+     0003       GameDiv          equ 3   ;GameDiv          byte    1   
+     10+     0004       GameFrogX        equ 4   ;GameFrogX        byte    1   
+     10+     0005       GameFrogY        equ 5   ;GameFrogY        byte    1   
+     10+     0006       GameSize         equ 6   ;GameSize         size        
+     10+                
+     10+                	; Level Data
+     10+                                         ;                 struct      
+     10+     0000       LevelFlags       equ 0   ;LevelFlags       byte    1   
+     10+                ;                equ 1   ;;                byte    1   
+     10+     0002       LevelBaseU       equ 2   ;LevelBaseU       byte    1   
+     10+     0003       LevelBaseF       equ 3   ;LevelBaseF       byte    1   
+     10+     0004       LevelIncM        equ 4   ;LevelIncM        byte    1   
+     10+     0005       LevelIncD        equ 5   ;LevelIncD        byte    1   
+     10+     0006       LevelDecM        equ 6   ;LevelDecM        byte    1   
+     10+     0007       LevelDecD        equ 7   ;LevelDecD        byte    1   
+     10+     0008       LevelStrips      equ 8   ;LevelStrips      byte    4   ;NumStrips
+     10+     000C       LevelSize        equ 12  ;LevelSize        size        
+     10+                
+     10+                	;Level Data: strip byte values
+     10+                
+     10+     0000       StripStill	equ	0	;Frog doesn't move and is safe
+     10+     0001       StripMove	equ	1	;Frog is moving and is safe
+     10+     0002       StripHome	equ	2	;Frog has reached home
+     10+     0003       StripWall	equ	3	;Frog can't go here: wall
+     10+     0004       StripWDead	equ	4	;Frog dies in water
+     10+     0005       StripXDead	equ	5	;Frog Dies not in water
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page    3
+
+
+     10+     000A       StripBDead	equ	10	;Frog can't move here, trying dies
+     10+                
+     10+                	; Anim Data
+     10+                                         ;                 struct      
+     10+     0000       AnimStrip        equ 0   ;AnimStrip        byte    1   ;the art strip holding the anim
+     10+     0001       AnimWidth        equ 1   ;AnimWidth        byte    1   ;width of anim in 8 pixel pieces
+     10+     0002       AnimNum          equ 2   ;AnimNum          byte    1   ;Number of frames in animation
+     10+     0003       AnimPal          equ 3   ;AnimPal          byte    1   ;Palette
+     10+     0004       AnimStripX       equ 4   ;AnimStripX       byte    1   ;Number of 8 bit pixels into strip
+     10+     0005       AnimMove         equ 5   ;AnimMove         byte    1   ;Number of pixels movement each frame
+     10+     0006       AnimSize         equ 6   ;AnimSize         size        ;size of header
+     10+     0006       AnimTicks        equ 6   ;AnimTicks        byte    1   ;start of frame tickers
+     10+                
+     10+                	; Strip Animation
+     10+                                         ;                 struct      
+     10+     0000       SAnimNum         equ 0   ;SAnimNum         byte    1   ;number of frames in the animation
+     10+     0001       SAnimTick        equ 1   ;SAnimTick        byte    1   ;Number of ticks between frames
+     10+     0002       SAnimStrips      equ 2   ;SAnimStrips      byte    1   ;The first strip in the list of animating strips
+     10+                
+     10+                ; RAM
+     10+                	; Player Data
+     10+                                         ;                 struct      
+     10+     0000       PlayerScore      equ 0   ;PlayerScore      word    1   
+     10+     0002       PlayerLevel      equ 2   ;PlayerLevel      byte    1   
+     10+     0003       PlayerLives      equ 3   ;PlayerLives      byte    1   
+     10+     0004       PlayerHomeF      equ 4   ;PlayerHomeF      byte    1   
+     10+     0005       PlayerUnused     equ 5   ;PlayerUnused     byte    1   
+     10+     0006       PlayerVSize      equ 6   ;PlayerVSize      size        
+     10+                
+     10+                	; Level Data
+     10+                                         ;                 struct      
+     10+     0000       LevelSpeedU      equ 0   ;LevelSpeedU      byte    1   ;composite (current) speed
+     10+     0001       LevelSpeedF      equ 1   ;LevelSpeedF      byte    1   ;
+     10+     0002       LevelVFlags      equ 2   ;LevelVFlags      byte    1   
+     10+     0003       LevelOffset      equ 3   ;LevelOffset      byte    1   ;offset (LevelStrips - +3) to left strip number
+     10+     0004       LevelPageA       equ 4   ;LevelPageA       byte    1   ;Art page
+     10+     0005       LevelYoffA       equ 5   ;LevelYoffA       byte    1   ;Art yoffset
+     10+     0006       LevelAddr1       equ 6   ;LevelAddr1       word    1   ;Left Strip table address
+     10+     0008       LevelAddr2       equ 8   ;LevelAddr2       word    1   ;Right strip table address
+     10+     000A       LevelPage1       equ 10  ;LevelPage1       byte    1   ;Left or unmoving art page
+     10+     000B       LevelPage2       equ 11  ;LevelPage2       byte    1   ;Right or unused art page
+     10+     000C       LevelYoff1       equ 12  ;LevelYoff1       byte    1   ;Left or unmoving art offset
+     10+     000D       LevelYoff2       equ 13  ;LevelYoff2       byte    1   ;Right or unused art offset
+     10+     000E       LevelXoff1       equ 14  ;LevelXoff1       byte    1   ;Left X offset for art (pixels)
+     10+     000F       LevelXofff       equ 15  ;LevelXofff       byte    1   ;Left X offset fraction (pixels)
+     10+     0010       LevelVSize       equ 16  ;LevelVSize       size        
+     10+                
+     10+                	; Animation Data
+     10+                                         ;                 struct      
+     10+     0000       AnimBand         equ 0   ;AnimBand         word    1   ;Band animation is on
+     10+     0002       AnimAnim         equ 2   ;AnimAnim         word    1   ;which animation am I controlling
+     10+     0004       AnimXOff         equ 4   ;AnimXOff         word    1   ;offset from left edge of screen (+100h)
+     10+     0006       AnimXOffH        equ 6   ;AnimXOffH        byte    1   ;X offset high value
+     10+     0007       AnimFNum         equ 7   ;AnimFNum         byte    1   ;the frame number currently diplayed
+     10+     0008       AnimFTick        equ 8   ;AnimFTick        byte    1   ;how many ticks left till anim changes
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page    4
+
+
+     10+     0009       AnimRange        equ 9   ;AnimRange        byte    1   ;width of animation area in pixels
+     10+     000A       AnimVFlags       equ 10  ;AnimVFlags       byte    1   ;flags
+     10+     000B       AnimXRel         equ 11  ;AnimXRel         word    1   ;relative position in area U.F
+     10+     000D       AnimYOff         equ 13  ;AnimYOff         byte    1   ;offset from top of screen
+     10+     000E       AnimCall         equ 14  ;AnimCall         byte    1   ;routine to call (1 to ...)
+     10+     000F       AnimVSize        equ 15  ;AnimVSize        size        
+     10+                
+     10+                	;Strip Animation
+     10+                                         ;                 struct      
+     10+     0000       SAnimTime        equ 0   ;SAnimTime        byte    1   ;Time left before change
+     10+     0001       SAnimCur         equ 1   ;SAnimCur         byte    1   ;current strip in animation
+     10+     0002       SAnimVSize       equ 2   ;SAnimVSize       size        
+     10+                
+     10+                ; these two flags are also copied to LevelVFlag
+     10+     0001       LevelFlagS	equ	01h  	;Art does not move
+     10+     0002       LevelFlagH	equ	02h	;Art doesn't h-flip on direction change
+     10+                
+     10+     0080       LevelVFlagD	equ	80h	;80h= left to right
+     10+     0040       LevelVFlagH	equ	40h	;last byte processed was anim header
+     10+     0020       LevelVFlagT	equ	20h	;last byte processed was anim non-header
+     10+                
+     10+     0080       AnimVFlagD	equ	80h	;anim moving left to right
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; Game States
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+     0000       Game_Open	equ	0
+     10+     0001       Game_Menus	equ	1
+     10+     0002       Game_Init	equ	2
+     10+     0003       Game_Next	equ	3	;go to next (or first, or only)
+     10+     0004       Game_Play	equ	4
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; Zero Page Ram (0beh-0ffh)
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+00BE                         org     0beh
+     10+00BE            HoldSP      defs    2                   ;hold the game SP
+     10+00C0            CursorX     defs    1                   ;Cursor X,Y
+     10+00C1            CursorY     defs    1                   ;
+     10+00C2            GameState   defs    1                   ;game state
+     10+00C3            NumPlayers  defs    1                   ;1-MaxPlayers
+     10+00C4            GameMode    defs    1                   ;0=Arcade, 1=Tiger
+     10+00C5            Difficulty  defs    1                   ;0=Easy, 1=Arcade
+     10+00C6            Lives       defs    1                   ;3-5
+     10+00C7            Continue    defs    1                   ;0=Off, 1=On
+     10+00C8            StartLevel  defs    1                   ;1-5
+     10+00C9            Paused      defs    1                   ;1=game paused
+     10+00CA            SfxOn       defs    1                   ;1=Sound Effects on
+     10+00CB            MusicOn     defs    1                   ;1=Music On
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page    5
+
+
+     10+00CC            DemoMode    defs    1                   ;1=Demo, 0=regular
+     10+00CD            sound_flag	defs	1
+     10+00CE            Timer	defs	2	;Time on level remaining (4E00h=full time)
+     10+                
+     10+00D0            temp0w      defs    2                   ;work areas word
+     10+00D2            temp1w      defs    2                   ;work areas word
+     10+00D4            temp0       defs    1                   ;work areas
+     10+00D5            temp1       defs    1                   ;work areas
+     10+00D6            temp2       defs    1                   ;work areas
+     10+                
+     10+                	; Game Data
+     10+                
+     10+00D7            NextPlayer	defs	1
+     10+00D8            PlayerVAddr	defs	2
+     10+00DA            LevelAddr	defs	2
+     10+                
+     10+                	; Frog animation controls
+     10+                
+     10+00DC            FrogX	defs	2	;Current screen X
+     10+00DE            FrogY	defs	1	;Current screen Y
+     10+00DF            FrogMinY	defs	1	;Current minimum Y for scoring
+     10+00E0            FrogTick	defs	1	;Ticks till next move
+     10+00E1            FrogDir	defs	1	;1=S, 2=N, 3=E, 4=W, 0=sitting
+     10+00E2            FrogCnt	defs	1	;Count of remaining animations
+     10+00E3            FrogFlags	defs	1	;Frog Flags
+     10+00E4            FrogPage	defs	1	;page of frog art
+     10+00E5            FrogArtX	defs	1	;x of frog art
+     10+00E6            FrogArtY	defs	1	;y of frog art
+     10+00E7            FrogRest	defs	1	;resting animation
+     10+                
+     10+00E8            TargetX	defs	1	;Where Frog will be for texting
+     10+00E9            TargetY	defs	1	;
+     10+                
+     10+00EA            LastKey	defs	1	;Last Key entered
+     10+                
+     10+00EB            hold_byte1	defs	1
+     10+                
+     10+     0080       FrogFlagM	equ	80h	;on if moving with strip
+     10+                
+     10+     0001       FrogDirS	equ	1	;moving south
+     10+     0002       FrogDirN	equ	2	;moving north
+     10+     0003       FrogDirE	equ	3	;moving east
+     10+     0004       FrogDirW	equ	4	;moving west
+     10+     0005       FrogDirXW	equ	5	;dying waterdeath
+     10+     0006       FrogDirXL	equ	6	;dying landdeath
+     10+                
+     10+     0002       FrogSpeed	equ	2	;Number of ticks per move
+     10+     0004       FrogMoves	equ	4	;Number of movement pixels
+     10+     0004       FrogFrames	equ	4	;Number of frames
+     10+                
+     10+00EC            ZZZ	defs	10
+     10+                
+     10+00F6            testff:
+     10+                            if      testff .gt. 0ffh
+     10+                            error 	Too much data in zero page ram
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page    6
+
+
+     10+                            endif
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; Non-Zero page Ram (208h-37fh)
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+0208             	org	208h
+     10+0208            PlayerData	defs	MaxPlayers*PlayerVSize
+     10+0238            LevelData	defs	NumBands*LevelVSize
+     10+02C8            AnimData	defs	NumAnims*AnimVSize
+     10+0340            SAnimData	defs	NumSAnims*SAnimVSize
+     10+                
+     10+0364            new_melody_ptr defs 1
+     10+0365            DemoPtr	defs	2
+     10+0367            DemoCnt	defs	1
+     10+                
+     10+0368            page_ptr1	defs	2
+     10+036A            index0	defs	1
+     10+036B            index1	defs	1
+     10+036C            index2	defs	1
+     10+036D            index3	defs	1
+     10+                
+     10+036E            test37f:
+     10+                	if	test37f .gt. 37fh
+     10+                	error	Too much data in non-zero page ram
+     10+                	endif
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; User input equates
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+                ;	001-013	 ;row 0 of screen, column 0 to 12
+     10+                ;	...	 ;...
+     10+                ;	118-082h ;row 9 of screen, column 0 to 12
+     10+                ;
+     10+                ;	spot on screen = row*13+column+1
+     10+                
+     10+     0082       UserScreen	equ	082h	;highest screen press
+     10+                
+     10+     0083       UserUp	equ	083h	;joypad up
+     10+     0084       UserDown	equ	084h	;joypad down
+     10+     0085       UserLeft	equ	085h	;joypad left
+     10+     0086       UserRight	equ	086h	;joypad right
+     10+                
+     10+     0087       UserMenu	equ	087h	;Menu button
+     10+     0089       UserSound	equ	089h	;Sound button
+     10+     008A       UserPause	equ	08ah	;Pause button
+     10+                
+     10+     008B       UserA	equ	08bh	;A button
+     10+     008C       UserB	equ	08ch	;B button
+     10+     008D       UserC	equ	08dh	;C button
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page    7
+
+
+     10+     008E       UserD	equ	08eh	;D button
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; Bank definitions
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+     0020       program_bank1   equ     020h
+     10+     0021       program_bank2   equ     021h
+     10+     0023       program_bank3   equ     023h
+     10+     0024       program_bank4   equ     024h
+     10+     0025       program_bank5   equ     025h
+     10+     0026       program_bank6   equ     026h
+     10+                
+     10+     0020       bankno_front0 equ   20h
+     10+     0021       bankno_front1 equ   21h
+     10+     0022       bankno_front2 equ   22h
+     10+     0023       bankno_sprite equ   23h
+     10+     0024       bankno_strip  equ   24h
+     10+     0072       bankno_winpic10 equ 72h ;    bankno_winpic9+2
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; Macros
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+                ;	; long conditional branches
+     10+                ;
+     10+                ;breq:	macro	?dest
+     10+                ;	br	ne,cont???
+     10+                ;	jmp	eq,?dest
+     10+                ;cont???:
+     10+                ;	endm
+     10+                ;
+     10+                ;brne:	macro	?dest
+     10+                ;	br	eq,cont???
+     10+                ;	jmp	ne,?dest
+     10+                ;cont???:
+     10+                ;	endm
+     10+                ;
+     10+                ;brnz:	macro	?dest
+     10+                ;	br	z,cont???
+     10+                ;	jmp	nz,?dest
+     10+                ;cont???:
+     10+                ;	endm
+     10+                ;
+     10+                ;bruge:	macro	?dest
+     10+                ;	br	ult,cont???
+     10+                ;	jmp	uge,?dest
+     10+                ;cont???:
+     10+                ;	endm
+     10+                ;
+     10+                ;brugt:	macro	?dest
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page    8
+
+
+     10+                ;	br	ule,cont???
+     10+                ;	jmp	ugt,?dest
+     10+                ;cont???:
+     10+                ;	endm
+     10+                ;
+     10+                ;brule:	macro	?dest
+     10+                ;	br	ugt,cont???
+     10+                ;	jmp	ule,?dest
+     10+                ;cont???:
+     10+                ;	endm
+     10+                ;
+     10+                ;brz:	macro	?dest
+     10+                ;	br	nz,cont???
+     10+                ;	jmp	z,?dest
+     10+                ;cont???:
+     10+                ;	endm
+     10+                
+     10+                ;============================================================================
+     10+                ;
+     10+                ; The old stuff here
+     10+                ;
+     10+                ;----------------------------------------------------------------------------
+     10+                
+     10+                ;ASB	include oldstuff.inc
+     10+                
+     10+                            program
+     11                 	include disp_ram.inc
+     11+                ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     11+                ;               WORKING RAMs
+     11+                ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+     11+                ;;  00 -  7F : RP = 3, Display
+     11+                ;;  80 -  9F : Display Working RAM (32 bytes)
+     11+                ;; 1A0 - 1BF : Display (32 bytes)
+     11+                
+     11+     0080       cur_pos_x       equ     80h
+     11+     0081       cur_pos_y       equ     cur_pos_x+1
+     11+     0082       win_left_x      equ     cur_pos_y+1
+     11+     0083       win_left_y      equ     win_left_x+1
+     11+     0084       win_width       equ     win_left_y+1
+     11+     0085       win_height      equ     win_width+1
+     11+     0086       RP_image        equ     win_height+1            ;??
+     11+     0087       font_x          equ     RP_image+1
+     11+     0088       font_y          equ     font_x+1      ;font_no??
+     11+     0089       font_bank       equ     font_y+1      ;reserved space for user defined fonts??
+     11+     008A       font_offset     equ     font_bank+1
+     11+                
+     11+                ;font_table_hi   equ     font_offset+1             ;??
+     11+                ;font_table_lo   equ     font_table_hi+1         ;??
+     11+                ;text_no_x       equ     font_table_lo+1
+     11+                ;text_no_y       equ     text_no_x+1
+     11+                
+     11+     008B       temp_left_x     equ     font_offset+1
+     11+     008C       temp_left_y     equ     temp_left_x+1
+     11+     008D       temp_width      equ     temp_left_y+1
+     11+     008E       temp_height     equ     temp_width+1
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page    9
+
+
+     11+     008F       temp_pos_x      equ     temp_height+1
+     11+     0090       temp_pos_y      equ     temp_pos_x+1
+     11+     0091       work_ram1       equ     temp_pos_y+1
+     11+     0092       work_ram2       equ     work_ram1+1
+     11+     0093       dmc_image       equ     work_ram2+1
+     11+     0094       cur_page        equ     dmc_image+1     ;!! for page swapping & block clear
+     11+     0095       local_global    equ     cur_page+1
+     11+     0096       local_global_1  equ     local_global+1
+     11+     0097       local_global_2  equ     local_global_1+1
+     11+     0098       local_global_3  equ     local_global_2+1
+     11+     0099       local_global_4  equ     local_global_3+1
+     11+     009A       temp_1          equ     local_global_4+1
+     11+     009B       temp_2          equ     temp_1+1
+     11+     009C       temp_3          equ     temp_2+1        ;!! text background color
+     11+     009D       cur_status      equ     temp_3+1        ;!! cursor status
+     11+     009E       font_id         equ     cur_status+1
+     11+     009F       font_num        equ     font_id+1
+     11+                
+     11+     01E8       font3a          equ     01e8h
+     11+     01E9       font3b          equ     font3a+1
+     11+     01EA       font3c          equ     font3b+1
+     11+     01EB       font4a          equ     font3c+1
+     11+     01EC       font4b          equ     font4a+1
+     11+     01ED       font4c          equ     font4b+1
+     11+     01EE       font5a          equ     font4c+1
+     11+     01EF       font5b          equ     font5a+1
+     11+     01F0       font5c          equ     font5b+1
+     11+     01F1       font6a          equ     font5c+1
+     11+     01F2       font6b          equ     font6a+1
+     11+     01F3       font6c          equ     font6b+1
+     11+     01F4       font7a          equ     font6c+1
+     11+     01F5       font7b          equ     font7a+1
+     11+     01F6       font7c          equ     font7b+1
+     11+     01F7       font8a          equ     font7c+1
+     11+     01F8       font8b          equ     font8a+1
+     11+     01F9       font8c          equ     font8b+1
+     11+     01FA       font9a          equ     font8c+1
+     11+     01FB       font9b          equ     font9a+1
+     11+     01FC       font9c          equ     font9b+1
+     11+     01FD       fontaa          equ     font9c+1
+     11+     01FE       fontab          equ     fontaa+1
+     11+     01FF       fontac          equ     fontab+1
+     11+     0200       font_start      equ     fontac+1
+     11+     0201       timer_ovr       equ     font_start+1
+     11+     0202       inverse         equ     timer_ovr+1
+     11+     0203       intnet          equ     inverse+1
+     11+     0204       scroll          equ     intnet+1
+     11+     0205       scroll1         equ     scroll+1
+     11+     0206       text_dest       equ     scroll1+1
+     11+     0207       cart_flag       equ     text_dest+1 ;0: cart1 ;1:cart2
+     11+                
+     11+     01A8       mel_counter     equ     01a8h
+     11+     01A9       mel_counter1    equ     mel_counter+1
+     11+     01AA       mel_flag        equ     mel_counter1+1
+     11+     01AB       mel_flag1       equ     mel_flag+1
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page   10
+
+
+     11+                
+     11+                
+     12                 
+     13      0008       highdelay   equ     8
+     14      0008       plandelay   equ     8
+     15                 
+     16                             program
+     17                 
+     18                 ;============================================================================
+     19                 ;
+     20                 ;           Display the Game.Com screen
+     21                 ;
+     22                 ;----------------------------------------------------------------------------
+     23                 
+     24                 GameCom:    global  GameCom
+     25 0000 0E3B                   push    dmpl
+     26 0002 58E43B     	mov     dmpl,#0e4h
+     27                 
+     28                             ; draw two static copies of the Game.Com screen
+     29 0005 4900AF'                call    drawbg
+     30 0008 490000"                call    Swap_page
+     31 000B 4900AF'                call    drawbg
+     32 000E 490000"                call    Swap_page
+     33                 
+     34                             ; set up the counts and delays for the highlight and planet
+     35                 
+     36 0011 C208                   mov     r2,#highdelay       ;highlight counter
+     37 0013 C311                   mov     r3,#17              ;highlight marker
+     38 0015 C408                   mov     r4,#plandelay       ;planet counter
+     39 0017 C506                   mov     r5,#6               ;planet marker
+     40                 
+     41                             ; this loop is planet and highlight changing
+     42 0019            GameComL1:
+     43                 
+     44                             ; determine if time to change highlight.  If so, draw on both screens
+     45                 
+     46 0019 0902                   dec     r2
+     47 001B DE1F                   br      nz,GameComNoH
+     48 001D C208                   mov     r2,#highdelay
+     49 001F 1E02                   pushw   rr2
+     50 0021 1E04                   pushw   rr4
+     51 0023 490116'                call    drawhl
+     52 0026 490000"                call    Swap_page
+     53 0029 1F04                   popw    rr4
+     54 002B 1F02                   popw    rr2
+     55 002D 1E02                   pushw   rr2
+     56 002F 1E04                   pushw   rr4
+     57 0031 490116'                call    drawhl
+     58 0034 1F04                   popw    rr4
+     59 0036 1F02                   popw    rr2
+     60 0038 0903                   dec     r3
+     61 003A D635                   br      z,GameComE1
+     62 003C            GameComNoH:
+     63                             ; determine if time to rotate planet.  If so, draw on both screens
+     64                 
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page   11
+
+
+     65 003C 0904                   dec     r4
+     66 003E DE21                   br      nz,GameComNoP1
+     67 0040 C408                   mov     r4,#plandelay
+     68 0042 1E02                   pushw   rr2
+     69 0044 1E04                   pushw   rr4
+     70 0046 490152'                call    drawpl
+     71 0049 490000"                call    Swap_page
+     72 004C 1F04                   popw    rr4
+     73 004E 1F02                   popw    rr2
+     74 0050 1E02                   pushw   rr2
+     75 0052 1E04                   pushw   rr4
+     76 0054 490152'                call    drawpl
+     77 0057 1F04                   popw    rr4
+     78 0059 1F02                   popw    rr2
+     79 005B 0905                   dec     r5
+     80 005D DE02                   br      nz,GameComNoP1
+     81 005F C506                   mov     r5,#6
+     82 0061            GameComNoP1:
+     83                             
+     84                             ; keep going in loop
+     85                 
+     86 0061 1E02                   pushw   rr2
+     87 0063 1E04                   pushw   rr4
+     88 0065 490000"                call    Swap_page
+     89 0068 490190'                call    delay20ms
+     90 006B 1F04                   popw    rr4
+     91 006D 1F02                   popw    rr2
+     92 006F D8A8                   br      GameComL1
+     93                 
+     94                             ; here once highlight finished-- now loop for planet only
+     95                 
+     96 0071            GameComE1:
+     97 0071 C3FF                   mov     r3,#255             ;Delay
+     98 0073            GameComL2:
+     99                             
+    100                             ; only do for a few seconds
+    101                 
+    102 0073 0903                   dec     r3
+    103 0075 D635                   br      z,GameComE2
+    104                 
+    105                             ; rotate planet if it is time
+    106                 
+    107 0077 0904                   dec     r4
+    108 0079 DE21                   br      nz,GameComNoP2
+    109 007B C408                   mov     r4,#plandelay
+    110 007D 1E02                   pushw   rr2
+    111 007F 1E04                   pushw   rr4
+    112 0081 490152'                call    drawpl
+    113 0084 490000"                call    Swap_page
+    114 0087 1F04                   popw    rr4
+    115 0089 1F02                   popw    rr2
+    116 008B 1E02                   pushw   rr2
+    117 008D 1E04                   pushw   rr4
+    118 008F 490152'                call    drawpl
+    119 0092 1F04                   popw    rr4
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page   12
+
+
+    120 0094 1F02                   popw    rr2
+    121 0096 0905                   dec     r5
+    122 0098 DE02                   br      nz,GameComNoP2
+    123 009A C506                   mov     r5,#6
+    124 009C            GameComNoP2:
+    125                 
+    126                             ; continue this loop
+    127                 
+    128 009C 1E02                   pushw   rr2
+    129 009E 1E04                   pushw   rr4
+    130 00A0 490000"                call    Swap_page
+    131 00A3 490190'                call    delay20ms
+    132 00A6 1F04                   popw    rr4
+    133 00A8 1F02                   popw    rr2
+    134 00AA D8C7                   br      GameComL2
+    135                 
+    136                             ; everything done, so bail
+    137                 
+    138 00AC            GameComE2:
+    139 00AC 0F3B                   pop     dmpl
+    140 00AE F8                     ret
+    141                 
+    142                 ;============================================================================
+    143                 ;
+    144                 ;           Draw the static Game.Com background
+    145                 ;
+    146                 ;----------------------------------------------------------------------------
+    147                 
+    148 00AF            drawbg:
+    149                 
+    150                             ; fill screen with light grey
+    151                 
+    152 00AF 580208                 mov     r8,#2
+    153 00B2 500194                 cmp     cur_page,#1
+    154 00B5 D602                   br      eq,drawbg1
+    155 00B7 AC08                   bset    r8,#4
+    156 00B9            drawbg1:
+    157 00B9 490000"                call    Scn_colr
+    158                 
+    159                             ; point to table of vertical source values
+    160 00BC 7C0101'    	movw    rr4,#bgdata
+    161                 
+    162                             ; initialize all initial Fi_graph values
+    163                 
+    164 00BF 580008                 mov     r8,#0
+    165 00C2 580009                 mov     r9,#0
+    166 00C5 58000A                 mov     r10,#0
+    167 00C8 58C80C                 mov     r12,#200
+    168 00CB 58080D                 mov     r13,#8
+    169 00CE 58210E                 mov     r14,#bankno_front1
+    170                 
+    171                             ; composite is ok for background.
+    172                 
+    173 00D1 58000F                 mov     r15,#override
+    174 00D4 500194                 cmp     cur_page,#1
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page   13
+
+
+    175 00D7 D602                   br      eq,drawbgLoop
+    176 00D9 A90F                   bset    r15,#1
+    177 00DB            drawbgLoop:
+    178                 
+    179                             ; use vertical source table to load Fi_graph value
+    180                             ; quit if value signals end of table
+    181                 
+    182 00DB 387C                   mov     r7,(rr4)+
+    183 00DD 50FF07                 cmp     r7,#255
+    184 00E0 D61E                   br      eq,drawbgEnd
+    185 00E2 BF0B                   mov     r11,r7
+    186                 
+    187                             ; do register protected Fi_graph
+    188                 
+    189 00E4 1E04                   pushw   rr4
+    190 00E6 1E08                   pushw   rr8
+    191 00E8 0E0A                   push    r10
+    192 00EA 1E0C                   pushw   rr12
+    193 00EC 1E0E                   pushw   rr14
+    194 00EE 490000"                call    Fi_graph
+    195 00F1 1F0E                   popw    rr14
+    196 00F3 1F0C                   popw    rr12
+    197 00F5 0F0A                   pop     r10
+    198 00F7 1F08                   popw    rr8
+    199 00F9 1F04                   popw    rr4
+    200                 
+    201                             ; move destination y value down a band and loop
+    202                 
+    203 00FB 510809                 add     r9,#8
+    204 00FE D8DB                   br      drawbgLoop
+    205 0100            drawbgEnd:
+    206 0100 F8                     ret
+    207                 
+    208                             ; tell routine which source band to use for next destination band
+    209                 
+    210 0101            bgdata:
+    211 0101 10                     defb    16                  ;frame top
+    212 0102 18                     defb    24                  ;frame top
+    213 0103 20                     defb    32                    ;blank
+    214 0104 20                     defb    32                    ;blank
+    215 0105 20                     defb    32                    ;blank
+    216 0106 20                     defb    32                    ;blank
+    217 0107 20                     defb    32                    ;blank
+    218 0108 28                     defb    40                  ;game.com
+    219 0109 30                     defb    48                  ;game.com
+    220 010A 38                     defb    56                  ;game.com
+    221 010B 40                     defb    64                  ;game.com
+    222 010C 20                     defb    32                    ;blank
+    223 010D 20                     defb    32                    ;blank
+    224 010E 20                     defb    32                    ;blank
+    225 010F 20                     defb    32                    ;blank
+    226 0110 20                     defb    32                    ;blank
+    227 0111 20                     defb    32                    ;blank
+    228 0112 48                     defb    72                  ;copyright
+    229 0113 50                     defb    80                  ;frame bottom
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page   14
+
+
+    230 0114 58                     defb    88                  ;frame bottom
+    231 0115 FF                     defb    255                 ;QUIT
+    232                 
+    233                 ;============================================================================
+    234                 ;
+    235                 ;           Draw the highlight
+    236                 ;
+    237                 ;----------------------------------------------------------------------------
+    238                 
+    239 0116            drawhl:
+    240                 
+    241                             ; grab next source band (r3 has band number)
+    242                 
+    243 0116 C200                   mov     r2,#0
+    244 0118 7C0140'                movw    rr4,#hldata-1
+    245 011B 610204                 addw    rr4,rr2
+    246 011E 387C                   mov     r7,(rr4)+
+    247                 
+    248                             ; set Fi_graph values
+    249                 
+    250 0120 581308                 mov     r8,#19
+    251 0123 584309                 mov     r9,#67
+    252 0126 58000A                 mov     r10,#0
+    253 0129 BF0B                   mov     r11,r7
+    254 012B 58A00C                 mov     r12,#160
+    255 012E 58050D                 mov     r13,#5
+    256 0131 58210E                 mov     r14,#bankno_front1
+    257                 
+    258                             ; assume forced override of art
+    259                 
+    260 0134 58000F                 mov     r15,#override
+    261 0137 500194                 cmp     cur_page,#1
+    262 013A D602                   br      eq,drawhl1
+    263 013C A90F                   bset    r15,#1
+    264 013E            drawhl1:
+    265                             ; do Fi_graph and exit
+    266                 
+    267 013E 980000"                jmp     Fi_graph
+    268                 
+    269                             ; source Y offsets of highlight bands
+    270                 
+    271 0141            hldata:
+    272 0141 E0                     defb    224
+    273 0142 D8                     defb    216
+    274 0143 D0                     defb    208
+    275 0144 C8                     defb    200
+    276 0145 C0                     defb    192
+    277 0146 B8                     defb    184
+    278 0147 B0                     defb    176
+    279 0148 A8                     defb    168
+    280 0149 A0                     defb    160
+    281 014A 98                     defb    152
+    282 014B 90                     defb    144
+    283 014C 88                     defb    136
+    284 014D 80                     defb    128
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page   15
+
+
+    285 014E 78                     defb    120
+    286 014F 70                     defb    112
+    287 0150 68                     defb    104
+    288 0151 60                     defb    96
+    289                 
+    290                 ;============================================================================
+    291                 ;
+    292                 ;           Draw the Planet
+    293                 ;
+    294                 ;----------------------------------------------------------------------------
+    295                 
+    296 0152            drawpl:
+    297                 
+    298                             ; get source art x location by converting byte in r5 to word
+    299                             ; in rr4.  Then add address of x value table.
+    300                 
+    301 0152 C400                   mov     r4,#0
+    302 0154 7A0183'                movw    rr2,#pldatax-1
+    303 0157 610402                 addw    rr2,rr4
+    304 015A 387A                   mov     r7,(rr2)+
+    305 015C BF0A                   mov     r10,r7
+    306                 
+    307                             ; same idea to get source y location.
+    308                 
+    309 015E 7A0189'                movw    rr2,#pldatay-1
+    310 0161 610402                 addw    rr2,rr4
+    311 0164 387A                   mov     r7,(rr2)+
+    312 0166 BF0B                   mov     r11,r7
+    313                 
+    314                             ; get Fi_graph values
+    315                 
+    316 0168 586608                 mov     r8,#102
+    317 016B 584909                 mov     r9,#73
+    318 016E 580D0C                 mov     r12,#13
+    319 0171 580D0D                 mov     r13,#13
+    320 0174 58210E                 mov     r14,#bankno_front1
+    321                 
+    322                             ; assume hard replace of image
+    323                 
+    324 0177 58000F                 mov     r15,#override
+    325 017A 500194                 cmp     cur_page,#1
+    326 017D D602                   br      eq,drawpl1
+    327 017F A90F                   bset    r15,#1
+    328 0181            drawpl1:
+    329                             ; call Fi_graph and exit
+    330                 
+    331 0181 980000"                jmp     Fi_graph
+    332                 
+    333                             ; planet source X offsets
+    334                 
+    335 0184            pldatax:
+    336 0184 F0                     defb    240
+    337 0185 E0                     defb    224
+    338 0186 D0                     defb    208
+    339 0187 F0                     defb    240
+
+
+
+Generali SM8521 Assembler V1.10            Wed Dec 23 17:35:37 1998  Page   16
+
+
+    340 0188 E0                     defb    224
+    341 0189 D0                     defb    208
+    342                 
+    343                             ; planet source Y offsets
+    344                 
+    345 018A            pldatay:
+    346 018A 28                     defb    40
+    347 018B 28                     defb    40
+    348 018C 28                     defb    40
+    349 018D 18                     defb    24
+    350 018E 18                     defb    24
+    351 018F 18                     defb    24
+    352                 
+    353                 ;============================================================================
+    354                 ;
+    355                 ;           Loop for a 50th of a second
+    356                 ;
+    357                 ;----------------------------------------------------------------------------
+    358                 
+    359                 delay20ms:  global  delay20ms
+    360 0190 781800                 movw    rr0,#01800h             ;6
+    361 0193            d20ms_loop:
+    362 0193 1900                   decw    rr0                     ;8
+    363 0195 DEFC                   br      nz,d20ms_loop          ;8
+    364                 
+    365 0197 F8                     ret
+    366                 
+    367 0198                         end

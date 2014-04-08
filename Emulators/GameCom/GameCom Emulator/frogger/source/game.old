@@ -1,0 +1,1472 @@
+	title   Fighter Mega Mix Common Bank program/Entry Point
+	type    8521
+
+	include frogger.tmp
+	include equate.inc
+	include ram.inc
+	include disp_ram.inc
+	include disp_equ.inc
+
+
+	program
+
+;============================================================================
+;
+; The Game Loop
+;
+;----------------------------------------------------------------------------
+
+Game:       global  Game
+
+	call	InitGame
+	mov	r0,#Game_Next
+	mov	GameState,r0
+
+	; Get here when changing player
+GameL0:
+
+	call	InitPlayer
+	br	z,GameDone	;no player still has levels to play
+	call	InitLevel
+	mov	r0,#Game_Play
+	mov	GameState,r0
+
+	; Standard game playing loop
+
+GameL1:
+
+            call    GetUser
+
+	call	UpdateFrog
+
+	call	UpdateBands
+	
+	call	UpdateSAnims
+
+	call	UpdateAnims
+
+	Call	DisplayGame
+	
+            br      GameL1
+
+GameDone:
+	jmp	FromMainMenu
+
+;============================================================================
+;
+; Initialize a new game
+;
+;----------------------------------------------------------------------------
+
+InitGame:
+	; Set initial player
+
+	clr	r1
+	mov	NextPlayer,r1
+
+	; initialize player data
+
+	movw	rr2,#PlayerData
+	mov	r6,NumPlayers
+	movw	rr0,#0
+	mov	r4,StartLevel
+	mov	r5,Lives
+InitGameL1:
+	movw	PlayerScore(rr2),rr0
+	mov	PlayerLevel(rr2),r4
+	mov	PlayerLives(rr2),r5
+	addw	rr2,#PlayerVSize
+	dec	r6
+	br	nz,InitGameL1
+
+	ret
+
+;============================================================================
+;
+; Initialize the next player
+;
+;----------------------------------------------------------------------------
+
+InitPlayer:
+
+	; Get Next Player that can still play
+
+	movw	rr2,#PlayerData-PlayerVSize
+	mov	r1,NextPlayer	;The player who just played
+	mov	r0,NumPlayers	;The Total number of players
+	mov	r6,r0	;The total plus one (for testing)
+	inc	r6
+
+	; find a player
+
+InitPlayerL0:
+
+	; go to next player
+
+	inc	r1
+	cmp	r1,r6
+	br	ne,InitPlayerOK
+	mov	r1,#1
+InitPlayerOK:
+
+	; locate player's data
+
+	movw	rr4,#PlayerVSize
+	mult	rr4,r1
+	addw	rr4,rr2
+
+	; use if lives left not zero
+
+	mov	r6,PlayerLives(rr4)
+	cmp	r6,#0
+	br	ne,InitPlayerE0
+
+	; this player is done, go to next one
+
+	dec	r0
+	br	nz,InitPlayerL0
+
+	; oops-- no more players: flag is zero
+
+	ret
+
+	; found a player: remember table address
+	; flag is non-zero
+
+InitPlayerE0:
+	movw	PlayerVAddr,rr4
+	ret
+
+;============================================================================
+;
+; Initialize the next level
+;
+;----------------------------------------------------------------------------
+
+InitLevel:
+	; get level to play
+	
+	movw	rr8,PlayerVAddr
+	mov	r1,PlayerLevel(rr8)
+
+	; get which game we are playing
+
+	movw	rr12,#ClassicGame-GameSize
+	mov	r0,GameMode
+	cmp	r0,#0
+	br	eq,InitLevelClassic
+	movw	rr12,#UpdatedGame-GameSize
+InitLevelClassic:
+
+	; get offset to level entry in game table
+
+	movw	rr10,#GameSize
+	mult	rr10,r1
+	addw	rr10,rr12
+
+	; remember level table location
+	movw	rr12,GameLevel(rr10)
+	movw	LevelAddr,rr12
+
+	; get speed modifiers
+
+	mov	r6,GameMult(rr10)
+	mov	r7,GameDiv(rr10)
+	movw	temp0,rr6
+
+	; get frog position
+
+	mov	r0,GameFrogX(rr10)
+	clr	r1
+	movw	FrogX,rr0
+	mov	r0,GameFrogY(rr10)
+	dec	r0
+	sll	r0
+	sll	r0
+	sll	r0
+	sll	r0
+	mov	FrogY,r0
+
+	; and other frog parameters
+
+	mov	FrogDir,r1
+
+	; loop through each level
+
+	mov	r7,#NumBands
+	movw	rr10,#LevelData
+InitLevelL0:
+
+	mov	r1,#LevelStrips-1
+	mov	LevelOffset(rr10),r1
+
+	; get velocity and separate direction
+
+	clr	r6
+	movw	rr0,LevelBaseU(rr12)
+	btst	r0,#80h
+	br	z,InitLevelLeft
+	mov	r6,#80h
+	xorw	rr0,#0ffffh
+	incw	rr0
+InitLevelLeft:
+	mov	LevelVFlags(rr10),r6
+
+	; get adjusted velocity
+
+	mov	r3,r0	;keep units
+	mov	r5,temp0
+	mult	rr2,r5
+	mov	r2,r3
+	mov	r3,0
+	mult	rr0,r5
+	addw	rr0,rr2
+
+	mov	r5,temp0+1
+	cmp	r5,#0
+	br	z,InitLevelL1
+	div	rr0,rr4
+InitLevelL1:	
+
+	movw	LevelSpeedU(rr10),rr0
+
+	; get are location
+
+	mov	r0,LevelStrips(rr12)
+	mov	r1,r0
+	srl	r0
+	srl	r0
+	srl	r0
+	srl	r0
+	add	r0,#bankno_strip
+	mov	LevelPageA(rr10),r0
+
+	and	r1,#15
+	sll	r1
+	sll	r1
+	sll	r1
+	sll	r1
+	mov	LevelYoffA(rr10),r1
+
+	; establich the two data/drawing strips
+
+	call	NextStrip
+	call	NextStrip
+
+	; scan strip for animations
+
+	pushw	rr12
+	pushw	rr10
+	push	r7
+
+	; set up initial conditions
+
+	movw	rr6,LevelAddr2(rr10)
+	mov	r4,#0
+	mov	r1,LevelVFlags(rr10)
+	mov	r5,#25
+
+	; for each byte in strip table
+
+InitLevelA0:
+
+	; see if byte inside animation
+
+	mov	r3,0(rr6)
+	btst	r3,#80h
+	br	z,InitLevelANo
+
+	; see if byte is head or tail
+
+	cmp	r3,#80h
+	br	ne,InitLevelAH
+
+	; tail
+
+	and	r1,#255-LevelVFlagH
+	or	r1,#LevelVFlagT
+	br	InitLevelAE
+
+	; head-- is it already processed?
+
+InitLevelAH:
+	btst	r1,#LevelVFlagH
+	br	nz,InitLevelAE
+
+	; new animation
+
+	or	r1,#LevelVFlagH
+	and	r1,#255-LevelVFlagT
+
+	push	r1
+	pushw	rr4
+	pushw	rr6
+	sll	r3
+	clr	r2
+	movw	rr12,InitRoutines(rr2)
+	call	@rr12
+	popw	rr6
+	popw	rr4
+	pop	r1
+	br	InitLevelAE
+
+	; outside animation area
+
+InitLevelANo:
+	and	r1,#255-LevelVFlagH-LevelVFlagT
+	
+InitLevelAE:
+	incw	rr6
+	add	r4,#8
+	dec	r5
+	br	nz,InitLevelA0
+
+	pop	r7
+	popw	rr10
+	popw	rr12
+
+	mov	LevelVFlags(rr10),r1
+
+	; go to next band
+
+InitLevelEnd:
+	addw	rr12,#LevelSize
+	addw	rr10,#LevelVSize
+	dec	r7
+	brnz	InitLevelL0
+	
+	ret
+
+;============================================================================
+;
+; Update Bands
+;
+;----------------------------------------------------------------------------
+
+UpdateBands:
+
+	; get loop information for bands
+
+	movw	rr10,#LevelData
+	movw	rr12,LevelAddr
+	mov	r7,#NumBands
+
+	; for each band
+
+UpdateBandsL0:
+
+	; get speed and position
+
+	movw	rr2,LevelSpeedU(rr10)
+	movw	rr4,LevelXoff1(rr10)
+
+	; determine direction of motion
+
+	mov	r1,LevelVFlags(rr10)
+	and	r1,#LevelVFlagD
+	br	z,UpdateBandsL
+		
+	; may be to right-- see if reversed art
+	
+	mov	r1,LevelFlags(rr12)
+	btst	r1,#LevelFlagS+LevelFlagH
+	brnz	UpdateBandsR
+	
+	; subtract speed from position
+
+UpdateBandsL:
+	movw	rr14,rr4
+	decw	rr14
+	subw	rr4,rr2
+	movw	LevelXoff1(rr10),rr4
+	subw	rr14,rr2
+	br	nc,UpdateBandsL1
+
+	; ran off left end of strip, get prior one
+
+	call	NextStrip
+
+	; determine if starting an animation 
+
+UpdateBandsL1:
+
+	; is right edge iin first or second strip
+
+	mov	r3,#199
+	call	GetStripByte
+
+	; get the byte and determine if part of an animation
+
+	mov	r3,0(rr14)
+	btst	r3,#80h
+	br	z,UpdateBandsLNA
+
+	; inside animation: Determine if new
+
+	mov	r1,LevelVFlags(rr10)
+	btst	r1,#LevelVFlagH+LevelVFlagT
+	br	z,UpdateBandsLNew
+
+	; we have already processed this animation, wait for it to go by.
+
+	btst	r1,#LevelVFlagH
+	br	nz,UpdateBandsLH
+
+	; already seen the tail-- treat as new if head
+
+	cmp	r3,#80h
+	br	eq,UpdateBandsE3a
+
+	; here we add a new animation
+
+UpdateBandsLNew:
+
+	cmp	r3,#80h ;ZZZ
+	br	ne,zzz1 ;ZZZ
+	call abaker1 ;ZZZ
+zzz1: ;ZZZ	
+
+	; set flag as head
+
+	or	r1,#LevelVFlagH
+	mov	LevelVFlags(rr10),r1
+
+	; do animation
+
+	pushw	rr12
+	pushw	rr10
+	push	r7
+	sll	r3
+	clr	r2
+	movw	rr12,InitRoutines(rr2)
+	call	@rr12
+	pop	r7
+	popw	rr10
+	popw	rr12
+	
+	br	UpdateBandsE3a
+
+	; here we are in tail-- look for head
+
+UpdateBandsLH:
+
+	cmp	r3,#80h
+	br	ne,UpdateBandsE3a
+
+	and	r1,#255-LevelVFlagH
+	or	r1,#LevelVFlagT
+	mov	LevelVFlags(rr10),r1
+	br	UpdateBandsE3a
+
+	; right most byte not an animation: turn off "inside animation flags"
+
+UpdateBandsLNA:
+
+	mov	r1,LevelVFlags(rr10)
+	and	r1,#255-LevelVFlagH-LevelVFlagT
+	mov	LevelVFlags(rr10),r1
+
+UpdateBandsE3a:
+	jmp	UpdateBandsE3
+
+	; add speed to position
+
+UpdateBandsR:
+	addw	rr4,rr2
+	movw	LevelXoff1(rr10),rr4
+	br	nc,UpdateBandsR1
+
+	; ran off right end of strip, get next one
+
+	call	PriorStrip
+
+	; determine if starting an animation 
+
+UpdateBandsR1:
+
+	; point to leftmost byte of left strip
+	; also put number of pixels off screen in r4
+
+	mov	r3,#0
+	call	GetStripByte
+
+	; get the byte and determine if part of an animation
+
+	mov	r3,0(rr14)
+	btst	r3,#80h
+	br	z,UpdateBandsRNA
+
+	; inside animation: Determine if new
+
+	mov	r1,LevelVFlags(rr10)
+	btst	r1,#LevelVFlagH+LevelVFlagT
+	br	z,UpdateBandsRNew
+
+	; we have already processed this animation, wait for it to go by.
+
+	btst	r1,#LevelVFlagT
+	br	nz,UpdateBandsRT
+
+	; already seen the head-- treat as new if tail
+
+	cmp	r3,#80h
+	brne	UpdateBandsE3
+
+	; here we add a new animation
+
+UpdateBandsRNew:
+
+	; set flag based on if this is a 2 or a over 3 byte animation
+
+	cmp	r3,#80h
+	br	eq,UpdateBandsRNew0
+	or	r1,#LevelVFlagH
+	br	UpdateBandsRNew1
+UpdateBandsRNew0:
+	or	r1,#LevelVFlagT
+UpdateBandsRNew1:
+	mov	LevelVFlags(rr10),r1
+
+	; loop to find head of animations
+
+UpdateBandsRNew2:
+	cmp	r3,#80h
+	br	ne,UpdateBandsRNew3
+	sub	r4,#8
+	decw	rr14
+	mov	r3,0(rr14)
+	br	UpdateBandsRNew2
+UpdateBandsRNew3:
+	sub	r4,#8
+	decw	rr14
+	mov	r3,0(rr14)
+
+	pushw	rr12
+	pushw	rr10
+	push	r7
+	sll	r3
+	clr	r2
+	movw	rr12,InitRoutines(rr2)
+	call	@rr12
+	pop	r7
+	popw	rr10
+	popw	rr12
+	
+	br	UpdateBandsE3
+
+	; here we are in tail-- look for head
+
+UpdateBandsRT:
+
+	cmp	r3,#80h
+	br	eq,UpdateBandsE3
+
+	and	r1,#255-LevelVFlagT
+	or	r1,#LevelVFlagH
+	mov	LevelVFlags(rr10),r1
+	br	UpdateBandsE3
+
+	; left most byte not an animation: turn off "inside animation flags"
+
+UpdateBandsRNA:
+
+	mov	r1,LevelVFlags(rr10)
+	and	r1,#255-LevelVFlagH-LevelVFlagT
+	mov	LevelVFlags(rr10),r1
+
+	; loop for next band
+
+UpdateBandsE3:
+	addw	rr10,#LevelVSize
+	addw	rr12,#LevelSize
+	dec	r7
+	brnz	UpdateBandsL0
+	ret
+
+InitRoutines:
+	defw	abaker4
+	defw	InitAnim1
+	defw	InitAnim2
+
+;============================================================================
+;
+; Update Strip Anims
+;
+;----------------------------------------------------------------------------
+
+UpdateSAnims:
+
+	; get loop information for bands
+
+	movw	rr10,#LevelData
+	movw	rr12,LevelAddr
+	movw	rr6,#NumBands-1
+	
+	; for each band
+
+UpdateSAnimsL0:
+
+	sll	r7
+	sll	r7
+
+	; get left strip number
+
+	mov	r3,LevelOffset(rr10)
+	clr	r2
+	addw	rr12,rr2
+	mov	r5,0(rr12)
+	subw	rr12,rr2
+
+	; process animation strip if it is
+
+	pushw	rr2
+	mov	r0,#1
+	call	UpdateS1Anim
+	popw	rr2
+
+	; go to next strip
+
+	add	r7,#2
+
+	; return to first if past four
+
+	inc	r3
+	cmp	r3,#LevelStrips+4
+	br	nz,UpdateSAnimsL2
+	mov	r3,#LevelStrips
+UpdateSAnimsL2
+
+	; get strip value
+
+	addw	rr12,rr2
+	mov	r5,0(rr12)
+	subw	rr12,rr2
+
+	; if strip not valid, use first strip value
+
+	cmp	r5,#255
+	br	nz,UpdateSAnimsL3
+	mov	r3,#LevelStrips
+	addw	rr12,rr2
+	mov	r5,0(rr12)
+	subw	rr12,rr2
+UpdateSAnimsL3:
+
+	; process animation strip if it is
+
+	mov	r0,#2
+	call	UpdateS1Anim
+
+	; loop for next band
+
+UpdateSAnimsE:
+	srl	r7
+	srl	r7
+	addw	rr10,#LevelVSize
+	addw	rr12,#LevelSize
+	dec	r7
+	br	pl,UpdateSAnimsL0
+
+	ret
+
+;============================================================================
+;
+; Update Aimation in single strip
+;
+;----------------------------------------------------------------------------
+
+UpdateS1Anim:
+
+	; if not animated, bail
+
+	btst	r5,#80h
+	brz	UpdateS1AnimE
+
+	; decrement counter
+
+	mov	r1,SAnimData(rr6)
+	dec	r1
+	mov	SAnimData(rr6),r1
+	brnz	UpdateS1AnimE
+
+	; get number of animations and tick
+
+	sll	r5
+	clr	r4
+	movw	rr14,StripAnims(rr4)
+	movw	rr4,0(rr14)
+
+	; store new tick
+
+	mov	SAnimData(rr6),r5
+
+	; increment strip offset
+
+	inc	r7
+	mov	r3,SAnimData(rr6)
+	inc	r3
+	cmp	r3,r4
+	br	nz,UpdateS1AnimsL1
+	clr	r3
+UpdateS1AnimsL1:
+	mov	SAnimData(rr6),r3
+	dec	r7
+
+	; offset for new table
+
+	clr	r2
+	addw	rr14,rr2
+	mov	r3,SAnimStrips(rr14)
+
+	cmp	r0,#2
+	br	eq,UpdateS1AnimsL2
+
+	; convert into art page number
+
+	mov	r2,r3
+	srl	r2
+	srl	r2
+	srl	r2
+	srl	r2
+	add	r2,#bankno_strip
+	mov	LevelPage1(rr10),r2
+
+	; convert into Y offset
+
+	mov	r2,r3
+	and	r2,#15
+	sll	r2
+	sll	r2
+	sll	r2
+	sll	r2
+	mov	LevelYoff1(rr10),r2
+
+	; convert into strip table address
+
+	clr	r2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,#StripTable
+	movw	LevelAddr1(rr10),rr2
+
+	br	UpdateS1AnimE
+
+UpdateS1AnimsL2:
+
+	; convert into art page number
+
+	mov	r2,r3
+	srl	r2
+	srl	r2
+	srl	r2
+	srl	r2
+	add	r2,#bankno_strip
+	mov	LevelPage2(rr10),r2
+
+	; convert into Y offset
+
+	mov	r2,r3
+	and	r2,#15
+	sll	r2
+	sll	r2
+	sll	r2
+	sll	r2
+	mov	LevelYoff2(rr10),r2
+
+	; convert into strip table address
+
+	clr	r2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,#StripTable
+	movw	LevelAddr2(rr10),rr2
+
+UpdateS1AnimE:
+	ret
+
+;============================================================================
+;
+; Update Frog:
+;
+;----------------------------------------------------------------------------
+
+UpdateFrog:
+	ret
+
+;============================================================================
+;
+; Update animations
+;
+;----------------------------------------------------------------------------
+
+UpdateAnims:
+	ret
+
+;============================================================================
+;
+; Get byte under address on screen
+;
+; GetScrnByte:
+;
+;	r7=y pixel on screen
+;   or
+;
+; GetStripByte:
+;
+;	r10 = address of band ram table
+;	r12 = address of band rom table
+;
+;     inputes:
+;
+;	r7 or (rr10 and rr12) as defined above
+;	r3 = x pixel on screen
+;
+;     Output:
+;
+;	rr14 = address of byte
+;	r4   = pixel distance to byte from left edge of screen
+;
+;----------------------------------------------------------------------------
+
+GetScrnByte:
+
+	push	r7
+	pushw	rr10
+	pushw	rr12
+
+	srl	r7
+	srl	r7
+	srl	r7
+	srl	r7
+	
+	movw	rr10,#LevelVSize
+	mult	rr10,r7
+	addw	rr10,#LevelData
+	
+	movw	rr12,#LevelSize
+	mult	rr12,r7
+	addw	rr12,LevelAddr
+	
+	call	GetStripByte
+	popw	rr12
+	popw	rr10
+	pop	r7
+	ret
+
+GetStripByte:
+	pushw	rr0 
+	pushw	rr2
+
+	; get offset position
+	
+	mov	r4,LevelXoff1(rr10)
+	
+	cmp	r7,#4 ;ZZZ
+	br	ne,zzz2 ;ZZZ
+	cmp	r4,#36h ;ZZZ
+	br	ne,zzz2 ;ZZZ
+	call	abaker2 ;ZZZ
+zzz2: ;ZZZ	
+
+	; get distance from left edge of screen
+	
+	mov	r0,r4	
+	and	r0,#7
+	neg	r0
+	add	r0,r3
+	
+	; if reversed motion, we may reverse positions
+
+	mov	r1,LevelVFlags(rr10)
+	and	r1,#LevelVFlagD
+	br	z,GetStripByteL0
+		
+	; may be to right-- see if reversed art
+	
+	mov	r1,LevelFlags(rr12)
+	btst	r1,#LevelFlagS+LevelFlagH
+	br	nz,GetStripByteL0
+	
+	; direction is reversed
+
+	mov	r4,r3	;mirror screen location
+	mov	r3,#199
+	sub	r3,r4
+	
+	mov	r4,#199	;mirror strip split location
+	sub	r4,LevelXoff1(rr10)
+	
+	; pick the strip
+
+	movw	rr14,LevelAddr2(rr10)
+	cmp	r3,r4
+	br	ult,GetStripByteR
+	movw	rr14,LevelAddr1(rr10)
+	
+	br	GetStripByteR
+	
+GetStripByteL0: 
+	
+	; pick the strip
+
+	movw	rr14,LevelAddr1(rr10)
+	cmp	r3,r4
+	br	ult,GetStripByteR
+	movw	rr14,LevelAddr2(rr10)
+	
+GetStripByteR:
+
+	; get the offset from beginning of strip in pixels
+
+	sub	r3,r4
+	srl	r3
+	srl	r3
+	srl	r3
+	clr	r2
+	addw	rr14,rr2
+
+	; get offset from left edge of screen to this byte
+	
+	mov	r4,r0
+	
+	; get out
+
+	popw	rr2
+	popw	rr0
+	ret
+
+;============================================================================
+;
+; Display Game
+;
+;----------------------------------------------------------------------------
+
+DisplayGame:
+
+	call	DisplayBands
+	call	DisplayAnims
+	call	DisplayFrog
+	call	DisplayOlays
+
+	ret
+
+;============================================================================
+;
+; Display Overlays
+;
+;----------------------------------------------------------------------------
+
+DisplayOlays:
+	ret
+
+;============================================================================
+;
+; Display Animations
+;
+;----------------------------------------------------------------------------
+
+DisplayAnims:
+	ret
+
+;============================================================================
+;
+; Display the silly frog
+;
+;----------------------------------------------------------------------------
+
+DisplayFrog:
+	ret
+
+;============================================================================
+;
+; Display Bands
+;
+;----------------------------------------------------------------------------
+
+DisplayBands:
+
+	; start at top of screen and work down
+
+	movw	rr6,#LevelData
+	movw	rr4,LevelAddr
+	mov	r0,#NumBands
+
+	; loop for each band
+
+DisplayGameL0:
+	push	r0
+	pushw	rr4
+	pushw	rr6
+	
+	; branch if art is moving
+
+	mov	r1,LevelFlags(rr4)
+	and	r1,#LevelFlagS
+	br	z,DisplayGameMov
+
+	; still art: point to destination
+
+	clr	r8
+	mov	r9,#9
+	sub	r9,r0
+	sll	r9
+	sll	r9
+	sll	r9
+	sll	r9
+
+	; point to source
+
+	mov	r1,LevelYoffA(rr6)
+	clr	r10
+	mov	r11,r1
+
+	; set width and height
+
+	mov	r12,#200
+	mov	r13,#16
+
+	; point to page
+
+	mov	r1,LevelPageA(rr6)
+	mov	r14,r1
+
+	; set drawing style and location
+
+	mov	r15,#override
+            cmp     cur_page,#1
+            br      eq,DisplayGameP1
+            bset    r15,#1
+DisplayGameP1:
+
+	; draw the band and exit
+
+            call    Fi_graph
+	jmp	DisplayGameEnd
+
+	; draw one or two moving strips in band
+
+DisplayGameMov:
+
+	; point to destination
+
+	clr	r8
+	mov	r9,#9
+	sub	r9,r0
+	sll	r9
+	sll	r9
+	sll	r9
+	sll	r9
+
+	; point to source
+
+	mov	r0,LevelXoff1(rr6)
+	neg	r0
+	mov	r10,r0
+	mov	r1,LevelYoff1(rr6)
+	mov	r11,r1
+
+	; set width and height
+
+	neg	r0
+	mov	r12,#200
+	mov	r13,#16
+
+	; point to page
+
+	mov	r1,LevelPage1(rr6)
+	mov	r14,r1
+
+	; set drawing style and location
+
+	mov	r15,#override
+            cmp     cur_page,#1
+            br      eq,DisplayGameP3
+            bset    r15,#1
+DisplayGameP3:
+
+	; see if adjustments are needed: band too short
+
+	;mov	r1,LevelVFlags(rr6)
+	;btst	r1,#LevelVFlagD
+	;br	z,DisplayGameP8
+	;cmp	r0,#0
+	;br	eq,DisplayGameP4
+;DisplayGameP8:	
+	cmp	r0,#199
+	br	ugt,DisplayGameP4
+
+	; shorten first strip draw
+
+	cmp	r0,#0
+	br	eq,DisplayGameP9
+	mov	r12,r0
+
+	; determine direction of motion
+
+	mov	r1,LevelFlags(rr4)
+	btst	r1,#LevelFlagH+LevelFlagS
+	br	nz,DisplayGameP6
+	mov	r1,LevelVFlags(rr6)
+	and	r1,#LevelVFlagD
+	br	z,DisplayGameP6
+	or	r15,#left_right
+	mov	r8,#200
+	sub	r8,r0
+DisplayGameP6:
+
+	; draw first strip, saving important information
+	push	r0
+	push	r9
+	call	Fi_graph
+	pop	r9
+	pop	r0
+	popw	rr6
+	popw	rr4
+	pushw	rr4
+	pushw	rr6
+	
+DisplayGameP9:
+
+	; adjust destination
+
+	mov	r8,r0
+
+	; point to source
+
+	clr	r10
+	mov	r1,LevelYoff2(rr6)
+	mov	r11,r1
+
+	; set width and height
+
+	mov	r12,#200
+	sub	r12,r0
+	mov	r13,#16
+
+	; point to page
+
+	mov	r1,LevelPage2(rr6)
+	mov	r14,r1
+
+	; set drawing style and location
+
+	mov	r15,#override
+            cmp     cur_page,#1
+            br      eq,DisplayGameP5
+            bset    r15,#1
+DisplayGameP5:
+
+
+	; draw the band and exit
+
+DisplayGameP4:
+
+	; determine direction of motion
+
+	mov	r1,LevelFlags(rr4)
+	btst	r1,#LevelFlagH+LevelFlagS
+	br	nz,DisplayGameP7
+	mov	r1,LevelVFlags(rr6)
+	and	r1,#LevelVFlagD
+	br	z,DisplayGameP7
+	or	r15,#left_right
+	clr	r8 
+DisplayGameP7:
+
+            call    Fi_graph
+
+	; we are done, so quit band
+
+DisplayGameEnd:
+	popw	rr6
+	popw	rr4
+	pop	r0
+
+	; point to next band to draw
+
+	addw	rr6,#LevelVSize
+	addw	rr4,#LevelSize
+	dec	r0
+	brnz	DisplayGameL0
+	
+	; show page
+
+	call	Swap_page
+	
+	ret
+
+;============================================================================
+;
+; Give r8=Rom Level, r10=Ram Level
+; rotate strips to right
+;
+;----------------------------------------------------------------------------
+
+NextStrip:
+	; Get next left strip
+
+	dec	r7
+	
+	sll	r7
+	sll	r7
+	clr	r6
+
+	add	r7,#2
+	movw	rr14,SAnimData(rr6)
+	sub	r7,#2
+	movw	SAnimData(rr6),rr14
+	add	r7,#2
+
+	mov	r3,LevelPage2(rr10)
+	mov	LevelPage1(rr10),r3
+	mov	r3,LevelYoff2(rr10)
+	mov	LevelYoff1(rr10),r3
+	movw	rr2,LevelAddr2(rr10)
+	movw	LevelAddr1(rr10),rr2
+
+	; get right strip
+
+	; go to next strip
+
+	mov	r3,LevelOffset(rr10)
+	inc	r3
+
+	; if too high, go back to first strip
+
+	cmp	r3,#LevelStrips+NumStrips
+	br	ne,NextStripL2
+	mov	r3,#LevelStrips
+NextStripL2:
+
+	; if unused, go back to first strip
+
+	clr	r2
+	movw	rr14,rr12
+	addw	rr14,rr2
+	mov	r4,0(rr14)
+	cmp	r4,#255
+	br	ne,NextStripL3
+	mov	r3,#LevelStrips
+NextStripL3:
+
+	mov	LevelOffset(rr10),r3
+
+	; get current strip number
+
+	movw	rr14,rr12
+	addw	rr14,rr2
+	mov	r3,0(rr14)
+
+	; see if animation strip
+
+	btst	r3,#80h
+	br	z,NextStripL4
+
+	; get strip animation table address
+
+	sll	r3
+	movw	rr14,StripAnims(rr2)
+
+	; get contents of RAM strip animation table
+	
+	mov	r2,SAnimTick(rr14)
+	mov	r3,#0
+	movw	SAnimData(rr6),rr2
+
+	; get value of first strip animation
+
+	mov	r3,SAnimStrips(rr14)
+	clr	r2
+
+	; save current offset
+
+NextStripL4:
+
+	; convert into art page number
+
+	mov	r2,r3
+	srl	r2
+	srl	r2
+	srl	r2
+	srl	r2
+	add	r2,#bankno_strip
+	mov	LevelPage2(rr10),r2
+
+	; convert into Y offset
+
+	mov	r2,r3
+	and	r2,#15
+	sll	r2
+	sll	r2
+	sll	r2
+	sll	r2
+	mov	LevelYoff2(rr10),r2
+
+	; convert into strip table address
+
+	clr	r2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,#StripTable
+	movw	LevelAddr2(rr10),rr2
+
+	srl	r7
+	srl	r7
+	inc	r7
+
+	ret
+
+;============================================================================
+;
+; Give r8=Rom Level, r10=Ram Level
+; rotate strips to left
+;
+;----------------------------------------------------------------------------
+
+PriorStrip:
+	; Get next right strip
+
+	dec	r7
+	sll	r7
+	sll	r7
+
+	movw	rr14,SAnimData(rr6)
+	add	r7,#2
+	movw	SAnimData(rr6),rr14
+	sub	r7,#2
+
+	mov	r3,LevelPage1(rr10)
+	mov	LevelPage2(rr10),r3
+	mov	r3,LevelYoff1(rr10)
+	mov	LevelYoff2(rr10),r3
+	movw	rr2,LevelAddr1(rr10)
+	movw	LevelAddr2(rr10),rr2
+
+	; get left strip
+
+	; go to next strip
+
+	mov	r3,LevelOffset(rr10)
+	dec	r3
+
+	; if too low, go forward to last strip
+
+	cmp	r3,#LevelStrips-1
+	br	ne,PriorStripL2
+	mov	r3,#LevelStrips+NumStrips-1
+PriorStripL2:
+
+	; if unused, go to prior strip
+
+	clr	r2
+	movw	rr14,rr12
+	addw	rr14,rr2
+PriorStripL1:
+	mov	r4,0(rr14)
+	cmp	r4,#255
+	br	ne,PriorStripL3
+	dec	r3
+	decw	rr14
+	br	PriorStripL1
+PriorStripL3:
+
+	; save current offset
+
+	mov	LevelOffset(rr10),r3
+
+	; get current strip number
+
+	movw	rr14,rr12
+	addw	rr14,rr2
+	mov	r3,0(rr14)
+
+	; see if animation strip
+
+	btst	r3,#80h
+	br	z,PriorStripL4
+
+	; get strip animation table address
+
+	sll	r3
+	movw	rr14,StripAnims(rr2)
+
+	; get contents of RAM strip animation table
+	
+	mov	r2,SAnimTick(rr14)
+	mov	r3,#0
+	movw	SAnimData(rr6),rr2
+
+	; get value of first strip animation
+
+	mov	r3,SAnimStrips(rr14)
+	clr	r2
+
+	; save current offset
+
+PriorStripL4:
+
+	; convert into art page number
+
+	mov	r2,r3
+	srl	r2
+	srl	r2
+	srl	r2
+	srl	r2
+	add	r2,#bankno_strip
+	mov	LevelPage1(rr10),r2
+
+	; convert into Y offset
+
+	mov	r2,r3
+	and	r2,#15
+	sll	r2
+	sll	r2
+	sll	r2
+	sll	r2
+	mov	LevelYoff1(rr10),r2
+
+	; convert into strip table address
+
+	clr	r2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,rr2
+	addw	rr2,#StripTable
+	movw	LevelAddr1(rr10),rr2
+
+	srl	r7
+	srl	r7
+	inc	r7
+
+	ret
+
+;============================================================================
+;
+; Initialize animation 1
+;
+;----------------------------------------------------------------------------
+
+InitAnim1:
+	ret
+
+;============================================================================
+;
+; Initialize animation 2
+;
+;----------------------------------------------------------------------------
+
+InitAnim2:
+	ret
+
+	end

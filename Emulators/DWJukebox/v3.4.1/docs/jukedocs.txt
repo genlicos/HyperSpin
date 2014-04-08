@@ -1,0 +1,2730 @@
+
+
+
+DWJukebox for DOS and Windows
+Version 3.4.1
+By Chris La Mantia (support@dwjukebox.com)
+Home page: www.DWJukebox.com
+Skin Gallery: www.DWJukebox.com/category/skins
+Support Forum: www.DWJukebox.com/forum
+
+
+LICENSE: Free for non-commercial use.  This software may not be
+used for any commercial activity of any kind.  See license.txt
+for full details.
+
+
+
+
+======================================
+============ Introduction ============
+======================================
+
+This is an MP3 jukebox program for DOS and Windows.  It was designed 
+to run on MAME cabinets, although MAME is not required.
+
+This program is meant to look and act like a jukebox, not a media
+player.  Thus, there are no playlists, no fast forward, no rewind, 
+no track seek, etc.  It expects input via buttons like a real jukebox, 
+not by navigating a GUI with a joystick or mouse.
+
+Special note for Windows 95, 98, ME, 2000, Vista, and Windows 7 users:
+----------------------------------------------------------------------
+
+
+The default mouse and touchscreen support in this software is only
+compatible with DOS and Windows XP. To enable the mouse for Windows 95,
+98, ME, or 2000, rename the file ALLEG41.DLL to ALLEG41.XP and rename
+the file ALLEG41.98 to ALLEG41.DLL.
+
+=================================================
+============ Setup and Configuration ============
+=================================================
+
+The jukebox has no configuration options available through the program
+itself; all configuration is carried out through text-based
+configuration files.
+
+First Time Setup:
+-----------------
+
+
+In order to get up and running quickly, please edit the jukebox.ini file
+in a text editor like Windows Notepad or DOS Edit and set the SongPath 
+to point to your music collection. You may set multiple song paths, so 
+if you have more than one folder of music, set SongPath1, SongPath2, etc. 
+Please note that if one of your SongPaths is in a subfolder of another 
+SongPath, songs will get indexed twice and updates may not be stored 
+properly.  This will be enough to get the jukebox running with the 
+default skin and contols.
+
+The first time the jukebox is run, it will index all of the song files.
+For large collections, this step can be time-consuming, as each song 
+must be completely loaded into memory to be searched for identification
+information.  This information is saved in a song database, so on 
+subsequent runs, the jukebox only needs to verify the existence of the 
+file.  This verification step allows you to use removable media; songs 
+will only be displayed on the jukebox if they exist when the jukebox is 
+started.
+
+Configuration Files
+-------------------
+
+
+The configuration files used by DWJukebox are plain text files.  They are 
+organized similar to Windows INI files; they contain a number of 
+parameters divided into sections, with the section names starting in 
+square braces. Lines that start with the # character (pound, octothorpe, 
+number sign, whatever you want to call it) are comments and are not
+read by the jukebox.  For example, here is a section with two parameters:
+
+
+[Settings]
+# This section contains jukebox settings.
+
+RadioMode = Disabled
+MaxQueueSize = 250
+
+
+
+Three configuration files are used to determine the operation of
+the jukebox:
+
+ JUKEBOX.INI
+This file contains all settings related to operation of the program
+itself, and general user preferences. Anything related to the physical
+PC, such as resolution or refresh rate, or jukebox operator settings,
+such as whether or not to require credits, are set in this file. You can
+specify a different configuration file on the command line when starting
+the jukebox; for example, starting the jukebox with WINCAB.EXE
+MYPREFS.INI will use MYPREFS.INI instead of JUKEBOX.INI.
+
+ Control Map File
+The control map file assigns jukebox functions to individual keys,
+joystick or gamepad buttons and axes, or mouse buttons. The default
+control map file is CONTROLS.INI; however, a different file can be
+selected via the Controls parameter in JUKEBOX.INI.
+
+ Skin File
+The skin file defines the look of the jukebox and the scheme by which
+songs are selected. All interactive elements of the interface can be
+defined here. The skin file is set via the Skin parameter in
+JUKEBOX.INI; the default is DEFAULT.SKN. Although the skin files
+included have a .SKN extension, they are still effectively INI files and
+can be edited with any text editor.
+
+
+
+==================================
+============ Controls ============
+==================================
+
+The jukebox is designed to emulate a real, physical jukebox, not a media
+player or video jukebox. thus, it is designed to use physical buttons on
+a control panel rather than a mouse or keyboard. The standard way to do
+this is through a keyboard encoder such as a KeyWiz or I-Pac, or by
+hacking a keyboard or game controller. All jukebox functions can be
+mapped to any keyboard key, or to the two main axes or buttons on a
+gamepad.
+Configuring the Control Panel
+-----------------------------
+
+
+Control information is stored in a separate configuration file.  The
+default control map file is controls.ini; however, you can select a
+different file by changing the Controls setting in the Controls section 
+in jukebox.ini.
+
+In controls.ini, physical keys or gamepad buttons are mapped to jukebox 
+functions.  This allows more than one key or button to provide the same 
+function.  The jukebox can read any key on a standard PC keyboard, 
+including the Shift, Ctrl, Alt, Lock, and Windows keys, and it can read 
+up to 14 buttons and the 4 main directions on the first two axes of the
+first four gamepads or joysticks in the system.  (DOS users will be
+limited to two buttons on two gamepads or four buttons on one gamepad
+due to limitations on the DOS PC gameport.) Mouse buttons can be mapped 
+as well; however, mouse button 1 always controls the user interface, so 
+mouse button1 should only remapped for skins with no clickable icons.
+
+The default controls.ini file includes every mappable key and button for
+demonstration purposes; however, you are only required to include keys 
+or buttons that you are actually using.
+
+Some buttons are required for basic jukebox operation, such as controls
+to change pages or select songs.  Others represent optional functions 
+such as displaying a list of the most popular songs, volume control, 
+etc.
+
+Required Buttons:
+-----------------
+
+
+ BTN_A, BTN_B, etc.
+These are the letters used by jukeboxes that use either one letter and
+one number or just one letter to select a song. BTN_A through BTN_Z are
+available. The default controls.ini maps BTN_A through BTN_J to their PC
+keyboard counterparts. The default skin uses BTN_A through BTN_D for
+song selection and ignores higher letters.
+
+If you are using a skin with a numeric selection method, the letter 
+keys will jump directly to the first page starting with an artist with
+a name starting with that letter.
+
+ BTN_1, BTN_2, etc.
+These are the number buttons on the jukebox; they are used in all
+control setups except those that use just a single letter to select a
+song. BTN_1 through BTN_25 are available. Note that BTN_10 through
+BTN_25 represent a single button with the two-digit number on its face
+and not two separate buttons. In addition, if the skin file is designed
+to use a zero, BTN_0 will also be used. The default skin uses BTN_1 
+through BTN_4 for song selection and ignores higher numbers.
+
+ BTN_PREVPG
+ BTN_NEXTPG
+
+These buttons page through the available songs.
+By default, they are mapped to the Page Up and Page Down keys.
+
+
+Optional Buttons
+----------------
+
+
+ BTN_SELECT
+Selects the song entered. This button is optional is the AutoSelect
+option is enabled in jukebox.ini; otherwise it is required. By default,
+for the default skin, the user should press a letter button and a number
+button followed by the Select button to start a song. If you would
+prefer the song to be started immediately rather than requiring the
+Select button, enable the AutoSelect option in jukebox.ini. By default,
+it is mapped to both Enter keys on the keyboard.
+
+ BTN_FIRSTPG
+ BTN_LASTPG
+These buttons will jump to the first or last pages of the available 
+songs.
+
+ BTN_PREVALPHA
+ BTN_NEXTALPHA
+These buttons skip to the next or previous page where the first letter
+of the artist is different (not counting the word "THE"). This allows
+paging through large collections quickly. By default, these functions
+are mapped to the comma and period keys (think of  as arrows
+pointing to the next character in the alphabet).
+
+ BTN_POPULAR
+BTN_POPULAR temporarily changes the Coming Up display to show the most
+popular songs rather than the song queue. Pressing this button again
+will show the next page of popular songs. After a few seconds, the
+display will return to showing the upcoming song queue. (The exact
+number of seconds the popular song list is displayed can be set in
+jukebox.ini via the MostPopularDisplayTime setting, which defaults to 5
+seconds.) This button is mapped to the F7 key on the keyboard by 
+default.
+
+ BTN_RADIO
+BTN_RADIO toggles "radio mode" on and off where random songs will be
+continually played. Pressing BTN_RADIO again will stop radio mode.
+BTN_RADIO is mapped to the F3 key by default.
+
+ BTN_RADIO_ON
+BTN_RADIO_ON turns "radio mode" on if it is currently disabled; 
+otherwise it has no effect.  It is not mapped by default.
+
+ BTN_RADIO_OFF
+BTN_RADIO_OFF turns "radio mode" off if it is currently enabled; 
+otherwise it has no effect.  It is not mapped by default.
+
+ BTN_PLAYSTIMULATOR
+BTN_PLAYSTIMULATOR toggles the PlayStimulator on and off. If no time was
+specified for the PlayStimulator, it is set to 10 minutes when enabled.
+
+ BTN_PLAYSTIMULATOR_ON
+BTN_PLAYSTIMULATOR_ON turns the PlayStimulator on if it was disabled; 
+otherwise it has no effect. If no time was specified for the 
+PlayStimulator, it is set to 10 minutes when enabled.  This button is
+not mapped by default.
+
+ BTN_PLAYSTIMULATOR_OFF
+BTN_PLAYSTIMULATOR_OFF turns the PlayStimulator of if it was ensabled; 
+otherwise it has no effect. This button is not mapped by default.
+
+
+ BTN_RANDOM
+This selects a random song and adds it to the queue. As this is a
+selection button, it requires a credit if credits are required.
+
+ BTN_SHUFFLE
+BTN_SHUFFLE reorganizes the songs in the queue, placing them in a random
+order.
+
+ BTN_TOPTUNE
+BTN_TOPTUNE selects the most-played song on the popularity list. If that
+song is already playing or already in the queue, the next most popular
+song will be played, etc. As this is a selection button, it requires a
+credit if credits are required.
+
+ BTN_COIN1
+ BTN_COIN2
+ BTN_COIN3
+ BTN_COIN4
+The BTN_COIN buttons represent the coin slots on a jukebox that requires
+credits to play. Up to 4 individual coin slots can be defined. Coins are
+only required if RequireCredits is enabled in jukebox.ini. By default,
+BTN_COIN1 is mapped to the Insert key. Credits are added to the jukebox 
+based on the CoinXCredit settings in jukebox.ini.
+
+ BTN_PAUSE
+BTN_PAUSE will pause the currently playing song, or restart it if the 
+song is paused. It is by default mapped to the F8 key.
+
+ BTN_PAUSE_ON
+BTN_PAUSE_ON will pause the currently playing song; if the song is already 
+paused it will have no effect. It is not mapped by default.
+
+ BTN_PAUSE_OFF
+BTN_PAUSE_OFF will unpause the current song, if the song is already 
+paused.  If the song is not paused or no song is playing it will have no 
+effect. It is not mapped by default.
+
+ BTN_SCREENSAVER
+BTN_SCREENSAVER will force the screensaver to be activated or deactivated 
+right away, rather than waiting for the timeout.  It is not mapped by
+default.
+
+ BTN_SCREENSAVER_ON
+BTN_SCREENSAVER_ON will force the screensaver to be activated if it 
+is currently not active; otherwise it will have no efferct. It is not 
+mapped by default.
+
+ BTN_SCREENSAVER_OFF
+BTN_SCREENSAVER_OFF will force the screensaver to be deactivated if it 
+is currently active; otherwise it will have no efferct. It is not 
+mapped by default.
+
+ BTN_SCREENSHOT
+BTN_SCREENSHOT will save a snapshot of the jukebox to a file. In higher
+resolutions, it may take several seconds to save the screenshot, during
+which the music will probably repeatedly loop a short section of music.
+BTN_SCREENSHOT is mapped to the F12 key by default.
+
+ BTN_EXIT
+Exits the jukebox.  BTN_EXIT is mapped to the Escape key by default.
+
+ BTN_BACKSPACE
+Clears the last entered button.  By default, this is mapped to the 
+Backspace key on the keyboard.
+
+ BTN_CLEAR
+Clears all currently entered buttons. This button is not mapped by 
+default.
+
+ BTN_LOOP
+Toggles LoopMode, where as soon as a song finishes playing it is
+re-added to the queue. Songs removed with MSG_SKIP are not looped. Songs
+added to the queue through this method do not consume a credit, but they
+do increase the play count. Useful at parties or holiday occasions to
+keep a particular set of songs on continuous play. It is mapped to the
+F5 key by default.
+
+ BTN_LOOP_ON
+Enables LoopMode, if it is not already enabled; otherwise it has no 
+effect.  It is not mapped by default.
+
+ BTN_LOOP_OFF
+Disables LoopMode, if it is already enabled; otherwise it has no effect.  
+It is not mapped by default.
+
+ BTN_SKIP
+Cancels the currently playing song and starts the next song in the
+queue. As this action does not restore credit to the credits counter, it
+should probably not be included on a jukebox that is set up to use
+credits. By default, it is mapped to the Delete key.
+
+ BTN_CLEARQUEUE
+Cancels all of the songs in the queue. If credits are enabled, a number
+of credits equal to the number of songs waiting in the queue will be
+added. By default, it is mapped to the F1 key.
+
+ BTN_CLEARALL
+Cancels all of the songs in the queue, including the
+currently playing song.  If credits are enabled, a number of credits 
+equal to the number of songs waiting in the queue will be added.
+Credit is not returned for the currently playing song.  This button
+is not mapped by default.
+
+ BTN_FREEPLAY
+Toggles between free play and credits required modes.
+
+ BTN_FREEPLAY_ON
+Turns free play mode on if credits are currently required; otherwise it
+has no effect. It is not mapped by default.
+
+ BTN_FREEPLAY_OFF
+Turns free play mode off if it is currently enabled; otherwise it has no
+effect. It is not mapped by default.
+
+ BTN_SKIPLAST
+Deletes the last song in the queue.  Note that you cannot
+skip the currently playing song this way.  This button can only be used
+during the time specified by SkipLastTimeLimit in jukebox.ini. If  
+SkipLastTimeLimit is set to 0, this button can be used at any time
+to remove the most recent addition.  If SkipLastTimeLimit is set to
+any value higher than 0, BTN_SKIPLAST can only remove the single most
+recent addition, unless LimitSkipLastToMostRecent is set to False.
+
+GUI Navigation Buttons
+----------------------
+
+
+On a control panel with very limited controls, such as a single 4-way 
+joystick with one button, the jukebox can be navigated as a GUI.  This
+is not the recommended way to use the jukebox, but it is available for
+those who need it. Navigating off the left or right sides of the screen
+will cause the page to turn without explicitly having to select a page
+change button. The available GUI controls are:
+
+ BTN_GUI_LEFT
+ BTN_GUI_RIGHT
+ BTN_GUI_UP
+ BTN_GUI_DOWN
+Moves the GUI focus in the appropriate direction.  The control with 
+focus will be marked with a dotted line.  These buttons are mapped 
+to the cursor keys by default.  The directions are relative to the
+screen rotation.
+
+ BTN_GUI_SELECT
+Selects the control that currently has focus, i.e. "clicks" the button.
+By default, this is mapped to the spacebar.
+
+ BTN_GUI_NEXT
+ BTN_GUI_PREV
+Moves the focus to the next or previous control. By default, 
+BTN_GUI_NEXT is mapped to the Tab key; BTN_GUI_PREV is not mapped by 
+default.
+
+ BTN_SKIN_PREV
+ BTN_SKIN_NEXT
+Switches to the next or previous skin. By default, BTN_SKIN_NEXT is 
+mapped to the F10 key; BTN_SKIN_PREV is mapped to the F9 key.
+
+ BTN_SKIN_1
+ BTN_SKIN_2
+ BTN_SKIN_3
+ BTN_SKIN_4
+ BTN_SKIN_5
+ BTN_SKIN_6
+ BTN_SKIN_7
+ BTN_SKIN_8
+ BTN_SKIN_9
+ BTN_SKIN_10
+Switches directly to a specific skin. None of these buttons are 
+mapped by default.
+
+
+============================================
+============ Icons and Messages ============
+============================================
+
+In order to interact with the skin, the jukebox sends status 
+messages to the skin and can receive control messages from icons
+mapped to locations on the screen.
+
+When a message is received that matches the Action setting of an 
+icon, that icon's OnImage is displayed, and when the negative 
+version of the message is received, the icon reverts to its OffImage.
+More than one icon can have the same Action, but each icon can only 
+have one Action. If no OnImage is defined, the OffImage will appear 
+down and to the right as if "pressed" in like a button.  If no 
+OffImage is specified, the background image in the area specified 
+by the icon is used.
+
+An Action may contain any of the button definitions listed above.  
+When a button definition is used, the icon will move to the OnImage 
+state for a tenth of a second, and then return to the OffImage state.
+If the icon is marked as Clickable, it will send the button command as 
+well as receive it. 
+
+In addition to button messages, there are several state messages that 
+can be assigned as actions.  State messages should not be marked as 
+Clickable, as they are not commands.  State messages are often used 
+to activate "lights" on the jukebox, indicating credits being 
+available, that a song is paused, that radio mode is turned on, etc.
+This is done by putting an image of a turned-on lamp for the icon's 
+OnImage and of an unlit lamp for the OffImage.
+
+The state messages are:
+
+ MSG_FILTERED
+Activated when a filter is in place; deactivated when the filter is 
+cleared.
+
+ MSG_POPULAR
+Activated when the Most Popular list is shown; deactivated when the 
+Song Queue display is restored.
+
+ MSG_CREDITS
+Activated when one or more credits are available; deactivated when 
+no credits are remaining. When the jukebox is set to not require 
+credits, this message is always active.
+
+ MSG_SONGSTART
+Activated when a song is playing; deactivated when the song 
+finishes.
+
+ MSG_SONGPAUSE
+Activate when the Pause feature is activated; 
+deactivated when play is resumed. 
+
+ MSG_START
+Activated when the jukebox is started. Note that this message is never
+deactivated, so you cannot use this message to trigger shutdown events,
+as the shutdown happens too quickly for the jukebox to respond to.
+
+ MSG_START_SKIN
+Activated when a new skin starts. This is the default action, and
+can be used to essentially apply "decals" to the jukebox without having
+to edit the skin background image. Note that this message is never
+deactivated, so you cannot use this message to trigger skin shutdown 
+events, as the shutdown happens too quickly for the jukebox to respond 
+to.
+
+ MSG_ISDOS
+Activated for DOS, deactivated for Windows. Useful if you wanted to 
+show a different decal depending on which version is running.
+
+ MSG_RADIO
+Activated when RadioMode is started; deactivated when RadioMode
+is exited.
+
+ MSG_LOOP
+Activated when LoopMode is started; deactivated when LoopMode
+is exited.
+
+ MSG_PLAYSTIMULATOR
+Activated when the PlayStimulator has been enabled; deactivated 
+when the PlayStimulator has been disabled.
+
+ MSG_SCREENSAVER
+Activated when the screen saver is activated; deactivated 
+when the screen saver has been dismissed.
+
+ MSG_MUTE
+Activated when the Mute function is used; deactivated when normal volume
+is restored. This message is only sent if the actual mute function is
+used, not if the volume is simply turned down to minimum.
+
+ MSG_NOCREDITS
+Activated when the user attempts to select a song when credits are
+required and no credits are available. Deactivated two seconds later.
+
+ MSG_INVALID
+Activated when the user attempts to select an empty song slot.  
+Deactivated two seconds later.
+
+ MSG_DUPSONG
+Activated when a song is selected that is already in the queue 
+if AllowDuplicatesInQueue is disabled in jukebox.ini. Deactivated 
+two seconds later.
+
+ MSG_FREEPLAY
+Activated or deactivated at jukebox startup depending on the 
+RequireCredits setting in jukebox.ini, and activated or deactivated 
+as appropriate if BTN_FREEPLAY is toggled.
+
+ MSG_IDLE
+Activated when no songs are playing, paused, or queued. This
+message is sent after the post-song delay on the last song, and it is
+deactivated before the pre-song delay.  It is not activated between 
+queued songs, only when the last queued song has played.
+
+ MSG_QUEUE
+Activated when songs are added to an empty queue; deactivated when 
+the last song in the queue has started playing.
+
+ MSG_PRESONG
+Activated when the delay period before a song starts, and 
+deactivated when the song starts playing.  If no delay is set,
+this message will activate at the beginning of a song and then 
+immediately deactivate.
+
+ MSG_POSTSONG
+Activated when the delay period after a song starts, and deactivated
+when the post-song delay is over. If no delay is set, this message will
+activate and then immediately deactivate.
+
+ MSG_INTERSONG
+Activated when the between-song delay period starts, and deactivated
+when the between-song delay is over. If no delay is set, this message
+will not activate at all.
+
+ MSG_ADDINGCREDITS
+If the skin is set to add multiple credits one at a time, this message
+is activated while the credits are being added and deactivated when all
+of the credits for that coin have been added.
+
+ MSG_ADDEDCREDIT
+Activated for each credit as it is added, deactivated a moment later.
+
+ MSG_SKIPLASTOK
+Activated when the Skip Last Song function is available, deactivated 
+when the SkipLastTimeLimit timer is reached or another song is 
+queued or the last song is actually skipped.
+
+ MSG_QUEUEFULL
+Activated when the song queue is full; deactivated when the song queue
+is no longer full.
+
+ MSG_SELECTING
+Activated when one or more selection buttons have been pressed but not 
+enough to make a valid selection.  Deactivated when the selection 
+is cleared or a valid selection is ready to be selected.
+
+ MSG_SELECTIONREADY
+Activated when enough selection buttons have been pressed to indicate a
+valid selection.  Deactivated when this is no longer the case. 
+
+ MSG_ALLOWSELECTFULLCD
+Activated at startup if the AllowSelectFullCD option is enabled.
+Deactivated if it is disabled.
+
+ MSG_SONGSELECTED
+Activated whenever a song is selected by any user action as opposed to
+by the RadioMode or PlayStimulator. Deactivated two seconds later.
+
+ MSG_SELECTEDALL
+Activated if the user selects the full CD and all tracks are 
+successfully queued.  Deactivated two seconds later.
+
+ MSG_SELECTEDSOME
+Activated if the user selects the full CD but only some of the tracks 
+are successfully queued due to lack of credits.  Deactivated two 
+seconds later.
+
+
+Command Messages
+----------------
+
+
+A command message is similar to a BTN_ message; however, they are not 
+sent in pairs, i.e. there is never a deactivation for them. Commands
+are meant to trigger actions in the jukebox as opposed to triggering
+GUI actions. These are not usually used as icon actions; they are used 
+internally by timers.  Command messages are not sent to the GUI so 
+they should not be used by non-clickable icons, and clickable icons 
+will not appear to "press" if mapped to a command message.
+
+ CMD_ADDCREDIT
+If the skin is set to add multiple credits one at a 
+time, this command is sent once for each credit to instruct the jukebox
+to increase the credit counter.
+
+ CMD_NEXTPG
+Turns to the next page of songs.
+
+ CMD_PREVPG
+Turns to the previous page of songs.
+
+==========================================
+============ Jukebox Features ============
+==========================================
+
+(Editor's note: All jukebox features are named with BiCapitalization
+rather than using separate words.  This is not for trendy marketing 
+reasons; it simply allows the documentation builder to index the
+features properly.)
+
+ PlayStimulator
+
+In a commercial jukebox, a play stimulator is a feature that 
+automatically plays a song after a certain period of inactivity; the 
+theory is that it essentially reminds patrons that the jukebox is there
+which encourages people to use it.
+
+DWJukebox has an optional PlayStimulator mode that simulates this 
+function.  The PlayStimulator can be enabled in JUKEBOX.INI or 
+toggled on and off via BTN_PLAYSTIMULATOR. When the PlayStimulator 
+is enabled, a random song will play after the selected period of 
+inactivity.
+
+To enable the PlayStimulator via JUKEBOX.INI, set the number of 
+seconds the jukebox is to be idle before the PlayStimulator 
+kicks in by adding or changing the PlayStimulatorDelay setting 
+in JUKEBOX.INI in the [Settings] section:
+
+
+[Settings]
+PlayStimulatorDelay = 180
+
+
+This would set the PlayStimulator to 180 seconds, or three minutes.  
+Setting this value to 1 will cause the jukebox to play constantly 
+as if it were in Radio Mode.  Setting this value to 0 disables the Play 
+Stimulator.
+
+To avoid repetition, the PlayStimulator (and all other functions that
+randomly select songs) remembers the last 20 songs played and will 
+avoid playing them again.  However, this feature is disabled if the 
+jukebox contains less than 40 songs.  Songs higher on the Most Popular
+list will be selected for random play more often.
+
+ RadioMode
+RadioMode is similar to the PlayStimulator, except it selects a new 
+random song as soon as the queue is empty.  Although RadioMode is 
+essentially a PlayStimulator with a one-second delay, it is a
+separate function to allow both modes to be toggled independently.
+
+To enable RadioMode via JUKEBOX.INI, set the RadioMode setting 
+in JUKEBOX.INI in the [Settings] section to Enabled.
+
+
+
+[Settings]
+RadioMode = Enabled
+
+
+RadioMode can also be toggled on and off via BTN_RADIO.
+
+
+ LoopMode
+
+In LoopMode, when a song finishes playing it is immediately re-added 
+to the end of the queue.  Songs removed with MSG_SKIP are not looped.
+Songs added to the queue through this method do not consume a credit,
+but they do increase the play count.  LoopMode is useful at parties 
+or holiday occasions to keep a particular set of songs on continuous 
+play.
+
+LoopMode is usually enabled or disabled via BTN_LOOP.  It can also be
+enabled via the LoopMode setting in the [Settings] section of 
+JUKEBOX.INI
+
+
+
+Song sorting options
+--------------------
+
+
+There are three options for sorting the songs: Artist (the default),
+which sorts the labels by artist; Album, which sorts the labels by
+album; and Random, which randomly scrambles the titlestrips as they
+would normally appear on a real jukebox.
+
+To set the song sort, add the SongSort parameter to the [Settings] 
+section of JUKEBOX.INI as follows:
+
+[Settings]
+SongSort = Random
+
+ - or -
+
+SongSort = Artist
+
+ - or -
+
+SongSort = Album
+
+
+Note that Album sort only applies to album-based (CD-type) skins. If Album
+is selected for a classic-style skin, it will be treated as Artist.
+
+=====================================================
+============ Creating a Custom Skin File ============
+=====================================================
+
+The appearance of nearly every aspect of DWJukebox is controlled by a
+skin file. The skin file is a simple text file that contains pointers to
+all images used by a skin, the definition of the control scheme used for
+the jukebox, the definition of the output style of the jukebox, and
+definitions for any interactive elements such as displays, indicators,
+buttons and sounds.
+
+At this point, I have put my time into trying to finish the jukebox,
+so I have not written a skin builder.  Fortunately, building a skin
+is not that hard.  Things to remember:
+
+- All coordinates and measurements are relative to the background 
+image, not the actual resolution.
+- Pixels in the background image are always assumed to be square; 
+they will be corrected for the aspect ratio of the monitor, 
+resolution and orientation at runtime to stay square.  
+
+Designing a skin comes down to:
+
+- Selecting the background image
+- Set the selection method and range of selection keys
+- Set the location, size, color, and number of lines of the displays 
+  (or disable them)
+- Define the appearance of the titlestrips
+- Define the size and location of one or more grid(s) of titlestrips
+- Define any interactive icons
+- Define any sounds.
+
+Creating a simple skin
+----------------------
+
+
+Basic skins are very easy.  Here, for example, is the classic.skn with
+the comments stripped out to make it shorter:
+
+
+[skin]
+background=bgclassc.jpg
+
+[Selection]
+SelectionMethod=Alphanumeric
+UseZero=False
+HighLetter=D
+HighNumber=4
+
+[Display1]
+# Now Playing display
+enabled=True
+x=157
+y=202
+w=282
+h=80
+lines=4
+color=palegreen
+bgcolor=black
+
+[Display2]
+# Song List display
+enabled=True
+x=595
+y=202
+w=282
+h=80
+lines=4
+color=palegreen
+bgcolor=black
+
+[Display3]
+# Selection display
+enabled=True
+x=496
+y=258
+w=42
+h=25
+color=palegreen
+bgcolor=black
+
+[Display4]
+# Credit Display
+enabled=True
+x=496
+y=214
+w=42
+h=25
+color=palegreen
+bgcolor=black
+
+[TitleStrips]
+Background=jb45lb01.jpg
+AddQuotes=True
+ForceUpperCaseTitles=True
+ForceUpperCaseArtists=True
+SongsPerStrip=Double
+Font=bluehigh.ttf
+FontSize=26
+FontColor=black
+SmallFont=bluecond.ttf
+SmallFontSize=26
+Width=320
+Height=108
+
+[StripGrid]
+x=162
+y=308
+rows=4
+cols=2
+rowspace=2
+colspace=60
+order=Horizontal
+
+
+That is all there is to a basic skin. Where it gets more complicated is
+when you start adding icons that create or react to jukebox events;
+these icons are of course critical for touchscreen use. For this, we
+shift gears and look at default.skn. I'll skip all of the stuff covered
+above and go right to the icons:
+
+
+[Icon1]
+x=464
+y=193
+w=93
+h=94
+OnImage=instron.bmp
+OffImage=instroff.bmp
+Clickable=False
+Action=MSG_CREDITS
+
+[Icon2]
+x=624
+y=281
+w=11
+h=11
+OnImage=r-ledoff.bmp
+OffImage=r-ledon.bmp
+Clickable=False
+Action=MSG_POPULAR
+
+[Icon3]
+x=738
+y=281
+w=11
+h=11
+OnImage=r-ledon.bmp
+OffImage=r-ledoff.bmp
+Clickable=False
+Action=MSG_POPULAR
+
+[Icon4]
+x=477
+y=413
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_A
+
+[Icon5]
+x=514
+y=413
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_1
+
+
+(This is just a subset of the 17 icons in default.skn, but the rest are
+like Icon4 and Icon5.)
+
+Here we see the two different kinds of icons: non-clickable icons, which
+simply react to events, and clickable icons, which both create and react
+to events. Correspondingly, there are two kinds of events an icon can
+send or receive: BTN_ events, which act as if one of the buttons were
+pressed when sent, and MSG_ events, which report on the state of the
+jukebox.
+
+As a general rule, clickable BTN_ messages almost always represent
+physical buttons, and non-clickable MSG_ messages almost always
+represent lights or a similar status indicator.
+
+Clickable icons should always send BTN_ events; non-clickable icons can
+react to either BTN_ or MSG_ events. The BTN_ events are listed in
+controls.ini; the MSG_ events are listed in readme.txt.
+
+BTN_ events always un-set themselves after 1/10th of a second, and MSG_
+events un-set themselves when the condition is no longer true. A perfect
+example is to compare BTN_PAUSE vs. MSG_SONGPAUSED. When BTN_PAUSE is
+pressed, either on the keyboard or by clicking a clickable icon assigned
+to it, the BTN_PAUSE message is processed, which pauses the current song
+and pushes BTN_PAUSE and MSG_SONGPAUSED onto the message queue, and a
+-BTN_PAUSE (unset BTN_PAUSE) onto the timer queue. The user interface
+sees the BTN_PAUSE and causes whatever icons are assigned to it to
+display their OnImage, or if no OnImage is assigned it makes the
+OffImage (or the background if no OffImage is assigned) appear to be
+"pressed" by shifting it a couple of pixels down and to the right. The
+same thing happens with MSG_SONGPAUSED, so if you have an OffImage that
+looks like an unlit LED and an OnImage that looks like a lit LED, the
+LED for that icon will appear to "light" in response to MSG_SONGPAUSED.
+A tenth of a second later, -BTN_PAUSE is sent to the user interface,
+reverting any icons assigned to it back to their OffImage (or the
+background if no OffImage is assigned), but the song is still paused.
+When BTN_PAUSE is pressed again, the process repeats, except this time
+processing the message results in starting the song and sending
+BTN_PAUSE and -MSG_SONGPAUSED to the interface, and again -BTN_PAUSE to
+the timer queue. If the clickable icon instead was set to
+MSG_SONGPAUSED, nothing would happen, as the jukebox engine doesn't
+react to MSG_ messages, only BTN_ messages.
+
+MSG_ISDOS is a special case; it is set on startup if running in DOSCab
+and unset if running in Windows. This allows you to show an instruction
+label or logo differently depending on which operating system is
+running.
+
+NOTE: It is not necessary to add button icons to enable a button unless 
+the skin is to be used with a touchscreen, mouse, or via the GUI 
+navigation buttons. 
+
+Adding Sounds to Skins
+----------------------
+
+
+Skins can contain pointers to sounds that are triggered when a button 
+is pressed or an event occurs.  Sounds can be set to trigger either 
+when a message or button is set or unset. To specify that a sound 
+should be played when a message or button is unset, prefix the message 
+or button name with a minus sign.
+
+Here is a sample sound definition set:
+
+
+[Sounds]
+BTN_COIN1=coin.wav
+BTN_COIN2=coin.wav
+BTN_ANY=btnclick.wav
+MSG_START=startup.wav
+
+
+==========================================================
+============ [Controls] Section (JUKEBOX.INI) ============
+==========================================================
+
+The [Controls] section relates to input devices and how they are 
+interpreted by the jukebox engine.
+
+[Controls] AlphaToggle
+AlphaToggle sets one set of buttons to toggle between letters and 
+numbers. If AlphaToggle is True, keys and joystick buttons mapped to 
+letters will toggle back and forth between letters and numbers.  
+This option only takes effect when the SelectionMethod is set to 
+ALPHANUMERIC. This allows skins designed for two separate sets
+of selection keys to be used with a control panel with fewer buttons.
+This is equivalent to the 4ButtonPanel option from version 2.x.
+
+Default value: False
+
+[Controls] AutoSelect
+AutoSelect automatically enters the selected song without having to press
+a Select button. If AutoSelect is true, a selection is made the moment
+the maximum number of selection buttons are pressed. If AutoSelect is 
+false, a Select button must be pressed to enter the selection.  
+When AutoSelect is enabled, it actually pushes a BTN_SELECT message 
+onto the message queue, so if there is an on-screen icon mapped to 
+BTN_SELECT it will appear to trigger as if it had actually been pressed.
+
+Default value: False
+
+[Controls] Controls
+Controls sets the name of the file that contains the control maps. 
+This file maps jukebox functions to physical keyboard keys or joystick or
+gamepad axes and buttons.  See the Control Map File chapter for more
+information.
+
+Default value: CONTROLS.INI
+
+[Controls] KeyRepeatRate
+KeyRepeatRate sets the number of times per second a control will repeat 
+when held down, up to a maximum of 30.  This applies to all forms of 
+input: keyboard, gamepad, and on-screen icons. If KeyRepeatRate is set 
+to 0 or DISABLED, no controls will repeat.
+
+Default value: 5
+
+[Controls] Mouse
+Mouse sets the mode of the mouse.  Mouse = Disabled will disable the 
+mouse, Mouse = Enabled will enable the mouse with a visible pointer, 
+and Mouse = Touchscreen will enable the mouse with an invisible pointer.
+(If you prefer, you can use Visible and Invisible in place of Enabled 
+and Touchscreen.)
+
+Note that touchscreens are currently only supported under DOS and 
+Windows XP.
+
+Default value: Disabled
+
+[Controls] ShowKeys
+If ShowKeys is enabled, it puts the name of the last key, joystick 
+button, or mouse button pressed in the upper left corner of the screen.  
+This is meant to help identify buttons on remote controls or keyboard 
+encoders when setting up CONTROLS.INI. 
+
+Default value: Disabled
+
+
+=========================================================
+============ [Display] Section (JUKEBOX.INI) ============
+=========================================================
+
+[Display] AnimationSpeed
+AnimationSpeed sets the speed of the page change  animations.  This value
+can range from 2 to 100. Since this value represents milliseconds between 
+frames, lower numbers are faster.  Setting the speed to 0 or Disabled 
+disables page change animations.
+
+Default value: 20
+
+[Display] AnimationAcceleration
+
+AnimationAcceleration sets the rate at which the page change animation 
+accelerates.  It accepts values from 1 to 100, with 100 being fastest.
+Acceleration only starts to kick in on the third page change, and once 
+the page change button is released for more than a second or two the 
+acceleration resets.  A value of 0 or Disabled turns off acceleration.
+
+Default value: 20
+
+[Display] ColorDepth
+When DWJukebox starts up, it will cycle through color depths until it 
+finds one that is supported at the requested resolution.  By default, it
+tries 16 bits per pixel first, then 15, then 24, then 32.  This may cause 
+some undesired flashing on startup, or the selection of an undesired 
+color depth.  Setting ColorDepth to either 15, 16, 24, or 32 will cause 
+the jukebox to try that color depth first.  Setting ColorDepth to
+Auto will go in the order listed above in DOS; in Windows, the Auto 
+setting will try to use the existing desktop color depth before trying 
+the others in the order listed above.
+
+
+Note that selecting an unsupported color depth may cause the jukebox to 
+open in a window in Windows.
+
+
+Default value: Auto
+
+
+[Display] FixedDimension
+If a skin does not perfectly match the rotation, either the height or the
+with must be either clipped or letterboxed to make the display fit.  
+FixedDimension = Height uses the full height of the skin; FixedDimension
+Width uses the full width of the skin. FixedDimension = Auto uses width 
+for horizontal orientations and height for vertical orientations.
+
+Default value: Auto
+
+[Display] IconFocusBoxThickness
+[Display] TrackFocusBoxThickness
+IconFocusBoxThickness sets, in pixels,  the thickness of the dotted 
+focus line around highlighted icons; TrackFocusBoxThickness sets the 
+thickness of the line around track titles. If set to AUTO, the 
+thickness will depend on the screen resolution; if it is set to 0 or 
+DISABLED, the focus line won't appear at all.  
+
+Default value: Auto
+
+
+[Display] FontSmoothing
+FontSmoothing sets whether TrueType fonts used by the jukebox are 
+anti-aliased (smoothed).  Disabling font smoothing may increase 
+performance on slow machines. FontSmoothing has been tested to work at 
+full speed on at least a Pentium 166 at 800x600 resolution.
+
+Default value: Enabled
+
+
+[Display] InsertCoinMsg1
+[Display] InsertCoinMsg2
+InsertCoinMsg1 and InsertCoinMsg2 set the message that appears when a 
+selection is attempted with no credits available.  
+If the jukebox is set to use credits and a selection button is pressed 
+with no credits available, the message specified in InsertCoinMsg1 and 
+InsertCoinMsg2 will be shown on the Upcoming Songs display.  If the 
+Upcoming Songs display is set to only display one line, only 
+InsertCoinMsg1 will be shown.
+
+Default value: NO SELECTIONS REMAINING for line 1, INSERT COIN for line 2
+
+[Display] MonitorAspectRatio
+
+The MonitorAspectRatio sets the physical aspect ratio of the monitor,
+NOT the aspect ratio of the screen resolution. A particular monitor
+always has the same aspect ratio no matter what resolution it's running
+in. The aspect ratio needs to be set for the monitor in its "natural"
+configuration, not accounting for the Rotation setting in the jukebox.
+If the display is rotated in hardware by the video card, it needs to be
+inverted.
+
+Aspect ratios can be specified as an actual ratio (4:3 or 16:9, for 
+example) or as a decimal number representing the ratio (for example, 
+the standard 4:3 aspect ratio can be expressed as 1.33334, 
+which is roughly 4 divided by 3).  You should only need to 
+change this if you have a widescreen  monitor.  Most widescreen
+monitors use a 16:10 aspect ratio, or 1.6; widescreen TV's or
+monitors with TV-style 720 or 1080 vertical resolutions are usually
+16:9, or 1.77778.  
+
+If MonitorAspectRatio is set to STRETCH, the full height and width of 
+the skin will fill the height and width of the monitor and the
+FixedDimension attribute will be ignored.
+
+Default value: 4:3
+
+[Display] MousePointer
+MousePointer points to the file containing a set of Allegro bitmaps 
+representing the mouse pointers. Right now, changing this is only 
+useful if all of the pointers have their hotspot in the same spots as
+the default pointer file, as the hotspots are currently hardcoded.
+
+Default value: jbdefptr.ptr
+
+[Display] RefreshRate
+RefreshRate requests a specific monitor refresh rate.  Be careful with 
+this value!  Most monitors will not accept an out of range refresh rate,
+but some older monitors could theoretically be damaged.  If in doubt, 
+do not set a refresh rate and the monitor's default will be used.
+
+Default value: Monitor default
+
+[Display] Rotation
+Rotation sets the rotation of the display.  This value can be specified 
+three different ways; use the one that makes most sense to you.
+
+First, Rotation may be specified in 90 degree clockwise increments. Thus,
+Rotation = 0 is horizontal, Rotation = 1 is vertical rotated to the 
+right, Rotation = 2 is upside down, and Rotation = 3 is vertical rotated 
+to the left.
+
+Second, Rotation may be specified in degrees, with 0, 90, 180, and 270 
+being the only supported values.
+
+Finally, rotation may be specified as HORIZONTAL, VERTICAL (or 
+VERTICAL RIGHT), UPSIDE DOWN, or VERTICAL LEFT.
+
+Default value: 0
+
+[Display] Skin
+Skin sets the default definition file.  It can be either the name of a 
+specific .skn file in the Skins folder, or the name of a folder in the 
+Skins folder containing a .skn file by the same name.  It is not 
+necessary to specify the .skn extension.
+
+Multiple skins can be specified as Skin1, Skin2, etc.  When multiple 
+skins are used, the BTN_SKIN_NEXT and BTN_SKIN_PREV keys can be used 
+to cycle between them, or buttons BTN_SKIN_1 through BTN_SKIN_10 can
+be used to switch directly to a particular skin.
+
+Default value: Default.skn
+
+[Display] Width
+[Display] Height
+Width and Height set the screen resolution.  The skin will be scaled to 
+fit this resolution, adjusted by the aspect ratio of the monitor. 
+Because of these automatic adjustments, any skin can be used in any
+resolution and any rotation.
+
+Although any skin can be used at any resolution, use skins especially 
+designed for low resolutions for best results below 640x480.
+
+Note that the Width and Height are for the monitor in its normal 
+horizontal configuration. Thus, even if using a rotated display set the
+Width and Height appropriately for a non-rotated horizontal display.
+
+If Width or Height is set to Auto, the jukebox will use the existing 
+desktop resolution in Windows, or 1024x768 in DOS.  
+
+Default value: Width=Auto, Height=Auto
+
+
+=======================================================
+============ [Index] Section (JUKEBOX.INI) ============
+=======================================================
+
+The Index section sets parameters and preferences related to the
+indexing of song files.
+
+[Index] CoverArt
+CoverArt defines the order in which files are searched for cover art.
+Cover art is only used for CD skins at this time. The cover art found in
+the folder for the first song in an album is used.
+
+Multiple CoverArt paths can be set, so they are specified as CoverArt1, 
+CoverArt2, etc.  Here, for example, are the CoverArt settings in the 
+default JUKEBOX.INI:
+
+
+CoverArt1 = folder.jpg
+CoverArt2 = AlbumArt_{????????-????-????-????-????????????}_Large.jpg
+CoverArt3 = *.jpg
+
+
+Default value: None
+
+[Index] DefaultAlbum
+DefaultAlbum is the text to be used when no album name can be determined.
+
+Default value: Singles
+
+[Index] DefaultArtist
+DefaultArtist is the text to be used when no artist name can be 
+determined.
+
+Default value: Various Artists
+
+[Index] FilenameCrop
+FilenameCrop indicates whether or not to crop track, album and/or artist
+artist information from filenames. This only applies when ID3 
+information is unavailable or disabled.  If FilenameCrop is set to a 
+value of 2 or higher, that number of characters is always cropped from 
+the beginning of a filename. If FilenameCrop is set to 1 or Numeric, any 
+numbers and the space following them are dropped from the filename.  
+If FilenameCrop is set to Smart, any information in the filename up to 
+the last "- " (hyphen followed by a space) is assumed to be album and 
+artist information and is dropped from the title.
+
+NOTE: Only the Smart and Disabled modes are currently available; Numeric 
+is not yet implemented.
+
+Default value: Smart
+
+[Index] MaxFolderDepth
+Sets how deep to scan into the folder structure for songs,
+from 1 to 32 levels deep. MaxFolderDepth sets how deep in the folder 
+structure to look for music. This will help prevent runaway indexing 
+if unexpected removable media is found on a song path.
+
+Default value: 3
+
+[Index] RunawayLimiter
+RunawayLimiter is used in case a corrupted database gets 
+"stuck" reading a song; unfortunately in rare circumstances
+a large song database can trigger a runaway limit.  This
+value can be set up to 10000; larger runaway limiters will 
+result in longer delays before exit if a runaway condition is 
+reached.  You should not need to change this value unless
+directed to by technical support. 
+
+Default value: 30
+
+[Index] OrphanControl
+When a CD has more tracks than can fit on one title card, the remaining 
+tracks are split onto a different album.  If the last album of the set
+has fewer than 25% of the possible tracks for one album, OrphanControl 
+decides how to handle these "orphaned" tracks.  If OrphanControl is 
+enabled, some of the tracks from the previous album are moved to the 
+last album, making them both relatively even.  If OrphanControl is
+disabled, the orphaned tracks are left alone.
+
+Default value: Enabled
+
+
+[Index] SmartCrop
+SmartCrop has been replaced by FilenameCrop; it is still supported
+for backward compatibility.
+
+Default value: Value of FilenameCrop
+
+[Index] SongPath
+SongPath sets the folder(s) in which to look for music. By default, 
+subdirectories under the current folder are searched; to search a 
+different folder, set SongPath to the folder to search. Additional 
+folders may be specified as SongPath1, SongPath2, etc. You may specify
+the root folder of removable media; songs on that media will only be 
+used when the media is in the drive.
+
+Example:
+
+
+SongPath1 = C:\Documents and Settings\All Users\My Documents\My Music
+SongPath2 = D:\
+SongPath3 = C:\Music\Ogg
+
+
+Default value: The jukebox program directory and below.
+
+[Index] StrictAlbum
+StrictAlbum defines which album titles must have their songs in the same
+folder to count as belonging the same album.  This is necessary for 
+common album names like "Greatest Hits". If any StrictAlbum is set to *
+(asterisk), all albums will be treated as Strict.  Multiple StrictAlbum 
+settings can be specified as StrictAlbum1, StrictAlbum2, etc.
+
+Example:
+
+StrictAlbum1 = Greatest Hits
+StrictAlbum2 = Original Motion Picture Soundtrack
+
+
+Default value: None
+
+[Index] UpdateIndex
+UpdateIndex indicates whether to rescan the index every time the jukebox
+is started or to use the last index created by the jukebox.  If 
+UpdateIndex is set to True, the jukebox will go through every song file 
+to make sure it exists and will add new files to the database and/or 
+update existing files.  This can take a long time if there are a large 
+number of files; it's best used when a music collection changes often 
+or if some of the song paths are on removable or network paths.  If 
+UpdateIndex is set to False, the jukebox will load the last index it 
+created; this is much faster, but could result in errors if a selected 
+song is not found.
+
+If the index file does not exist, the jukebox will ignore this setting 
+and update the index.
+
+Default value: True
+
+[Index] UseID3
+UseID3 indicates whether to use ID3 for MP3 song identification, or OGG
+tags for OGG files. If UseID3 is set to False, it will assume the 
+filename is the name of the song and set the artist and album based on 
+the folder structure. Since DOS does not use long filenames, if ID3 
+support is disabled the database should be created on a Windows 
+system.
+
+Default value: True
+
+=============================================================
+============ [Screensaver] Section (JUKEBOX.INI) ============
+=============================================================
+The jukebox includes four screensaver options:
+
+Lines: an extremely simple screensaver that shows a
+moving pattern of lines with an optional display showing information
+about the current song.
+
+Blank: A blank screen with an optional moving information box
+about the current song.
+
+Slideshow: Displays all of the images (JPG, PNG, or BMP) in a folder 
+either in sequence or randomly.
+
+Windows: Activates the Windows default screensaver.
+
+[ScreenSaver] ScreenSaver
+Sets the screensaver mode.  Available options are Blank, Lines,
+Windows, and Slideshow. 
+
+Default value: Lines.
+
+
+[ScreenSaver] SlideShowPath
+
+SlideShowPath selects the folder for the images for the slideshow 
+screensaver.
+
+
+[ScreenSaver] SlideShowInterval
+SlideShowInterval sets the number of seconds each slideshow image is 
+displayed on the screen.  
+
+Default value: 10.
+
+
+[ScreenSaver] SlideShowRandom
+SlideShowRandom sets whether each slideshow image is displayed randomly
+or sequentially. 
+
+Default value: False.
+
+[ScreenSaver] SlideShowMaxImageSize
+SlideShowMaxImageSize sets the maximum size for slideshow images, in 
+kilobytes.  Images larger than this will be ignored.  If this value is 
+set to 0 or Disabled, the image size will not be checked and all images 
+will be used.
+
+Default value: 1024.
+
+
+[ScreenSaver] ColorVariance
+The screensaver kaleidoscope smoothly transitions from one color to 
+another, but for variety, the color will occasionally jump to a random
+new color.  The ColorVariance setting controls how often this happens.
+The lower the ColorVariance setting, the more often the colors will 
+jump around.  This setting can range from 1 to 5000.
+
+Default value: 100
+
+[ScreenSaver] CornerMirror
+The CornerMirror setting controls whether the kaleidoscope display is
+repeated in the corners of the screen. 
+
+Default value: True
+
+[ScreenSaver] LineCount
+LineCount sets the number of lines used by the screensaver kaleidoscope 
+display.  You may need to reduce this setting for lower resolutions, 
+depending on how dense you prefer the kaleidoscope to be. This can range 
+from 1 to 500.
+
+Default value: 80
+
+[ScreenSaver] MaxBlue
+[ScreenSaver] MaxGreen
+[ScreenSaver] MaxRed
+[ScreenSaver] MinBlue
+[ScreenSaver] MinGreen
+[ScreenSaver] MinRed
+MinRed, MaxRed, MinGreen, MaxGreen, MinBlue, and MaxBlue control the
+color range of the kaleidoscope lines. The range for these settings is
+0 to 255.
+Default value: 50 for minimums, 250 for maximums.
+
+[ScreenSaver] ScreenSaverCancelTimeout
+ScreenSaverCancelTimeout sets the number of minutes before the screen
+saver automatically deactivates. Setting ScreenSaverCancelTimeout to 
+0 or DISABLED requires a keystroke or mouse movement to deactivate the 
+screensaver.
+
+Default value: Disabled
+
+[ScreenSaver] ScreenSaverTimeout
+ScreenSaverTimeout sets the number of minutes before the screen saver 
+activates.  Setting ScreenSaverTimeout to 0 or DISABLED deactivates the
+screensaver. 
+
+Default value: Disabled
+
+[ScreenSaver] ShowSongInfo
+ShowSongInfo selects whether or not a floating box containing the Now 
+Playing display is show when the screensaver is active. 
+
+Default value: True
+
+[ScreenSaver] SongInfoBGColor
+SongInfoBgColor sets the color of the background used by the 
+screensaver's Song Info display. See Colors.html in the DOCS folder for
+information on specifying colors.
+
+Default value: Black
+
+[ScreenSaver] SongInfoColor
+SongInfoBgColor sets the color of the foreground text used by the 
+screensaver's Song Info display. See Colors.html in the DOCS folder for
+information on specifying colors.
+
+Default value: Palegreen
+
+[ScreenSaver] SongInfoHeight
+[ScreenSaver] SongInfoWidth
+SongInfoWidth and SongInfoHeight set the size of the Song Info display
+in pixels.  Note that this size will not be adjusted for resolution or
+aspect ratio. 
+
+Default value: The defaults are a percentage of the screen resolution. 
+
+[ScreenSaver] SongInfoLines
+SongInfoLines sets the number of lines displayed on the screensaver's 
+Song Info display, from 1 to 5.  
+
+Default value: 5
+
+[ScreenSaver] StepSize
+StepSize controls the distance between lines in the kaleidoscope 
+display. This can range from 1 to 50.
+
+Default value: 5
+
+==========================================================
+============ [Settings] Section (JUKEBOX.INI) ============
+==========================================================
+
+[Settings] AllowDuplicatesInQueue
+AllowDuplicatesInQueue sets whether or not a duplicate song can be 
+added into the queue.  Real jukeboxes, especially those that use remote
+wallboxes, will usually not allow duplicates, although they will 
+happily accept the money, on the theory that if two patrons want to 
+hear a particular song, they will both hear it even if it is only 
+played once. 
+
+If this setting is set to FALSE and the song being added is already in 
+the queue, the song will not be added, a credit will still be taken, 
+and the MSG_DUPSONG message will be fired, with -MSG_DUPSONG being 
+fired two seconds later. This will allow a skin to display an icon
+showing that the song has already been queued, although ordinarily
+such a display would not be desired, at least on a real jukebox.
+
+Default value: False.
+
+
+[Settings] AllowSelectFullCD
+Sets whether selecting track 0 on a CD selects the full CD.
+AllowSelectFullCD sets whether or not selecting track zero on a CD 
+will select all the songs on a CD. If credits are required, only the 
+number of tracks for which credit is available will be selected.
+
+Default value: True.
+
+[Settings] ArtCacheMB
+ArtCacheMB specifies the amount of memory set aside for caching cover
+art images in megabytes.  Note that at least enough memory to cache 
+one page will always be reserved.  The range is 0 to 1024.  The 
+default setting is AUTO, which is 4MB for DOS or 32MB for Windows.
+This setting only applies to album-based skins, as cover art is not 
+supported for classic skins.
+
+Default value: Auto.
+
+[Settings] AutoFlipTimer
+The AutoFlip timer automatically changes pages after a timer 
+expires. If a longer delay before the first automatic flip is 
+desired, set the FirstAutoFlipTimer to the desired time. For 
+example you may want pages to start flipping after 5 minutes 
+but then flip every 30 seconds thereafter.
+
+If either timer is disabled the other timer will control all flips. 
+If both timers are disable no automatic flips will occur.  The 
+timers are set in seconds.  
+
+Default value: Disabled.
+
+[Settings] Coin1Credit
+[Settings] Coin2Credit
+[Settings] Coin3Credit
+[Settings] Coin4Credit
+CoinXCredit sets the number of credits provided by a given 
+coin input. X can range from 1 to 4.  For example, if coin 
+slot 1 took nickels and coin slot 2 took quarters, you might want 
+to set 1 credit for a nickel and 5 credits for a quarter.  You
+would thus set:
+
+
+Coin1Credit = 1
+Coin2Credit = 5
+
+
+Default value: 3.
+
+[Settings] CPUUsage
+CPUUsage sets how much CPU time the jukebox gives itself in Windows;
+it has no effect in DOS.  Higher values give more CPU priority
+to the jukebox, lower values give more priority to the system.
+This value can range from 0 to 100.
+
+Default value: 10.
+
+[Settings] DebugLevel
+DebugLevel sets the logging level for the jukebox.  The debug log 
+is stored in jbdebug.log in the same folder as the jukebox. The 
+DebugLevel may be set from DISABLED (no logging) to 5 (maximum 
+logging).  Detail level 5 will show inordinately large amounts of
+detail; usually detail level 3 is the most informative without
+detail overload.  Debug logs can grow quite large, so DebugLevel 
+should only be enabled when troubleshooting.
+
+If a fatal error occurs, jbdebug.log will get create whether or
+not the DebugLevel is set,
+
+Default value: Disabled.
+
+
+[Settings] DisplayOutputFile
+DisplayOutputFile sets the location and name of the display output
+file.  This file contains a four-line version of the Now Playing 
+display in plain text, usable by programs that can send the contents
+of a file to an LCD display like LCD Smartie.  Setting this to 
+Disabled will prevent the output file from being created or updated.
+
+Default value: display.txt, in the same directory as the jukebox.
+
+
+[Settings] FileSystemEncoding
+FileSystemEncoding sets the text encoding used by the file system.
+Possible values are ASCII, UTF8, and UNICODE. You should never 
+need  to change this setting.
+
+Default value: ASCII.
+
+
+[Settings] FirstAutoFlipTimer
+
+The AutoFlip timers automatically change pages after a timer 
+expires. Usually a longer delay for the first flip is desired, 
+for example you may want pages to start flipping after 
+5 minutes but then flip every 30 seconds thereafter.
+FirstAutoFlipTimer sets the interval for the first flip;
+use AutoFlipTimer to set the interval for the remaining flips. 
+If either timer is disabled the other timer will control all 
+flips. If both timers are disable no automatic flips will occur.
+The timers are set in seconds.  
+
+Default value: Disabled.
+
+
+[Settings] KeyboardLEDsOff
+This setting attempts to turn off the keyboard LED's when the 
+jukebox starts.  This is meant for jukeboxes in game cabinets where 
+the keyboard LED's may be mapped to LEDs on the control panel.
+This setting only works in DOS and Windows 95/98.
+
+Default value: Disabled.
+
+
+[Settings] LimitSkipLastToMostRecent
+LimitSkipLastToMostRecent prevents the BTN_SKIPLAST button from
+removing more than a single song from the end of the queue if
+SkipLastTimeLimit is enabled.  If this setting is disabled, the 
+BTN_SKIPLAST button can be used to remove as many songs from the 
+end of the queue as desired until the time limit runs out.
+Note that if SkipLastTimeLimit is set to 0 or DISABLED, this 
+setting has no effect, as in that case BTN_SKIPLAST is not limited.
+
+Default value: Enabled.
+
+
+[Settings] LoopMode
+LoopMode enables loop mode, where songs are re-added to the queue
+automatically as soon as they finish playing.  You usually want to 
+leave this set to FALSE and enable it via BTN_LOOP.
+
+Default value: Disabled.
+
+
+[Settings] MaxQueueSize
+MaxQueueSize sets the maximum number of songs that can be queued up to
+play, not counting the currently playing song. This value can range from
+1 to 500.
+
+Default value: 250.
+
+
+[Settings] MaxRandomSongLength
+MaxRandomSongLength sets, in minutes, the longest song that can be played
+by any method that selects a random song, such as the play stimulator or
+radio mode. The default is 6 minutes; the minimum is two minutes. Note 
+that if there are very few songs available below this limit, longer 
+songs may be played as the random song selector will only try a limited 
+number of times to find a matching song to avoid crashes.
+
+Default value: 6.
+
+
+[Settings] MostPopularDisplayTime
+MostPopularDisplayTime sets the number of seconds the "most popular" 
+display is shown before returning to the "upcoming songs" display.
+
+Default value: 5.
+
+
+[Settings] PlayStimulatorDelay
+PlayStimulatorDelay sets the number of seconds the jukebox must be idle 
+before randomly selecting and playing a song.  If PlayStimulatorDelay is 
+set to 0 or DISABLED, songs will not play randomly while the jukebox is 
+idle.
+
+Default value: Disabled.
+
+
+[Settings] RadioMode
+RadioMode sets whether or not the jukebox will play songs continuously 
+when idle, like a radio.  This mode can be toggled with BTN_RADIO, or 
+specifically turned on or off with BTN_RADIO_ON and BTN_RADIO_OFF.
+
+Default value: Disabled.
+
+
+[Settings] RandomSongPopularityPreference
+RandomSongPopularityPreference sets the level which the jukebox gives
+preference to songs higher in the popularity list. A value of 0 or
+DISABLED ignores popularity for random selects, giving equal preference
+to all songs regardless of popularity. Values above 0 give more
+preference to popular songs, to a maximum value of 10. Values above 4 or
+so are not recommended unless you have thousands of songs available. The
+default value is 2.
+
+Note that this setting only has any effect after at least a quarter of
+the songs in the library have been played at least once.
+
+
+[Settings] RequireCredits
+If RequireCredits is true, selections cannot be made without credits. If
+RequireCredits is false and the credit display is enabled, it will
+always show 01.
+
+Please note that the credits feature is meant only for home use, for
+entertainment purposes only. There are ways to bypass the credit system;
+it is not licensed for, or suitable for, a commercial environment.  See
+license.txt for full details.
+
+Default value: False.
+
+
+
+[Settings] ResourcePath
+ResourcePath sets alternate paths for skin resources. Multiple 
+ResourcePaths can be specified as ResourcePath1, ResourcePath2, etc.  
+If no ResourcePath is set, the jukebox will default to the SKINS folder.
+Subfolders are not searched.
+
+Default value: skins.
+
+
+[Settings] SkipLastTimeLimit
+SkipLastTimeLimit sets the number of seconds after a song is queued in 
+which is can be removed from the queue with BTN_SKIPLAST.  If 
+SkipLastTimeLimit is set to 0 or DISABLED, the user can always remove the 
+last song in the queue.  To disable this function, simply don't map a key 
+to it.  
+
+Default value: 15.
+
+
+[Settings] SongDelay
+SongDelay sets the length of time the jukebox pauses between songs, in 
+hundredths of a second.  This would be the time a real jukebox would be 
+switching disks. Note that this setting is only used if the skin does
+not provide an InterSongDelay.  
+
+Default value: 200 (2 seconds).
+
+
+[Settings] SongSort
+SongSort sets how the jukebox arranges titlestrips. If SongSort is set 
+to Artist, title strips will be sorted by the artist name. If SongSort 
+is set to Random or is not set, title strips will be randomized. If 
+SongSort is set to Album, title strips will be sorted by the album name.
+Note that Album sort only appllies to CD-based skins. 
+
+Default value: Artist.
+
+
+[Settings] SystemShutdownEnabled
+SystemShutdownEnabled sets whether or not the jukebox can shut down
+Windows. If SystemShutdownEnabled=True, Windows will shut down if
+BTN_SHUTDOWN was pressed or if the jukebox is requested to close by
+Windows. Exiting via BTN_EXIT will not shut down the system even if
+SystemShutdownEnabled is enabled. This setting has no effect in the DOS
+version.
+
+Default value: False.
+
+
+=================================================
+============ [VolumeControl] Section ============
+=================================================
+
+[VolumeControl] SetSystemVolume
+SetSystemVolume controls whether the jukebox volume control is
+controlling the volume for the entire system via the hardware mixer
+(True), or just controlling its own volume through software (False). The
+default is False. It is not always possible to access the hardware mixer
+on all sound cards; if you set this value to True and the volume does
+not change when a volume key is pressed, the hardware mixer is not
+accessible on your system.
+
+Default value: False.
+
+
+[VolumeControl] SoundEffectsVolume
+SoundEffectsVolume sets the volume for sound effects, from 0 to 100.
+This value is interpreted as a percentage of the music volume.
+
+Default value: 50.
+
+
+[VolumeControl] SoundEffectsVolumeWhenPlaying
+SoundEffectsVolumeWhenPlaying sets the volume for sound effects that
+start while a song is playing, from 0 to 100. This value is interpreted
+as a percentage of the music volume.
+
+Default value: 0.
+
+
+[VolumeControl] Volume
+Volume sets the initial music volume, from 0 to 100.  
+
+Default value: 100.
+
+
+[VolumeControl] VolumeIncrement
+VolumeIncrement sets the amount the volume changes each time a 
+volume up/volume down key is pressed.  
+
+Default value: 10.
+
+
+==========================================================
+============ [Joystick] Section (JUKEBOX.INI) ============
+==========================================================
+
+The [Joystick] section is not normally used; its purpose is to load 
+special drivers for non-standard DOS joysticks, or to specify the Win32
+joystick driver in Windows as opposed to the standard DirectInput driver.
+
+[Joystick] JoyType
+
+DOS joystick drivers :
+
+
+  0        - none
+  STD      - standard 2-button
+  2PAD     - dual standard 2-button
+  4BUT     - standard 4-button
+  6BUT     - standard 6-button
+  8BUT     - standard 8-button
+  FPRO     - CH Flightstick Pro
+  WING     - Logitech Wingman Extreme
+  SW       - Microsoft Sidewinder digital pad
+  SWAG     - Microsoft Sidewinder digital pad (aggressive)
+  SWPP     - Microsoft Sidewinder 3D/Precision/Force Feedback Pro
+  GPRO     - Gravis GamePad Pro
+  GRIP     - Gravis GrIP
+  GRI4     - Gravis GrIP (4-axis only)
+  SNE1     - SNES joypads connected to LPT1
+  SNE2     - SNES joypads connected to LPT2
+  SNE3     - SNES joypads connected to LPT3
+  PSX1     - PSX joypads connected to LPT1
+  PSX2     - PSX joypads connected to LPT2
+  PSX3     - PSX joypads connected to LPT3
+  N641     - N64 joypads connected to LPT1
+  N642     - N64 joypads connected to LPT2
+  N643     - N64 joypads connected to LPT3
+  DB91     - Pair of 2-button joysticks connected to LPT1
+  DB92     - Pair of 2-button joysticks connected to LPT2
+  DB93     - Pair of 2-button joysticks connected to LPT3
+  TGX1     - TurboGraFX joysticks connected to LPT1
+  TGX2     - TurboGraFX joysticks connected to LPT2
+  TGX3     - TurboGraFX joysticks connected to LPT3
+  SEGI     - IF-SEGA joystick interface card (ISA bus)
+  SEGP     - IF-SEGA joystick interface card (PCI bus)
+  SGPF     - IF-SEGA joystick interface card (fast PCI bus)
+  WWAR     - Wingman Warrior
+
+
+Windows joystick drivers :
+
+
+  0        - none
+  DX       - DirectInput joystick
+  W32      - Win32 joystick
+
+
+
+
+
+========================================
+============ [Skin] Section ============
+========================================
+
+[Skin] Background
+
+
+
+
+
+
+[Skin] FlipText
+
+
+
+
+
+
+[Skin] ResourcePath
+
+
+============================================
+============ [DisplayX] Section ============
+============================================
+
+[DisplayX] BGColor
+
+
+
+
+
+
+[DisplayX] Color
+
+
+
+
+
+
+[DisplayX] Enabled
+
+
+
+
+
+[DisplayX] FontCase
+
+
+
+
+
+[DisplayX] H
+
+
+
+
+
+
+[DisplayX] Lines
+
+
+
+
+
+
+[DisplayX] W
+
+
+
+
+
+
+[DisplayX] X
+
+
+
+
+
+
+[DisplayX] Y
+
+
+
+
+
+
+=========================================
+============ [Fonts] Section ============
+=========================================
+
+Fonts may be specified individually for the song titles, artist names,
+album names, and the address number of the CD.  Here is an example of 
+the font configuration for a skin:
+
+
+[Fonts]
+TitleFont = dvsans.ttf
+TitleFontSize = 14
+TitleFontCondensed = dvsansc.ttf
+TitleFontCondensedSize = 12
+TitleFontSmall = dvsansc.ttf
+TitleFontSmallSize = 8
+TitleFontColor = ghostwhite
+TitleFontCase = Normal
+TitleFontAddQuotes = False
+TitleFontQuoteSymbol = "
+
+
+ArtistFont = dvsans.ttf
+ArtistFontSize = 12
+ArtistFontCondensed = dvsansc.ttf
+ArtistFontCondensedSize = 11
+ArtistFontSmall
+ArtistFontColor = lightgrey
+ArtistFontCase = Normal
+ArtistFontAddQuotes = False
+
+AlbumFont = dvsansb.ttf
+AlbumFontSize = 14
+AlbumFontCondensed = dvsansbc.ttf
+AlbumFontCondensedSize = 12
+AlbumFontSmall = dvsansbc.ttf
+AlbumFontSmallSize = 8
+AlbumFontColor = ghostwhite
+AlbumFontCase = Uppercase
+AlbumFontAddQuotes = False
+
+CDAddressFont = bluecond.ttf
+CDAddressFontSize = 26
+CDAddressFontColor = white
+
+
+
+
+
+
+[Fonts] FixedFont
+
+
+
+
+
+
+=========================================
+============ [IconX] Section ============
+=========================================
+
+[IconX] Action
+
+
+
+
+
+
+[IconX] Clickable
+
+
+
+
+
+
+[IconX] FocusColor
+
+
+
+
+
+
+[IconX] H
+
+
+[IconX] NormallyOff
+[IconX] NormallyOn
+NormallyOff or NormallyOn (only one should be used per icon) can be used
+to reverse the normal action of an icon. By default, Icons are normally
+Off, and are set to On when they are activated. By setting
+NormallyOff=False or NormallyOn=True, you can reverse this situation,
+causing an icon to turn Off when activated.
+
+Default value: True for NormallyOff, False for NormallyOn.
+
+
+
+[IconX] OffImage
+
+
+
+
+
+
+[IconX] OnImage
+
+
+
+
+
+
+[IconX] ShadowColor
+
+
+
+
+
+
+[IconX] W
+
+
+
+
+
+
+[IconX] X
+
+
+
+
+
+
+[IconX] Y
+
+
+
+
+
+
+=============================================
+============ [Selection] Section ============
+=============================================
+
+[Selection] DiscAddress
+
+
+
+
+
+
+[Selection] HighLetter
+
+
+
+
+
+
+[Selection] HighNumber
+
+
+
+
+
+
+[Selection] LetterASymbol, LetterBSymbol, etc.
+[Selection] Number1Symbol, Number2Symbol, etc.
+LetterXSymbol and NumberNSymbol change the symbol displayed
+for the corresponding selection value.  There is probably never a need to 
+use this setting.  It could be used, for example, on a jukebox with an 
+alphanumeric selection scheme where the number is first rather than the 
+letter.  In this case, the symbols would be swapped as follows:
+
+LetterASymbol = 1
+LetterBSymbol = 2
+LetterCSymbol = 3
+LetterDSymbol = 4
+Number1Symbol = A
+Number2Symbol = B
+Number3Symbol = C
+Number4Symbol = D
+
+
+Note that a symbol can contain more than one letter or number.
+
+Default value: Equal to the normal symbol for that value.
+
+[Selection] SelectionMethod
+
+
+
+
+
+
+[Selection] ShowSelectionAddress
+
+
+
+
+
+
+[Selection] SkipLetterA, SkipLetterB, etc.
+[Selection] SkipNumber1, SkipNumber2, etc.
+SkipLetterX and SkipNumberN skip the specified letter or
+number in the selection order.  Many jukeboxes did not use the letters 
+I or O to avoid confusion with 1 and 0.  If SkipLetterX 
+or SkipNumberN are set to True, the specified letter or number
+will not be available.  If a key is mapped to that letter or number, it
+will trigger MSG_INVALID if pressed.
+
+Default value: False
+
+
+[Selection] UseTrackZero
+
+
+
+
+
+
+[Selection] UseZero
+
+
+
+
+
+==========================================
+============ [Sounds] Section ============
+==========================================
+
+[Sounds] (message)
+
+
+
+
+
+
+=============================================
+============ [StripGrid] Section ============
+=============================================
+
+[StripGrid] Cols
+
+
+
+
+
+
+[StripGrid] ColSpace
+
+
+
+
+
+
+[StripGrid] CoverArtSide
+
+
+
+
+
+
+[StripGrid] CoverArtSpace
+
+
+
+
+
+
+[StripGrid] Order
+
+
+
+
+
+
+[StripGrid] Rows
+
+
+
+
+
+
+[StripGrid] RowSpace
+
+
+
+
+
+
+[StripGrid] X
+
+
+
+
+
+
+[StripGrid] Y
+
+
+
+
+
+
+==========================================
+============ [Timers] Section ============
+==========================================
+
+[Timers] IncrementalCreditDelay
+
+
+
+
+
+
+[Timers] InterSongDelay
+
+
+
+
+
+
+[Timers] PostSongDelay
+
+
+
+
+
+
+[Timers] PreSongDelay
+
+
+
+
+
+
+===============================================
+============ [Titlestrips] Section ============
+===============================================
+
+[TitleStrips] AddQuotes
+
+
+
+
+
+
+[Titlestrips] Animation
+
+
+
+
+
+
+[Titlestrips] Background
+
+
+
+
+
+
+[Titlestrips] BGColor
+
+
+
+
+
+
+[Titlestrips] CDHeader
+
+
+
+
+
+
+[Titlestrips] DefaultAlbumArt
+
+
+
+
+
+
+[Titlestrips] FocusColor
+
+
+
+
+
+
+[TitleStrips] Font
+
+
+
+
+
+
+[Titlestrips] FontColor
+
+
+
+
+
+
+[TitleStrips] FontColor
+
+
+
+
+
+
+[Titlestrips] FontFocusColor
+
+
+
+
+
+
+[TitleStrips] FontSize
+
+
+
+
+
+
+[TitleStrips] ForceUpperCaseArtists
+
+
+
+
+
+
+[TitleStrips] ForceUpperCaseTitles
+
+
+
+
+
+
+[Titlestrips] Height
+
+
+
+
+
+
+[Titlestrips] ShadowColor
+
+
+
+
+
+
+[TitleStrips] SmallFont
+
+
+
+
+
+
+[TitleStrips] SmallFontSize
+
+
+
+
+
+
+[Titlestrips] SongsPerStrip
+
+
+
+
+
+
+[TitleStrips] TitleFontColor
+
+
+
+
+
+
+[Titlestrips] Width
+
+
+
+
+
+
+
+===========================================
+============ Control Map Files ============
+===========================================
+Control map files assign jukebox function to individual keys, joystick
+or gamepad buttons and axes, or mouse buttons.  For simplicity, this 
+documentation will simply refer to "keys" whether the input device is 
+a keyboard, a keyboard encoder, mouse buttons, or a gamepad. 
+
+Although it seems backwards to assign a function to a key as opposed to
+assigning a key to a function, it allows more than one key to perform a
+particular function; this is useful on cocktail-style arcade cabinets,
+where more than one set of controls is available. In the default control
+map file, CONTROLS.INI, all possible key assignments are shown but only
+keys actually in use are required to be present in the file.
+
+If you do not assign a function to a key, that function will not be 
+available.  On a coin-operated jukebox, for example, you would probably 
+not want to assign the BTN_SKIP and BTN_RADIO functions.
+
+
+ Keyboard Key Names
+NOTE: Key names refer to specific, physical keys, not character symbols.
+Thus, there is no distinction between an uppercase letter and a
+lowercase letter; however, there is a distinction between the number
+keys along the top of a keyboard and the number keys on the numeric
+keypad.
+
+Alphabetic Keys:
+----------------
+
+
+
+KEY_A 
+KEY_B
+...
+KEY_Y
+KEY_Z
+
+
+Numeric keys (top of keyboard):
+-------------------------------
+
+
+
+KEY_0
+KEY_1
+...
+KEY_8
+KEY_9
+
+
+Numeric Keypad Keys:
+--------------------
+
+
+
+KEY_0_PAD
+KEY_1_PAD
+...
+KEY_8_PAD
+KEY_9_PAD
+KEY_SLASH_PAD
+KEY_ASTERISK
+KEY_MINUS_PAD
+KEY_PLUS_PAD
+KEY_DEL_PAD
+KEY_ENTER_PAD
+
+
+Cursor Movement Keys:
+---------------------
+
+
+
+KEY_LEFT
+KEY_RIGHT
+KEY_UP
+KEY_DOWN
+KEY_INSERT
+KEY_DEL
+KEY_HOME
+KEY_END
+KEY_PGUP
+KEY_PGDN
+
+
+Function Keys:
+--------------
+
+
+
+KEY_F1
+KEY_F2
+...
+KEY_F11
+KEY_F12
+
+
+Modifier and Lock Keys
+----------------------
+
+
+
+KEY_LSHIFT
+KEY_RSHIFT
+KEY_LCTRL
+KEY_RCTRL
+KEY_LALT
+KEY_RALT
+KEY_LWIN
+KEY_RWIN
+KEY_MENU
+KEY_SCRLOCK
+KEY_NUMLOCK
+KEY_CAPSLOCK
+
+
+Other Keys
+----------
+
+
+
+KEY_ESC
+KEY_TILDE
+KEY_MINUS
+KEY_EQUALS
+KEY_BACKSPACE
+KEY_TAB
+KEY_OPENBRACE
+KEY_CLOSEBRACE
+KEY_ENTER
+KEY_SEMICOLON
+KEY_QUOTE
+KEY_BACKSLASH
+KEY_BACKSLASH2
+KEY_COMMA
+KEY_PERIOD
+KEY_SLASH
+KEY_SPACE
+KEY_PRTSCR
+KEY_PAUSE
+
+
+NOTE: On some keyboards, KEY_PAUSE and KEY_PRTSCR may not work properly.
+
+ Joystick and Gamepad Key Names
+
+The jukebox input engine supports up to four joysticks or gamepads in 
+Windows and two in DOS.  Up to 14 buttons can be accessed per stick.
+Note that in DOS a standard PC gameport only supports two buttons per
+stick.
+
+
+JOY1_UP
+JOY1_DOWN
+JOY1_LEFT
+JOY1_RIGHT
+JOY1_BUTTON1
+JOY1_BUTTON2
+...
+JOY1_BUTTON13
+JOY1_BUTTON14
+
+JOY2_UP
+JOY2_DOWN
+JOY2_LEFT
+JOY2_RIGHT
+JOY2_BUTTON1
+JOY2_BUTTON2
+...
+JOY2_BUTTON13
+JOY2_BUTTON14
+
+JOY3_UP
+JOY3_DOWN
+JOY3_LEFT
+JOY3_RIGHT
+JOY3_BUTTON1
+JOY3_BUTTON2
+...
+JOY3_BUTTON13
+JOY3_BUTTON14
+
+JOY4_UP
+JOY4_DOWN
+JOY4_LEFT
+JOY4_RIGHT
+JOY4_BUTTON1
+JOY4_BUTTON2
+...
+JOY4_BUTTON13
+JOY4_BUTTON14
+
+
+ Mouse Button Names
+Up to 5 buttons on a mouse are supported. Traditionally, the left button
+is button 1, the right button is button 2, and if there is a center
+button it is button 3.  Only one mouse can be used.
+
+Please note that mouse button 1 is always used for the user interface,
+so it should be mapped to a control only if a skin with no clickable
+icons is being used; otherwise, clicking the icon will trigger the
+function mapped to button 1. 
+
+Also, note that in Windows, the button number reported may be modified
+by the mouse settings in Control Panel. For example, if the rear
+shoulder button on a Microsoft Intellimouse (normally button 4) is set
+in Control Panel to act as a standard click (which is normally button
+1), it will act as button 1 in DWJukebox.
+
+
+MOUSE_BUTTON1
+MOUSE_BUTTON2
+MOUSE_BUTTON3
+MOUSE_BUTTON4
+MOUSE_BUTTON5
+
+
+
+
+
+
+==========================================
+============ Acknowledgements ============
+==========================================
+
+I would like to thank Javier Gonzales and Delirium Software, who's 
+libraries make up the core of DWJukebox.  Please see 
+http://nekros.freeshell.org/delirium/index.php for more 
+information on the useful tools made available by Delirium Software.
+
+Vinyl record image on defcdar2.jpg created at http://www.says-it.com.
+
+Some of the TrueType fonts in this package are from Larabie Fonts at
+http://www.larabiefonts.com.  See fonteula.txt for font 
+license information.
+
+This program uses Allegro for all graphics, sound, and user-interface
+handling.  The Allegro library and source code is available at 
+http://alleg.sourceforge.net.
+
+This program uses AllegMP3 as its MP3 decoder.  AllegMP3 is licensed 
+under the GNU Library General Public License.  The AllegMP3 library 
+and source code are available at 
+http://nekros.freeshell.org/delirium/almp3.php.
+
+This program uses AllegOGG as its OGG Vorbis decoder.  AllegOGG is 
+licensed under the Xiph.org BSD-Alike License.  The AllegOGG library 
+and source code are available at 
+http://nekros.freeshell.org/delirium/alogg.php.
+
+This program uses AllegFont as its TrueType decoder.  AllegFont is 
+licensed under the Freetype Project License.  The AllegFont library 
+and source code are available at 
+http://nekros.freeshell.org/delirium/alfont.php.
+
+This program uses JPGalleg as its JPG decoder. JPGalleg is licensed 
+under the zlib/libpng license. The JPGalleg library and source code 
+are available at http://www.ecplusplus.com/index.php?page=projects&pid=1.
+
+This program uses AllegroPNG as its PNG decoder. AllegroPNG
+is licensed under the zlib/libpng license. The AllegroPNG library 
+and source code are available at http://alpng.sourceforge.net/.
+
+This program uses id3lib as its ID3 decoder.  id3lib is licensed 
+under the  GNU Library General Public License.  The id3lib library 
+and source code are available at http://id3lib.sourceforge.net.
+
+==================================
+============ Feedback ============
+==================================
+
+DWJukebox has become what it is today largely through feedback from its 
+users. If you have any questions or comments, please visit the official 
+DWJukebox Support Forum at www.DWJukebox.com/forum,
+or feel free to E-mail me at support@dwjukebox.com.
+
+

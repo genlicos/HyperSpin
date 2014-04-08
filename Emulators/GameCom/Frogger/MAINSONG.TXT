@@ -1,0 +1,233 @@
+;
+; MAIN GAMEPLAY SONG
+; 
+game_mel1L:
+        db      C6S,NLL,10
+        db      PAUSE,NLL,6
+        db      A5S,NLL,8
+        db      F5S,NLL,8
+        db      F6S,NLL,10
+        db      PAUSE,NLL,6
+        db      F6,NLL,8
+        db      D6S,NLL,8
+        db      C6S,NLL,10
+        db      PAUSE,NLL,6
+        db      F6S,NLL,8
+        db      A5S,NLL,8
+        db      G5S,NLL,8
+        db      C6S,NLL,8
+        db      PAUSE,NLL,16
+  
+
+
+        db      F4S,NLL,8
+        db      C6S,NLL,8
+        db      C6S,NLL,8
+        db      C6S,NLL,8
+        db      C6S,NLL,8
+        db      A5S,NLL,8
+        db      G5S,NLL,8
+        db      F5S,NLL,8
+
+        db      F4S,NLL,8
+        db      F6S,NLL,8
+        db      F6S,NLL,8
+        db      F6S,NLL,8
+        db      G6S,NLL,8
+        db      F6S,NLL,8
+        db      F6,NLL,8
+        db      D6S,NLL,8
+
+        db      C6S,NLL,8
+        db      A5S,NLL,8
+        db      C4S,NLL,8
+        db      A5S,NLL,8
+        db      F6S,NLL,8
+        db      A4S,NLL,8
+        db      A5S,NLL,8
+        db      A4S,NLL,8
+
+        db      C6S,NLL,8
+        db      G5S,NLL,8
+        db      C4S,NLL,8
+        db      C5S,NLL,8
+        db      D4S,NLL,8
+        db      C5S,NLL,8
+        db      F4,NLL,8
+        db      C5S,NLL,8
+
+
+        db      F4S,NLL,8
+        db      A5S,NLL,8
+        db      A5S,NLL,8
+        db      B5,NLL,8
+        db      C6S,NLL,8
+        db      D6S,NLL,8
+        db      F6,NLL,8
+        db      D6S,NLL,8
+
+        db      F4S,NLL,8
+        db      B4,NLL,8
+        db      D4S,NLL,8
+        db      B4,NLL,8
+        db      F4S,NLL,8
+        db      B4,NLL,8
+        db      D4S,NLL,8
+        db      B4,NLL,8
+
+        db      B5,NLL,8
+        db      B5,NLL,8
+        db      C6S,NLL,8
+        db      D6S,NLL,8
+        db      F4S,NLL,8
+        db      F6,NLL,8
+        db      F6S,NLL,8
+        db      F6,NLL,8
+
+        db      G4S,NLL,8
+        db      C5S,NLL,8
+        db      C4S,NLL,8
+        db      C5S,NLL,8
+        db      G4S,NLL,8
+        db      C6S,NLL,8
+        db      C4S,NLL,8
+        db      F6S,NLL,8
+
+        db      F4S,NLL,8
+        db      A4S,NLL,8
+        db      C4S,NLL,8
+        db      F6S,NLL,8
+        db      F6,NLL,8
+        db      D6S,NLL,8
+        db      C6S,NLL,8
+        db      F6,NLL,8
+
+        db      F4S,NLL,8
+        db      A4S,NLL,8
+        db      D4,NLL,8
+        db      D6S,NLL,8
+        db      D4S,NLL,8
+        db      D6S,NLL,8
+        db      G4S,NLL,8
+        db      C6S,NLL,8
+
+        db      G4S,NLL,8
+        db      G6S,NLL,8
+        db      C4S,NLL,8
+        db      F6S,NLL,8
+        db      G4S,NLL,8
+        db      F6,NLL,8
+        db      C4S,NLL,8
+        db      F6S,NLL,8
+
+        db      F4S,NLL,8
+        db      A4S,NLL,8
+        db      C4S,NLL,8
+        db      A4S,NLL,8
+        db      F4S,NLL,8
+        db      A4S,NLL,8
+        db      C4S,NLL,8
+        db      F6S,NLL,8
+
+
+        db      F6S,NLL,8
+        db      F6S,NLL,8
+        db      F6S,NLL,8
+        db      F6S,NLL,8
+        db      F6S,NLL,8
+        db      F6,NLL,8
+        db      D6S,NLL,8
+        db      F6S,NLL,8
+
+        db      A4S,NLL,8
+        db      PAUSE,NLL,16
+        db      C6S,NLL,8
+        db      PAUSE,NLL,8
+        db      A5S,NLL,8
+        db      A5S,NLL,8
+        db      G5S,NLL,8
+  
+        db      PAUSE,NLL,8
+        db      G5S,NLL,8
+        db      G5S,NLL,8
+        db      F6S,NLL,8
+        db      F6S,NLL,8
+        db      F6,NLL,8
+        db      D6S,NLL,8
+        db      D6S,NLL,8
+
+        db      PAUSE,NLL,24
+        db      C6S,NLL,8
+        db      PAUSE,NLL,24
+        db      C6S,NLL,8
+
+        db      A5S,NLL,8
+        db      A5S,NLL,8
+        db      A5S,NLL,8
+        db      A5S,NLL,8
+        db      PAUSE,NLL,8
+        db      G5S,NLL,8
+        db      F5S,NLL,8
+        db      B5,NLL,8
+
+        db      A5S,NLL,8
+        db      B5,NLL,8
+        db      C6S,NLL,8
+        db      D6S,NLL,8
+        db      PAUSE,NLL,24
+        db      C6S,NLL,8
+
+        db      B5,NLL,8
+        db      G5S,NLL,8
+        db      G5S,NLL,8
+        db      G5S,NLL,8
+        db      PAUSE,NLL,8
+        db      F5S,NLL,8
+        db      F5,NLL,8
+        db      F5S,NLL,8
+
+        db      F5,NLL,8
+        db      F5S,NLL,8
+        db      G5S,NLL,8
+        db      A5S,NLL,8
+        db      PAUSE,NLL,24
+        db      C6S,NLL,8
+
+        db      A5S,NLL,8
+        db      A5S,NLL,8
+        db      A5S,NLL,8
+        db      A5S,NLL,8
+        db      PAUSE,NLL,8
+        db      G5S,NLL,8
+        db      F5S,NLL,8
+
+        db      B5,NLL,8
+        db      A5S,NLL,8
+        db      B5,NLL,8
+        db      C6S,NLL,8
+        db      D6S,NLL,8
+        db      PAUSE,NLL,8
+        db      F6,NLL,8
+        db      D6S,NLL,8
+
+        db      C6S,NLL,8
+        db      PAUSE,NLL,8
+        db      C6S,NLL,8
+        db      D6S,NLL,8
+        db      C6S,NLL,8
+        db      B5,NLL,8
+        db      A5S,NLL,8
+        db      G5S,NLL,8
+
+        db      D5S,NLL,8
+        db      PAUSE,NLL,24
+        db      F5,NLL,8
+        db      PAUSE,NLL,8
+        db      G5S,NLL,8
+        db      PAUSE,NLL,8
+
+        db      F5S,NLL,8
+        db      PAUSE,NLL,56
+
+	db	0,0,0
+

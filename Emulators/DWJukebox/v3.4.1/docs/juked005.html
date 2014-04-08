@@ -1,0 +1,271 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: Creating a Custom Skin File
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="Creating a Custom Skin File">Creating a Custom Skin File</a></h1>
+
+<ul>
+</ul>
+
+<p>
+The appearance of nearly every aspect of DWJukebox is controlled by a
+skin file. The skin file is a simple text file that contains pointers to
+all images used by a skin, the definition of the control scheme used for
+the jukebox, the definition of the output style of the jukebox, and
+definitions for any interactive elements such as displays, indicators,
+buttons and sounds.
+
+<p>
+At this point, I have put my time into trying to finish the jukebox,
+so I have not written a skin builder.  Fortunately, building a skin
+is not that hard.  Things to remember:
+
+<p>
+- All coordinates and measurements are relative to the background 
+image, not the actual resolution.
+- Pixels in the background image are always assumed to be square; 
+they will be corrected for the aspect ratio of the monitor, 
+resolution and orientation at runtime to stay square.  
+
+<p>
+Designing a skin comes down to:
+
+<p>
+- Selecting the background image
+- Set the selection method and range of selection keys
+- Set the location, size, color, and number of lines of the displays 
+  (or disable them)
+- Define the appearance of the titlestrips
+- Define the size and location of one or more grid(s) of titlestrips
+- Define any interactive icons
+- Define any sounds.
+
+<p>
+<br><center><h2><a name="Creating a simple skin">Creating a simple skin</a></h2></center><p>
+
+<p>
+Basic skins are very easy.  Here, for example, is the classic.skn with
+the comments stripped out to make it shorter:
+
+<blockquote class="code"><pre>
+[skin]
+background=bgclassc.jpg
+
+[Selection]
+<a href="juked017.html#SelectionMethod" class="autotype" title="">SelectionMethod</a>=Alphanumeric
+<a href="juked017.html#UseZero" class="autotype" title="">UseZero</a>=False
+<a href="juked017.html#HighLetter" class="autotype" title="">HighLetter</a>=D
+<a href="juked017.html#HighNumber" class="autotype" title="">HighNumber</a>=4
+
+[Display1]
+# Now Playing display
+enabled=True
+x=157
+y=202
+w=282
+h=80
+lines=4
+color=palegreen
+bgcolor=black
+
+[Display2]
+# Song List display
+enabled=True
+x=595
+y=202
+w=282
+h=80
+lines=4
+color=palegreen
+bgcolor=black
+
+[Display3]
+# Selection display
+enabled=True
+x=496
+y=258
+w=42
+h=25
+color=palegreen
+bgcolor=black
+
+[Display4]
+# Credit Display
+enabled=True
+x=496
+y=214
+w=42
+h=25
+color=palegreen
+bgcolor=black
+
+[TitleStrips]
+<a href="juked013.html#Background" class="autotype" title="">Background</a>=jb45lb01.jpg
+<a href="juked021.html#AddQuotes" class="autotype" title="">AddQuotes</a>=True
+<a href="juked021.html#ForceUpperCaseTitles" class="autotype" title="">ForceUpperCaseTitles</a>=True
+<a href="juked021.html#ForceUpperCaseArtists" class="autotype" title="">ForceUpperCaseArtists</a>=True
+<a href="juked021.html#SongsPerStrip" class="autotype" title="">SongsPerStrip</a>=Double
+<a href="juked021.html#Font" class="autotype" title="">Font</a>=bluehigh.ttf
+<a href="juked021.html#FontSize" class="autotype" title="">FontSize</a>=26
+<a href="juked021.html#FontColor" class="autotype" title="">FontColor</a>=black
+<a href="juked021.html#SmallFont" class="autotype" title="">SmallFont</a>=bluecond.ttf
+<a href="juked021.html#SmallFontSize" class="autotype" title="">SmallFontSize</a>=26
+<a href="juked007.html#Width" class="autotype" title="Sets the screen resolution.">Width</a>=320
+<a href="juked007.html#Height" class="autotype" title="Sets the screen resolution.">Height</a>=108
+
+[StripGrid]
+x=162
+y=308
+rows=4
+cols=2
+rowspace=2
+colspace=60
+order=Horizontal
+</pre></blockquote>
+
+<p>
+That is all there is to a basic skin. Where it gets more complicated is
+when you start adding icons that create or react to jukebox events;
+these icons are of course critical for touchscreen use. For this, we
+shift gears and look at default.skn. I'll skip all of the stuff covered
+above and go right to the icons:
+
+<blockquote class="code"><pre>
+[Icon1]
+x=464
+y=193
+w=93
+h=94
+<a href="juked016.html#OnImage" class="autotype" title="">OnImage</a>=instron.bmp
+<a href="juked016.html#OffImage" class="autotype" title="">OffImage</a>=instroff.bmp
+<a href="juked016.html#Clickable" class="autotype" title="">Clickable</a>=False
+<a href="juked016.html#Action" class="autotype" title="">Action</a>=<a href="juked003.html#MSG_CREDITS" class="autotype" title="">MSG_CREDITS</a>
+
+[Icon2]
+x=624
+y=281
+w=11
+h=11
+<a href="juked016.html#OnImage" class="autotype" title="">OnImage</a>=r-ledoff.bmp
+<a href="juked016.html#OffImage" class="autotype" title="">OffImage</a>=r-ledon.bmp
+<a href="juked016.html#Clickable" class="autotype" title="">Clickable</a>=False
+<a href="juked016.html#Action" class="autotype" title="">Action</a>=<a href="juked003.html#MSG_POPULAR" class="autotype" title="">MSG_POPULAR</a>
+
+[Icon3]
+x=738
+y=281
+w=11
+h=11
+<a href="juked016.html#OnImage" class="autotype" title="">OnImage</a>=r-ledon.bmp
+<a href="juked016.html#OffImage" class="autotype" title="">OffImage</a>=r-ledoff.bmp
+<a href="juked016.html#Clickable" class="autotype" title="">Clickable</a>=False
+<a href="juked016.html#Action" class="autotype" title="">Action</a>=<a href="juked003.html#MSG_POPULAR" class="autotype" title="">MSG_POPULAR</a>
+
+[Icon4]
+x=477
+y=413
+w=33
+h=33
+<a href="juked016.html#FocusColor" class="autotype" title="">FocusColor</a>=yellow
+<a href="juked016.html#ShadowColor" class="autotype" title="">ShadowColor</a>=Black
+<a href="juked016.html#Clickable" class="autotype" title="">Clickable</a>=True
+<a href="juked016.html#Action" class="autotype" title="">Action</a>=<a href="juked002.html#BTN_A" class="autotype" title="Song selection letter buttons.">BTN_A</a>
+
+[Icon5]
+x=514
+y=413
+w=33
+h=33
+<a href="juked016.html#FocusColor" class="autotype" title="">FocusColor</a>=yellow
+<a href="juked016.html#ShadowColor" class="autotype" title="">ShadowColor</a>=Black
+<a href="juked016.html#Clickable" class="autotype" title="">Clickable</a>=True
+<a href="juked016.html#Action" class="autotype" title="">Action</a>=<a href="juked002.html#BTN_1" class="autotype" title="Song selection number buttons.">BTN_1</a>
+</pre></blockquote>
+
+<p>
+(This is just a subset of the 17 icons in default.skn, but the rest are
+like Icon4 and Icon5.)
+
+<p>
+Here we see the two different kinds of icons: non-clickable icons, which
+simply react to events, and clickable icons, which both create and react
+to events. Correspondingly, there are two kinds of events an icon can
+send or receive: BTN_ events, which act as if one of the buttons were
+pressed when sent, and MSG_ events, which report on the state of the
+jukebox.
+
+<p>
+As a general rule, clickable BTN_ messages almost always represent
+physical buttons, and non-clickable MSG_ messages almost always
+represent lights or a similar status indicator.
+
+<p>
+Clickable icons should always send BTN_ events; non-clickable icons can
+react to either BTN_ or MSG_ events. The BTN_ events are listed in
+controls.ini; the MSG_ events are listed in readme.txt.
+
+<p>
+BTN_ events always un-set themselves after 1/10th of a second, and MSG_
+events un-set themselves when the condition is no longer true. A perfect
+example is to compare BTN_PAUSE vs. MSG_SONGPAUSED. When BTN_PAUSE is
+pressed, either on the keyboard or by clicking a clickable icon assigned
+to it, the BTN_PAUSE message is processed, which pauses the current song
+and pushes BTN_PAUSE and MSG_SONGPAUSED onto the message queue, and a
+-BTN_PAUSE (unset BTN_PAUSE) onto the timer queue. The user interface
+sees the BTN_PAUSE and causes whatever icons are assigned to it to
+display their OnImage, or if no OnImage is assigned it makes the
+OffImage (or the background if no OffImage is assigned) appear to be
+"pressed" by shifting it a couple of pixels down and to the right. The
+same thing happens with MSG_SONGPAUSED, so if you have an OffImage that
+looks like an unlit LED and an OnImage that looks like a lit LED, the
+LED for that icon will appear to "light" in response to MSG_SONGPAUSED.
+A tenth of a second later, -BTN_PAUSE is sent to the user interface,
+reverting any icons assigned to it back to their OffImage (or the
+background if no OffImage is assigned), but the song is still paused.
+When BTN_PAUSE is pressed again, the process repeats, except this time
+processing the message results in starting the song and sending
+BTN_PAUSE and -MSG_SONGPAUSED to the interface, and again -BTN_PAUSE to
+the timer queue. If the clickable icon instead was set to
+MSG_SONGPAUSED, nothing would happen, as the jukebox engine doesn't
+react to MSG_ messages, only BTN_ messages.
+
+<p>
+MSG_ISDOS is a special case; it is set on startup if running in DOSCab
+and unset if running in Windows. This allows you to show an instruction
+label or logo differently depending on which operating system is
+running.
+
+<p>
+NOTE: It is not necessary to add button icons to enable a button unless 
+the skin is to be used with a touchscreen, mouse, or via the GUI 
+navigation buttons. 
+
+<p>
+<br><center><h2><a name="Adding Sounds to Skins">Adding Sounds to Skins</a></h2></center><p>
+
+<p>
+Skins can contain pointers to sounds that are triggered when a button 
+is pressed or an event occurs.  Sounds can be set to trigger either 
+when a message or button is set or unset. To specify that a sound 
+should be played when a message or button is unset, prefix the message 
+or button name with a minus sign.
+
+<p>
+Here is a sample sound definition set:
+
+<blockquote class="code"><pre>
+[Sounds]
+<a href="juked002.html#BTN_COIN1" class="autotype" title="Adds credits to the jukebox.">BTN_COIN1</a>=coin.wav
+<a href="juked002.html#BTN_COIN2" class="autotype" title="Adds credits to the jukebox.">BTN_COIN2</a>=coin.wav
+BTN_ANY=btnclick.wav
+<a href="juked003.html#MSG_START" class="autotype" title="">MSG_START</a>=startup.wav
+</pre></blockquote>
+
+<p>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

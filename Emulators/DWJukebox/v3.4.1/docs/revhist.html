@@ -1,0 +1,519 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+Revision History
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+
+<p>
+<h1><a name="Revision History">Revision History</a></h1>
+For DWJukebox
+By Chris La Mantia (chris@dwjukebox.com)
+
+<p>
+<br><center><h2><a name="Version 3.4.1: (22 Feb 10): ">Version 3.4.1: (22 Feb 10): </a></h2></center><p>
+<ul>
+<li>Fixed a minor bug in timer handling where a timer would miss a stop message if another timer had the same message as a start message.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.4: (18 Feb 10): ">Version 3.4: (18 Feb 10): </a></h2></center><p>
+<ul>
+<li>Added User Timers feature for skins.
+<li>Added support for PNG files in skins.
+<li>Added support for PNG and BMP files to slideshow screensaver.
+<li>Added SlideInHorizontal, SlideOutHorizontal, SlideOverHorizontal, FlipHorizontal, RotateHorizontal, SlideVertical, SlideInVertical, SlideOutVertical, SlideOverVertical, FlipVertical, and RotateVertical animations.
+<li>Added SlideShowMaxImageSize to [ScreenSaver] section of JUKEBOX.INI.
+<li>Added DisplayOutputFile to [Settings] section of JUKEBOX.INI.
+<li>Added AnimationAcceleration to [Display] section of JUKEBOX.INI.
+<li>Added page change animations to vertical orientations.
+<li>Added additional song polls in animation process to make song play smoother during animations.
+<li>Added BTN_SCREENSAVER, BTN_SCREENSAVER_ON, and BTN_SCREENSAVER_OFF.
+<li>Added BTN_PAUSE_ON and BTN_PAUSE_OFF.
+<li>Added BTN_RADIO_ON and BTN_RADIO_OFF.
+<li>Added BTN_LOOP_ON and BTN_LOOP_OFF.
+<li>Added BTN_PLAYSTIMULATOR_ON and BTN_PLAYSTIMULATOR_OFF.
+<li>Added BTN_FREEPLAY_ON and BTN_FREEPLAY_OFF.
+<li>Added a CMD message for every BTN message.
+<li>Added MSG_SONGSELECTED when a song is selected by any user action rather than by radio mode or the play stimulator.
+<li>Added MSG_START_SKIN when a new skin is loaded.
+<li>Added LimitSkipLastToMostRecent setting to the [Settings] section of JUKEBOX.INI.
+<li>Changed MSG_START_SKIN to be the default icon action.
+<li>Changed default animation speed from 30 to 20 (making page change animations 33% faster).
+<li>Changed BTN_COMINGUPSCROLL to loop back to the first page after going past the last page.
+<li>Changed condensed font to left-align rather than center if the text is too large for the titlestrip
+<li>Fixed animation smoothness issues for album skins.
+<li>Fixed song skip during a screen shot.
+</ul>
+
+
+<p><br>
+<br><center><h2><a name="Version 3.3.2 (09 Oct 09): ">Version 3.3.2 (09 Oct 09): </a></h2></center><p>
+<ul>
+<li>Added BTN_COMINGUPSCROLL to page through the Coming Up list.
+<li>Added RunawayLimiter to [Index] section of JUKEBOX.INI
+<li>Added ignore file support.  Any folder containing a "dwj.ign" or "dwjukebox.ign" file will be ignored when searching for songs.  The actual content of the file is irrelevant.
+<li>Added messages to the log file when a folder is ignored due to being below the maximum search depth.
+<li>Added a STRETCH option for MonitorAspectRatio.
+<li>Added ScreenSaverRandom to [ScreenSaver] section of JUKEBOX.INI.
+<li>Changed MonitorAspectRatio to support either true ratios (4:3, etc.) or decimal equivalents.
+<li>Fixed a display bug with single titlestrips where the Artist would appear too low when the condensed font was used for the title.
+</ul>
+
+
+
+<p><br>
+<br><center><h2><a name="Version 3.3.1: (1 Jan 09)">Version 3.3.1: (1 Jan 09)</a></h2></center><p>
+<ul>
+<li>Changed skin change to remember the page that skin was last on.
+<li>Fixed autoflip during screen saver.
+<li>Fixed GUI movement on album skins.
+<li>Fixed NEXTALPHA/PREVALPHA and alpha jumps.
+<li>Fixed crashes related to Display5 (Album cover display).
+<li>Fixed alpha jumps when sorting by album.
+</ul>
+
+
+<p><br>
+<br><center><h2><a name="Version 3.3: (15 Dec 08)">Version 3.3: (15 Dec 08)</a></h2></center><p>
+<ul>
+<li>Added slideshow screensaver.
+<li>Added the Windows screensaver, which activates the current default Windows screensaver.
+<li>Added ScreenSaver, SlideShowPath, and SlideShowInterval to [ScreenSaver] section of jukebox.ini.
+<li>Added MSG_SCREENSAVER.
+<li>Added CPUUsage setting to [Settings] section in jukebox.ini to control how much CPU priority the jukebox gets.
+<li>Added ShowKeys to [Controls] section to show what keys are being pressed.
+<li>Added [Display5] which displays the cover art of the song that is playing.
+<li>Added Transparent as a color option for titlestrips, which overrides the titlestrip image file.
+<li>Added AUTO as a setting for ColorDepth, Width, and Height in [Display] section of JUKEBOX.INI.
+<li>Added a chdir to the executable directory to allow the jukebox to run as the Windows shell and increase compatibility with front end software.
+<li>Added a dump of Display1 to a file called display.txt for use with LCD Smartie
+<li>Added skin gcretro.skn.
+<li>Added an album display to cd4-1.skn.
+<li>Changed GUI navigation to change pages when scrolling off the screen to left or right.
+<li>Changed focus line indent on classic-style song titlestrips.
+<li>Changed default value for [DisplayX] Enabled to False.
+<li>Changed default mappings in CONTROLS.INI.
+<li>Synchronized page change button repeats with page change animation
+<li>Fixed problems with slow and corrupted screenshots.
+<li>Fixed song stuttering on page changes.
+<li>Fixed page change acceleration.
+<li>Fixed page change animation when using mouse.
+<li>Fixed page change messages stacking up in the message queue.
+<li>Fixed BTN_NEXTALPHA and BTN_PREVALPHA to go to the first page with a new artist letter, not the first full page.
+<li>Fixed BTN_NEXTALPHA and BTN_PREVALPHA behavior when going through a Various Artists section.
+<li>Optimized calls to song poll function.
+</ul>
+
+
+<p><br>
+<br><center><h2><a name="Version 3.2.1: (14 Nov 08)">Version 3.2.1: (14 Nov 08)</a></h2></center><p>
+<ul>
+<li>Added IconFocusBoxThickness to [Display] section of JUKEBOX.INI.
+<li>Added TrackFocusBoxThickness to [Display] section of JUKEBOX.INI.
+<li>Fixed a bug that prevented BTN_SKIN_NEXT and BTN_SKIN_PREV from working from a clickable icon.
+<li>Fixed a bug decoding some Unicode strings.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.2: (9 Nov 08) ">Version 3.2: (9 Nov 08) </a></h2></center><p>
+<ul>
+<li>Added jump to alphabet when an alphabetic button pressed for skins using numeric input.
+<li>Added BTN_SHUFFLE.
+<li>Added an OrphanControl setting to jukebox.ini to allow orphan control to be disabled.
+<li>Added jbsansb.fnt and jbblack.fnt.
+<li>Added ability to change skins on the fly.
+<li>Added BTN_SKIN_PREV and BTN_SKIN_NEXT to step through skin list.
+<li>Added BTN_SKIN_1 through BTN_SKIN_10 for direct access to a particular skin.
+<li>Added NormallyOff and NormallyOn setting to icons to reverse their normal behavior.
+<li>Added BTN_LOOP, MSG_LOOP, and LoopMode to support the new Loop Mode.
+<li>Changed focus line indent and thickness on CD song titlestrips.
+<li>Changed format of debug log to Comma-Separated Values.
+<li>Fixed StrictAlbum comparisons which were not ignoring the word "The" and didn't work properly against Unicode names.
+<li>Fixed a bug that caused occasional random crashes.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.1.5: (20 Jan 08)">Version 3.1.5: (20 Jan 08)</a></h2></center><p>
+<ul>
+<li>Added a new default cover art image.
+<li>Added a basic internal constructed cover art image if default image is missing.
+<li>Added a symbol for Album sort.
+<li>Added an AUTO setting for DefaultArtCacheMB to allow different defaults in DOS and Windows.
+<li>Added ability to map mouse buttons to controls.
+<li>Added MSG_ALLOWSELECTFULLCD.
+<li>Added MSG_SELECTEDALL.
+<li>Added MSG_SELECTEDSOME.
+<li>Added ColorDepth option to [Display] section of jukebox.ini.
+<li>Changed default art cache to 32MB in Windows.  Default for DOS is still 4MB.
+<li>Changed random song select to only use the Random Popularity Preference setting if top quarter of songs have more than one play each.
+<li>Changed product name to DWJukebox.
+<li>Fixed crash of jukebox on invalid CD art images, including JPG files missing a JFIF header.
+</ul>
+
+
+<p><br>
+<br><center><h2><a name="Version 3.1.4: (4 Sep 07)">Version 3.1.4: (4 Sep 07)</a></h2></center><p>
+<ul>
+<li>Added MSG_QUEUEFULL.
+<li>Added MSG_SELECTNG.
+<li>Added MSG_SELECTIONREADY.
+<li>Added automatic timed page flips.
+<li>Added settings FirstAutoFlipTimer and AutoFlipTimer to support timed page flips.
+<li>Added CMD_NEXTPG and CMD_PREVPG to support timed page flips.
+<li>Added SkipLetterA, SkipLetterB, SkipNumber1, SkipNumber2, etc. to [Selection] section in skins.
+<li>Added LetterASymbol, LetterBSymbol, Number1Symbol, Number2Symbol, etc. to [Selection] section in skins.
+<li>Added KEY_10 through KEY_25.
+<li>Added Steelfish and Steelfish Bold fonts.
+<li>Added larger, more detailed icons for Windows Vista.
+<li>Added BTN_TOPTUNE.
+<li>Added FontCase for display definitions.
+<li>Increased maximum titlestrip width and height by 1000 in each direction.
+<li>Increased maximum number of songs per titlestrip to 120.
+<li>Fixed page change buttons on numeric.skn.
+<li>Fixed OGG files, which were locking up when played.
+<li>Fixed bug where rotated icons were being smeared if there was an On image with no Off image.
+<li>Converted documentation to HTML and Windows Help formats in addition to plain text.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.1.3: (9 Jan 07) ">Version 3.1.3: (9 Jan 07) </a></h2></center><p>
+<ul>
+<li>Added RadioMode option to [Settings] section of jukebox.ini.
+<li>Added BTN_PLAYSTIMULATOR to toggle the state of the play stimulator.
+<li>Added MSG_PLAYSTIMULATOR to indicate the status of the play stimulator.
+<li>Added cursor movement normalization for flipped and rotated modes.
+<li>Added orphan track control: if part of a split album has 1/4 or less of an album worth of tracks, some tracks will be moved from the previous portion to even them out.
+<li>Added numeric.skn, a version of the default skin set up for a 10-key keypad.
+<li>Changed play counts to not increment for songs played by radio mode or play stimulator.
+<li>Moved message processing logs to debug level 3 from level 4.
+<li>Fixed radio mode adding songs when enabled even if a song is playing.
+<li>Fixed SHIFT, ALT, CTRL, WIN, and LOCK keys.
+<li>Fixed arrow mouse pointer orientation for rotations 2 and 3.
+<li>Fixed shutdown crash in screen saver cleanup.
+<li>Fixed skin loader not reporting missing icon files.
+<li>Fixed bug causing database to be erased on a fatal error.
+<li>Fixed multi-part albums showing incorrect artists. Multi-part albums now look at all parts when deciding who the main artist is.
+<li>Fixed UseTrackZero for classic-style interfaces.
+<li>Fixed bug allowing selections from the next page to be selected if an out-of-range selection address is entered.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.1.1: (15 Sep 06)">Version 3.1.1: (15 Sep 06)</a></h2></center><p>
+<ul>
+<li>Added BTN_SKIPLAST to delete the last song in the queue.  Note that you cannot skip the currently playing song this way.
+<li>Added SkipLastTimeLimit setting to [Settings] section of jukebox.ini to control BTN_SKIPLAST.
+<li>Added MSG_SKIPLASTOK to indicate when it's OK to skip the last song in the queue.
+<li>Added IncrementalCreditDelay to [Timers] section in skin; when non-zero, credits are added one at a time with the specified number of hundredths of a second between them.
+<li>Added MSG_ADDINGCREDITS to indicate that credits are being added; this message is not sent when IncrementalCreditDelay is disabled.
+<li>Added MSG_ADDEDCREDIT to indicate that a credit has been added.  It will fire once for all credits on a coin if IncrementalCreditDelay is disabled, otherwise it will fire once as each credit is added and unset a short time later.
+<li>Added CMD_ADDCREDIT message to tell the jukebox to add a credit.  CMD_ messages do not come in pairs like BTN_ and MSG_ messages; there is no "unset" for a CMD message.
+<li>Added a deferred credit counter; if another coin is inserted before all credits are added, the additional credits are deferred until the first credits are all loaded.
+<li>Added case support for Title, Artist and Album font contexts.
+<li>Fixed backward compatibility for font settings.  If the Font setting in the [Titlestrips] section of a skin is present, the [Fonts] section will be ignored.
+<li>Fixed BTN_PAUSE.
+<li>Fixed AllowSelectFullCD=False.
+<li>Cleaned up coin sound effect.
+<li>Changed Unicode character sorting to use ASCII equivalents.
+<li>Changed random song selector to not select songs that are duplicates of those in the queue if duplicates are disabled.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.1: (12 Sep 06)">Version 3.1: (12 Sep 06)</a></h2></center><p>
+<ul>
+<li>Added AllowSelectFullCD setting to enable or disable selecting all tracks when Track 0 is selected.
+<li>Added BTN_FREEPLAY and MSG_FREEPLAY to toggle and indicate the state of the credit requirement.
+<li>Added BTN_CLEARALL which clears both the queue and the currently playing song.
+<li>Added automatic addition of .skn extension if not specified
+<li>Added automatic search for skin files in a folder with the same name as the skin
+<li>Added transparent backgrounds for displays.  Use TRANSPARENT as the background color.
+<li>Added MSG_IDLE message to indicate no songs are playing or queued.
+<li>Added time index to debug file.
+<li>Added logging of processed messages to debug level 4.
+<li>Added delays before and after songs, indicated by MSG_PRESONG and MSG_POSTSONG.
+<li>Added message to delay between songs, MSG_INTERSONG.
+<li>Added MSG_IDLE to indicate when no songs are playing or queued.
+<li>Added MSG_QUEUE to indicate that songs are present in the queue.
+<li>Added status tracking for virtual disc changer.
+<li>Added ability to specify different fonts, colors, quote status, and quote symbols for various font contexts.
+<li>Changed color parameters to accept either "Color" or "Colour" spellings.
+<li>Changed clock to count seconds based on globalclock rather than asking the music engine for the time; this fixes the clock for MIDI files and makes it more consistent for MP3's.
+<li>Changed BTN_CLEARQUEUE to not clear the currently playing song.
+<li>Changed message queue timers to hundredth of a second resolution rather than tenth of a second resolution.
+<li>Changed virtual disc changer to be message-based.
+<li>Changed version numbering to remove beta designation.
+<li>Updated Allegro library to 4.2; this seems to have fixed the DOS MIDI crash.
+<li>Updated license agreement to add required verbiage related to FreeType and to make it more clear that commercial use is prohibited.
+<li>Fixed getting song lengths for MIDI files.
+<li>Fixed bug that sent MSG_CREDITS even if 0 credits were added.
+<li>Fixed bug where -MSG_SONGSTART was not being sent if song was skipped.
+<li>Fixed bug where song would be skipped if paused within the first second.
+<li>Fixed bug where extraneous button unsets were being sent when processing the delayed turn queue.
+<li>Fixed taskbar icon and window title.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.0 b11: (17 Aug 06)">Version 3.0 b11: (17 Aug 06)</a></h2></center><p>
+<ul>
+<li>Added control over screen saver song info display.
+<li>Added control over color ranges used by screensaver.
+<li>Fixed bug where credits display wasn't updating after a random song was selected.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.0 b10: (9 Aug 06)">Version 3.0 b10: (9 Aug 06)</a></h2></center><p>
+<ul>
+<li>Added a build configuration that removes MP3 and ID3 support
+<li>Added message level to debug log.
+<li>Added check for invalid symbol lookups.
+<li>Added object types to GUI object dump.
+<li>Added FileSystemEncoding setting to control which encoding is used to read filenames.
+<li>Added ability to specify a different INI file on the command line.
+<li>Added UseTrackZero setting to skins to allow track numbers to start at 00 instead of 01.
+<li>Added ResourcePath setting to jukebox.ini to specify paths to be searched for skin components.
+<li>Moved GUI functions to jbgui.c.
+<li>Moved titlestrip functions to jbstrip.c.
+<li>Fixed bug that caused BTN_CLEARQUEUE to crash for queue sizes below 1000.
+<li>Fixed Unicode handling for ID3 tags.
+<li>Fixed database entries not getting a last updated date on first run.
+<li>Fixed bug that caused queue to fill with one song when queue was completely filled.
+<li>Fixed bugs reading Unicode ID3 tags.
+<li>Fixed bugs preventing songs with international characters in the filename from being loaded.
+<li>Fixed bug that caused split CD's to be sorted in the wrong order.
+<li>Changed MaxQueueSize range to 1-500, with 250 as the new default.
+<li>Changed default on AllowDuplicatesInQueue to FALSE
+<li>Changed maximum songs per strip to 100.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.0 b8: (30 Jul 05)">Version 3.0 b8: (30 Jul 05)</a></h2></center><p>
+<ul>
+<li>Added FontFocusColor, FocusColor, and ShadowColor to titlestrips settings in skins.  They're global for now; they'll need to be moved into an array if genre labels are implemented.
+<li>Added MaxQueueSize setting to adjust the number of songs that may be held in the queue (not counting the currently playing song).
+<li>Added AllowDuplicatesInQueue setting to set whether or not duplicate songs can be added to the queue.
+<li>Added CDHeader setting to set whether CD header appears automatically in the card or above or below the CD art.
+<li>Added function to select all songs on a CD when track 00 is selected (only when UseZeroes is enabled) up to number of available credits.
+<li>Added song poll to cover art procedure; should stop stuttering when changing pages on slower machines.
+<li>Fixed CoverArtSide=Top, which wasn't working to a doubled Top symbol
+<li>Fixed albums not honoring SongSort setting.
+<li>Added CD2-1.skn
+<li>Added sound events to skins and corresponding volume settings to jukebox.ini
+<li>Added parameter checking to a number of options settings
+<li>Added jblcd.fnt.
+<li>Added StrictAlbum parameter to special-case common album names like "Greatest Hits".  Albums that match a StrictAlbum must be in the same folder to count as the same album.
+<li>Added MSG_NOCREDITS, MSG_INVALID, and MSG_DUPSONG messages.
+<li>Added ability to shut down Windows from the jukebox.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.0 b7: (31 May 05)">Version 3.0 b7: (31 May 05)</a></h2></center><p>
+<ul>
+<li>Added debug logging for indexer results and elapsed time
+<li>Removed non-working 8-bit video mode.
+<li>Added rudimentary MIDI (.MID and .KAR) support.
+<li>Moved AddQuotes, ForceUpperCaseTitles and ForceUpperCaseArtists to the skin files.
+<li>Added BTN_NEXTALPHA and BTN_PREVALPHA to skip to the next artist alphabetically.  This is only useful when sorted by artist.
+<li>Added MSG_RADIO message.
+<li>Added icon and message information to readme.txt.
+<li>Added ScreenSaverCancelTimeout, which will set the number of minutes the screen saver will run, after which it will automatically deactivate and return to the GUI.
+<li>Fixed screen saver fonts in vertical rotations.
+<li>Added ShowSongInfo setting for the screensaver.
+<li>Fixed Run Time text in low resolutions.  If there is not enough room for both the timer and the Run Time text, the Run Time text is omitted.
+<li>Added sanity check to track strip height on CD labels, automatically reducing number of songs per strip if necessary.
+<li>Fixed alignment on rotated elements.
+<li>Added BTN_CLEARQUEUE, which erases the entire queue, returning unused credits.
+<li>Fixed bug where jukebox would crash when returning from the screensaver.
+<li>Added Vera Sans and Vera Serif fonts.
+<li>Added cover art support.
+<li>Moved queue functions into jbqueue.c.
+<li>Added RandomSongPopularityPreference setting to jukebox.ini, which controls how much preference is given to popular songs when randomly selecting songs.
+<li>Added proper disc and track addresses to CD labels.
+<li>Rebuilt selector and selection display to account for all possible combinations of input methods and label types.
+<li>Album mode support functional.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.0 b6: (7 Mar 05)">Version 3.0 b6: (7 Mar 05)</a></h2></center><p>
+<ul>
+<li>Moved symbols into source code.
+<li>Added critical error logging even when logging is disabled.
+<li>Added ability to load alternate display font and pointer sets.
+<li>Added ability to flip the text in a skin and created a "flipped" skin to go with it.  Images are not flipped, so skins need to be designed "flipped" to take advantage of text flipping.
+<li>Renamed skin files to *.skn.
+<li>Moved Controls, KeyRepeatRate, AutoSelect, AlphaToggle, and Mouse settings to a new [Controls] section in jukebox.ini.
+<li>Added MaxRandomSonglength setting to control the maximum length of a song that can be randomly selected
+<li>Added more validation and debug logging to random song selector
+<li>Added escape valve to random song selector to prevent loops after 20 attempts
+<li>Changed random selection algorithm to use the popularity list; songs closer to the top of the list will be more likely to be randomly selected.
+<li>Added a BTN_RANDOM key, which randomly queues a song.
+<li>Added an Escape key to indexer to cancel indexing.
+<li>Added a KeyboardLEDsOff setting to jukebox.ini.
+<li>Added basic screen saver.
+<li>Added rotation symbols: HORIZONTAL, VERTICAL, VERTICAL RIGHT, UPSIDE DOWN, and VERTICAL LEFT.
+<li>Added support for setting rotation by degrees.
+<li>Added support for titlestrips to be specified as grids in skins. Titlestrips may be defined now as Strip, StripGrid, StripX, or StripGridX.  All are interchangeable as long as numbers aren't repeated.
+<li>Added a redraw of the tracker dialog when applying the skin.
+<li>Changed default skin to use titlestrip grids.
+<li>Changed alerts to add fatal crash logs.
+<li>Added song year to database.
+<li>Fixed precision issues regarding scaling math.  Skins may need to have coordinates tweaked to account for the correction.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.0 b5: (1 Dec 04)">Version 3.0 b5: (1 Dec 04)</a></h2></center><p>
+<ul>
+<li>Fixed bug where MSG_PAUSE was not sending an Off message.
+<li>Added volume control functions.
+<li>Rewrote memory allocation for song loader to try to fix the random crash bug.
+<li>Added more larger dot-matrix fonts for higher resolution displays.
+<li>Changed set_config_file to override_config_file to allow existing allegro.cfg files to be honored.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.0 b4: (29 Sep 04)">Version 3.0 b4: (29 Sep 04)</a></h2></center><p>
+<ul>
+<li>Renamed 4ButtonPanel option to AlphaToggle.
+<li>Fixed selection bug for AlphaToggle mode.
+<li>Fixed bug where one letter higher than the HighLetter could be entered.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.0 b3: (1 Sep 04)">Version 3.0 b3: (1 Sep 04)</a></h2></center><p>
+<ul>
+<li>Replaced TRACE with multi-level debug log
+<li>Fixed addresses in aj8skin.ini
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.0 b2: (26 Aug 04)">Version 3.0 b2: (26 Aug 04)</a></h2></center><p>
+<ul>
+<li>Fixed bug sizing non-square skins.
+<li>Added Genre to the database (to support genre labels).
+<li>Fixed bug where BTN_EXIT was not working when sent from an icon.
+<li>Fixed bug where OGG files were not showing the current time.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 3.0 b1 (5 Jul 04):">Version 3.0 b1 (5 Jul 04):</a></h2></center><p>
+<ul>
+<li>Added multiple resolution support.
+<li>Added rotation support.
+<li>Added skin support.
+<li>Added TrueType font support.
+<li>Added OGG Vorbis support.
+<li>Added multiple dot-matrix font sizes to support multiple resolutions.
+<li>Added support for multiple song paths.
+<li>Added ID3 support.
+<li>Added function to release unused time slices so jukebox no longer uses 100% CPU in Windows.
+<li>Added mouse support.
+<li>Added mouse cursors to jukebox.dat.
+<li>Added touchscreen (invisible mouse) support.
+<li>Added icon support.  Icons can both send messages and respond to messages sent by the jukebox.
+<li>Added new default skin with on-screen icons for mouse or touchscreen use.
+<li>Added support for button<li>or joystick-based GUI navigation (up, down, left, right, tab, select).
+<li>Added support for single (Arcade Jukebox-style) title strips in addition to the standard double (45-style) title strips.
+<li>Added support for CD-style title cards; in this mode, songs are sorted by album, not artist.
+<li>Added splash screen/indexer status display.
+<li>Added support for multiple song paths.
+<li>Added BTN_EXIT; the ESC key is no longer hardcoded to exit.
+<li>Added BTN_PAUSE.
+<li>Added a "radio mode"; if BTN_RADIO is pressed, the PlayStimulator value is overriden to a one-second delay, causing music to play continuously until BTN_RADIO is pressed again.
+<li>Added ability to disable unused displays.
+<li>Added ability to adjust the number of lines in Now Playing and Coming Up displays.
+<li>Added album name to Now Playing display when at least 5 lines are displayed.
+<li>Added ability to specify number of titlestrips per page; removed hardcoded setting of 8 titlestrips per page.
+<li>Added JPG support.
+<li>Added Unicode support.
+<li>Added key repeat.
+<li>Added joystick/gamepad support.
+<li>Added a configurable brief delay between songs.
+<li>Added a slight delay before the automatic select when AutoSelect is enabled.
+<li>Added file version block.
+<li>Rebuilt indexer; eliminated need for jukelist.
+<li>Rebuilt music API.
+<li>Jukebox will now play in the background while MAME plays in the foreground (in Windows) if the hardware mixer supports it.
+<li>Changed screenshot function to output BMP files instead of PCX.
+<li>Moved play counts to song database.
+<li>Moved graphics from datafile to individual files to support skins.
+<li>Moved symbol definitions to jukebox.dat.
+<li>Moved control definitions to separate ini file; default file is controls.ini.
+<li>When using Artist Sort, the word "The" at the beginning of an artist name is now ignored for sorting purposes, so "The Beatles" now sorts under B rather than T.
+<li>Songs are grouped on labels by album and in track order (when known) within an artist.
+<li>Fixed major bug that was causing excessive CPU usage (labels continually redrawn).
+<li>Fixed bug where songs wouldn't start in the background in Windows.
+<li>Fixed bug where SongPath wasn't actually working in Windows.
+<li>Fixed bug where files with a # in them could not be played.
+<li>Fixed bug where read-only files could not be played.
+<li>Fixed bug where last titlestrip wasn't being displayed.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 2.41 (1 Apr 03):">Version 2.41 (1 Apr 03):</a></h2></center><p>
+<ul>
+<li>2.4 was packaged with the wrong JUKELIST.EXE; this version contains the correct file.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 2.4 (29 Mar 03):">Version 2.4 (29 Mar 03):</a></h2></center><p>
+<ul>
+<li>Added Play Stimulator mode.
+<li>Added Artist Sort option.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 2.3 (18 Oct 02):">Version 2.3 (18 Oct 02):</a></h2></center><p>
+<ul>
+<li>Fixed the bug that caused the display to be lost in Windows 2000 and Windows XP.
+<li>Added RefreshRate, SongFile, and SongPath settings to JUKEBOX.INI.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 2.2 (9 Sep 02):">Version 2.2 (9 Sep 02):</a></h2></center><p>
+<ul>
+<li>Made JUKELIST.EXE a Win32 application so it should now work on Windows 2000.
+<li>Linked with Version 2.0.2 of AllegMP3.
+<li>Modified graphics.
+<li>Changed WinCab Jukebox so it will continue playing when in the background, and will restore the screen if switched away and back.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 2.1 (18 Aug 02):">Version 2.1 (18 Aug 02):</a></h2></center><p>
+<ul>
+<li>Added 9 more jukebox song labels.
+<li>Added LabelStyle setting to select a label (0 through 9) or -1 for a random style.
+<li>Added credits: up to four credit keys can be defined, and each can provide a different number of credits.
+<li>Added RequireCredits setting.  If RequireCredits=1, the selection buttons will not operate without a coin.
+<li>Added play count tracking.
+<li>Added count of coming songs and total time of coming songs to display.
+<li>Changed JUKELIST.EXE to add running times to SONGS.INI.  SONGS.INI will need to be regenerated for this version.
+<li>Added Most Popular display.
+<li>Minor graphic tweaks.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 2.0: (9 Aug 02)">Version 2.0: (9 Aug 02)</a></h2></center><p>
+<ul>
+<li>First public release.
+<li>Added a 4-button panel mode: buttons alternate from letters to numbers.
+<li>Added a AutoSelect function, which automatically selects a song when selection letter and number are pressed.
+<li>Changed the font style to dot-matrix allow more text
+<li>Added configuration file for keys, font color, autoselect, and 4buttonpanel
+</ul>
+
+<p>
+<br><center><h2><a name="Version 1.1: (28 Mar 02)">Version 1.1: (28 Mar 02)</a></h2></center><p>
+<ul>
+<li>Limited releases, with hardcoded controls customized by hand for each user.
+</ul>
+
+<p>
+<br><center><h2><a name="Version 1.0: (22 Feb 02)">Version 1.0: (22 Feb 02)</a></h2></center><p>
+<ul>
+<li>First version.
+<li>Controls hardcoded.
+</ul>
+
+
+</body>
+</html>

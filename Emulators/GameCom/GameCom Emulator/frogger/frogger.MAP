@@ -1,0 +1,1010 @@
+
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page    1
+
+
+[ source\frogger.obj ]  FIGHTER 
+
+          PROGRAM:             [020] 4000 - 43A0 : 03A1 BYTES
+          DATA   :             [000] 00BE - 036D : 02B0 BYTES
+
+AnimData         = [000]02C8L  BypassMenus      = [020]40D7L  
+CK_page          = [020]40F1L  Continue         = [000]00C7L  
+CursorX          = [000]00C0L  CursorY          = [000]00C1L  
+DemoCnt          = [000]0367L  DemoMode         = [000]00CCL  
+DemoPtr          = [000]0365L  Difficulty       = [000]00C5L  
+FrogArtX         = [000]00E5L  FrogArtY         = [000]00E6L  
+FrogCnt          = [000]00E2L  FrogDir          = [000]00E1L  
+FrogFlags        = [000]00E3L  FrogMinY         = [000]00DFL  
+FrogPage         = [000]00E4L  FrogRest         = [000]00E7L  
+FrogTick         = [000]00E0L  FrogX            = [000]00DCL  
+FrogY            = [000]00DEL  FromMainMenu     = [020]40C6G  
+GameEntry        = [020]402FL  GameInit         = [020]404EL  
+GameMode         = [000]00C4L  GameState        = [000]00C2L  
+Game_Close       = [020]404AL  Game_Die         = [020]40A6G  
+Game_Exe         = [020]40ACL  Game_Reset       = [020]4049L  
+GetUser          = [020]40F9G  GetUserDemo      = [020]411CL  
+GetUserDone      = [020]4150L  GetUserExit      = [020]4195L  
+GetUserExiter    = [020]4189L  GetUserKey       = [020]4115L  
+GetUserMenu      = [020]4174L  GetUserNext      = [020]4135L  
+GetUserNoP       = [020]4163L  GetUserPause     = [020]4190L  
+GetUserRestart   = [020]4182L  GetUserSound     = [020]416DL  
+HoldSP           = [000]00BEL  LastKey          = [000]00EAL  
+LevelAddr        = [000]00DAL  LevelData        = [000]0238L  
+Lives            = [000]00C6L  MusicOn          = [000]00CBL  
+NextPlayer       = [000]00D7L  NumPlayers       = [000]00C3L  
+Paused           = [000]00C9L  PlayerData       = [000]0208L  
+PlayerVAddr      = [000]00D8L  ResetGame        = [020]40AFG  
+SAnimData        = [000]0340L  SfxOn            = [000]00CAL  
+StartLevel       = [000]00C8L  TargetX          = [000]00E8L  
+TargetY          = [000]00E9L  Timer            = [000]00CEL  
+ZZZ              = [000]00ECL  abaker1          = [020]4020G  
+abaker2          = [020]4022G  abaker3          = [020]4024G  
+abaker4          = [020]4026G  abaker5          = [020]4028G  
+abaker5x         = [020]402EL  back_page_a      = [020]40F8L  
+bat_mel1         = [020]4354L  cont_melody      = [020]4317G  
+end_init_rec     = [020]4075L  get_font_info    = [020]4206L  
+gfiblank         = [020]4241L  gficap           = [020]4275L  
+gfidata          = [020]42AAL  gfidone          = [020]4288L  
+gfihigh          = [020]4259L  gfilow           = [020]421DL  
+gfinumber        = [020]4263L  gfiretest        = [020]420EL  
+gfisetzero       = [020]4273L  gfispecial       = [020]428FL  
+hold_byte1       = [000]00EBL  index0           = [000]036AL  
+index1           = [000]036BL  index2           = [000]036CL  
+index3           = [000]036DL  lower_clean      = [020]406DL  
+lower_cleanx     = [020]406AL  melody_high      = [020]4355L  
+melody_low       = [020]437BL  new_melody_ptr   = [000]0364L  
+page_ptr1        = [000]0368L  print_score      = [020]42CCG  
+print_scoreJ0    = [020]42EEL  print_scoreJ1    = [020]42FFL  
+print_scoreJ2    = [020]430AL  print_scoreL0    = [020]42DEL  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page    2
+
+print_scoreL1    = [020]42F4L  print_string     = [020]41AFG  
+print_stringv    = [020]41A1G  pstring_exit     = [020]4205L  
+pstring_loop     = [020]41C5L  pstring_space    = [020]41F8L  
+real_init        = [020]4051L  restart_init     = [020]4080L  
+sound_flag       = [000]00CDL  start_melody     = [020]4324G  
+temp0            = [000]00D4L  temp0w           = [000]00D0L  
+temp1            = [000]00D5L  temp1w           = [000]00D2L  
+temp2            = [000]00D6L  test37f          = [000]036EL  
+testff           = [000]00F6L  upper_clean      = [020]4061L  
+
+
+[ source\syscall.obj ]  System C
+
+          PROGRAM:             [020] 43A1 - 456F : 01CF BYTES
+          DATA   :             [000] 00BE - 036D : 02B0 BYTES
+
+Active_page_A    = [020]43B6G  Active_page_B    = [020]43AFG  
+AnimData         = [000]02C8L  Blk_cls          = [020]442AG  
+Blk_mov_2        = [020]44F3G  Blk_rev          = [020]4424G  
+CTRL_KBD         = [020]445AG  CTRL_SP          = [020]44A3G  
+CTRL_SPX         = [020]4473G  CTRL_TMR         = [020]4466G  
+Ch_abs           = [020]43DBG  Ch_abs_i         = [020]43C3G  
+Check_Timer      = [020]44D4G  Cls_scn          = [020]43F4G  
+Continue         = [000]00C7L  Control_Melody   = [020]44BCG  
+Cur_pos          = [020]43E7G  CursorX          = [000]00C0L  
+CursorY          = [000]00C1L  Def_font         = [020]4406G  
+Delay_Timer      = [020]44DAG  DemoCnt          = [000]0367L  
+DemoMode         = [000]00CCL  DemoPtr          = [000]0365L  
+Difficulty       = [000]00C5L  Disp_setup       = [020]43CFG  
+Draw_line_h      = [020]4436G  Draw_line_v      = [020]4430G  
+Dsp_ch           = [020]43D5G  Dsp_ch_sp        = [020]4448G  
+Fi_graph         = [020]4418G  Fi_graph2        = [020]44E7G  
+Fi_patt          = [020]4412G  Fill_blk_colr    = [020]43C9G  
+FrogArtX         = [000]00E5L  FrogArtY         = [000]00E6L  
+FrogCnt          = [000]00E2L  FrogDir          = [000]00E1L  
+FrogFlags        = [000]00E3L  FrogMinY         = [000]00DFL  
+FrogPage         = [000]00E4L  FrogRest         = [000]00E7L  
+FrogTick         = [000]00E0L  FrogX            = [000]00DCL  
+FrogY            = [000]00DEL  GameMode         = [000]00C4L  
+GameState        = [000]00C2L  HoldSP           = [000]00BEL  
+LastKey          = [000]00EAL  LevelAddr        = [000]00DAL  
+LevelData        = [000]0238L  Lives            = [000]00C6L  
+MemoryBlkReq     = [020]44C2G  MusicOn          = [000]00CBL  
+NextPlayer       = [000]00D7L  NumPlayers       = [000]00C3L  
+Output_scan      = [020]43A1G  Paused           = [000]00C9L  
+PlayerData       = [000]0208L  PlayerVAddr      = [000]00D8L  
+READTIME         = [020]44A9G  Receive_a_byte   = [020]4555G  
+Req_RAM_Block    = [020]4525G  Reset_UART_queue = [020]4549G  
+Return_line      = [020]43A8G  SAnimData        = [000]0340L  
+SCAN_KEY         = [020]4454G  SET_TMR          = [020]4460G  
+SND_ADDR         = [020]446DG  Scn_colr         = [020]440CG  
+Sel_font         = [020]43FAG  Select_mode      = [020]444EG  
+Send_a_byte      = [020]454FG  Set_colr         = [020]4400G  
+Set_win          = [020]43EDG  Setup_Melody     = [020]44B6G  
+SfxOn            = [000]00CAL  Short_Beep       = [020]44C8G  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page    3
+
+Speech_Stop      = [020]44CEG  StartLevel       = [000]00C8L  
+Str_abs          = [020]43E1G  Str_abs_i        = [020]43BDG  
+Swap_page        = [020]44EDG  Switch_bank      = [020]44B0G  
+SysKeyHandler    = [020]4506G  System_Call1     = [020]43F1L  
+System_Call2     = [020]442EL  System_Call3     = [020]446AL  
+System_Call4     = [020]44ADL  System_Call5     = [020]44DEL  
+System_Call6     = [020]44FDL  System_Call7     = [020]451CL  
+TargetX          = [000]00E8L  TargetY          = [000]00E9L  
+Text_in_A        = [020]44F9G  Text_in_B        = [020]4500G  
+Timer            = [000]00CEL  UART_enable      = [020]4543G  
+UART_setup       = [020]453DG  ZZZ              = [000]00ECL  
+call_appl        = [020]4518G  clear_A          = [020]443CG  
+clear_B          = [020]4442G  ctrl_sp1         = [020]44A3L  
+delay_200        = [020]449AL  delay_200ms      = [020]449DL  
+disable_pause    = [020]4537G  disable_timeout  = [020]4515G  
+disp_tmrovr      = [020]44E1G  enable_pause     = [020]4531G  
+enable_timeout   = [020]4512G  hold_byte1       = [000]00EBL  
+index0           = [000]036AL  index1           = [000]036BL  
+index2           = [000]036CL  index3           = [000]036DL  
+is_start         = [020]447DL  new_melody_ptr   = [000]0364L  
+not_start        = [020]44A1L  page_ptr1        = [000]0368L  
+quit_box         = [020]450CG  restart_timeout  = [020]451FG  
+restore_uart     = [020]455BG  set_line_color   = [020]441EL  
+sound_flag       = [000]00CDL  temp0            = [000]00D4L  
+temp0w           = [000]00D0L  temp1            = [000]00D5L  
+temp1w           = [000]00D2L  temp2            = [000]00D6L  
+test37f          = [000]036EL  testff           = [000]00F6L  
+yn_box           = [020]452BG  
+
+
+[ source\open.obj ]  Centiped
+
+          PROGRAM:             [020] 4570 - 478A : 021B BYTES
+          DATA   :             [000] 00BE - 036D : 02B0 BYTES
+
+AnimData         = [000]02C8L  Continue         = [000]00C7L  
+CursorX          = [000]00C0L  CursorY          = [000]00C1L  
+DemoCnt          = [000]0367L  DemoMode         = [000]00CCL  
+DemoPtr          = [000]0365L  Difficulty       = [000]00C5L  
+DrawFrame        = [020]46EBG  DrawFrame1       = [020]46F5L  
+DrawFrame2       = [020]4726L  DrawFrame21      = [020]4740L  
+DrawFrameL1      = [020]470CL  DrawTitle        = [020]474BL  
+DrawTitle1       = [020]4755L  DrawTitle21      = [020]4777L  
+FrogArtX         = [000]00E5L  FrogArtY         = [000]00E6L  
+FrogCnt          = [000]00E2L  FrogDir          = [000]00E1L  
+FrogFlags        = [000]00E3L  FrogLegal1       = [020]4647L  
+FrogLegal2       = [020]464BL  FrogLegal3       = [020]464FL  
+FrogLegal4       = [020]4653L  FrogLegal5       = [020]4657L  
+FrogLegal6       = [020]465BL  FrogLegalT1      = [020]45D7L  
+FrogLegalT2      = [020]45ECL  FrogLegalT3      = [020]45F5L  
+FrogLegalT4      = [020]4609L  FrogLegalT5      = [020]461FL  
+FrogLegalT6      = [020]4630L  FrogMinY         = [000]00DFL  
+FrogPage         = [000]00E4L  FrogRest         = [000]00E7L  
+FrogTick         = [000]00E0L  FrogTitle1       = [020]46E3L  
+FrogTitle2       = [020]46E7L  FrogTitleT1      = [020]46CBL  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page    4
+
+FrogTitleT2      = [020]46DAL  FrogX            = [000]00DCL  
+FrogY            = [000]00DEL  GameMode         = [000]00C4L  
+GameState        = [000]00C2L  HoldSP           = [000]00BEL  
+LastKey          = [000]00EAL  LegalScreen      = [020]4580L  
+LegalScreenL1    = [020]45CDL  LevelAddr        = [000]00DAL  
+LevelData        = [000]0238L  Lives            = [000]00C6L  
+MusicOn          = [000]00CBL  NextPlayer       = [000]00D7L  
+NumPlayers       = [000]00C3L  Opening          = [020]4570G  
+OpeningBypass    = [020]457FL  Paused           = [000]00C9L  
+PlayerData       = [000]0208L  PlayerVAddr      = [000]00D8L  
+SAnimData        = [000]0340L  SfxOn            = [000]00CAL  
+StartLevel       = [000]00C8L  TargetX          = [000]00E8L  
+TargetY          = [000]00E9L  Timer            = [000]00CEL  
+TitleScreen      = [020]465FL  TitleScreenE1    = [020]46ADL  
+TitleScreenL1    = [020]466AL  TitleScreenL2    = [020]466EL  
+TitleScreenX     = [020]46C6L  TitleScreenXT    = [020]468EL  
+ZZZ              = [000]00ECL  d10ms_loop       = [020]4786L  
+d200ms_loop      = [020]477EL  delay10ms        = [020]4783G  
+delay200ms       = [020]477BL  hold_byte1       = [000]00EBL  
+index0           = [000]036AL  index1           = [000]036BL  
+index2           = [000]036CL  index3           = [000]036DL  
+new_melody_ptr   = [000]0364L  page_ptr1        = [000]0368L  
+sound_flag       = [000]00CDL  temp0            = [000]00D4L  
+temp0w           = [000]00D0L  temp1            = [000]00D5L  
+temp1w           = [000]00D2L  temp2            = [000]00D6L  
+test37f          = [000]036EL  testff           = [000]00F6L  
+
+
+[ source\gamecom.obj ]  Generali
+
+          PROGRAM:             [020] 478B - 4922 : 0198 BYTES
+          DATA   :             [000] 00BE - 036D : 02B0 BYTES
+
+AnimData         = [000]02C8L  Continue         = [000]00C7L  
+CursorX          = [000]00C0L  CursorY          = [000]00C1L  
+DemoCnt          = [000]0367L  DemoMode         = [000]00CCL  
+DemoPtr          = [000]0365L  Difficulty       = [000]00C5L  
+FrogArtX         = [000]00E5L  FrogArtY         = [000]00E6L  
+FrogCnt          = [000]00E2L  FrogDir          = [000]00E1L  
+FrogFlags        = [000]00E3L  FrogMinY         = [000]00DFL  
+FrogPage         = [000]00E4L  FrogRest         = [000]00E7L  
+FrogTick         = [000]00E0L  FrogX            = [000]00DCL  
+FrogY            = [000]00DEL  GameCom          = [020]478BG  
+GameComE1        = [020]47FCL  GameComE2        = [020]4837L  
+GameComL1        = [020]47A4L  GameComL2        = [020]47FEL  
+GameComNoH       = [020]47C7L  GameComNoP1      = [020]47ECL  
+GameComNoP2      = [020]4827L  GameMode         = [000]00C4L  
+GameState        = [000]00C2L  HoldSP           = [000]00BEL  
+LastKey          = [000]00EAL  LevelAddr        = [000]00DAL  
+LevelData        = [000]0238L  Lives            = [000]00C6L  
+MusicOn          = [000]00CBL  NextPlayer       = [000]00D7L  
+NumPlayers       = [000]00C3L  Paused           = [000]00C9L  
+PlayerData       = [000]0208L  PlayerVAddr      = [000]00D8L  
+SAnimData        = [000]0340L  SfxOn            = [000]00CAL  
+StartLevel       = [000]00C8L  TargetX          = [000]00E8L  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page    5
+
+TargetY          = [000]00E9L  Timer            = [000]00CEL  
+ZZZ              = [000]00ECL  bgdata           = [020]488CL  
+d20ms_loop       = [020]491EL  delay20ms        = [020]491BG  
+drawbg           = [020]483AL  drawbg1          = [020]4844L  
+drawbgEnd        = [020]488BL  drawbgLoop       = [020]4866L  
+drawhl           = [020]48A1L  drawhl1          = [020]48C9L  
+drawpl           = [020]48DDL  drawpl1          = [020]490CL  
+hldata           = [020]48CCL  hold_byte1       = [000]00EBL  
+index0           = [000]036AL  index1           = [000]036BL  
+index2           = [000]036CL  index3           = [000]036DL  
+new_melody_ptr   = [000]0364L  page_ptr1        = [000]0368L  
+pldatax          = [020]490FL  pldatay          = [020]4915L  
+sound_flag       = [000]00CDL  temp0            = [000]00D4L  
+temp0w           = [000]00D0L  temp1            = [000]00D5L  
+temp1w           = [000]00D2L  temp2            = [000]00D6L  
+test37f          = [000]036EL  testff           = [000]00F6L  
+
+
+[ source\demo.obj ]          
+
+          PROGRAM:             [020] 4923 - 492A : 0008 BYTES
+
+DemoInput        = [020]4923G  
+
+
+[ source\new_sp.obj ]  new spee
+
+          PROGRAM:             [020] 492B - 4F84 : 065A BYTES
+          DATA   :             [000] 00BE - 036D : 02B0 BYTES
+
+AnimData         = [000]02C8L  Continue         = [000]00C7L  
+CursorX          = [000]00C0L  CursorY          = [000]00C1L  
+DemoCnt          = [000]0367L  DemoMode         = [000]00CCL  
+DemoPtr          = [000]0365L  Difficulty       = [000]00C5L  
+FrogArtX         = [000]00E5L  FrogArtY         = [000]00E6L  
+FrogCnt          = [000]00E2L  FrogDir          = [000]00E1L  
+FrogFlags        = [000]00E3L  FrogMinY         = [000]00DFL  
+FrogPage         = [000]00E4L  FrogRest         = [000]00E7L  
+FrogTick         = [000]00E0L  FrogX            = [000]00DCL  
+FrogY            = [000]00DEL  GameMode         = [000]00C4L  
+GameState        = [000]00C2L  HoldSP           = [000]00BEL  
+Instru_pointer   = [020]4CB7L  LastKey          = [000]00EAL  
+LevelAddr        = [000]00DAL  LevelData        = [000]0238L  
+Lives            = [000]00C6L  MusicOn          = [000]00CBL  
+NextPlayer       = [000]00D7L  NumPlayers       = [000]00C3L  
+OrganSound       = [020]4CBFL  Paused           = [000]00C9L  
+PianoSound       = [020]4CC0L  PlayerData       = [000]0208L  
+PlayerVAddr      = [000]00D8L  PureTone         = [020]4D21L  
+SAnimData        = [000]0340L  SfxOn            = [000]00CAL  
+StartLevel       = [000]00C8L  TargetX          = [000]00E8L  
+TargetY          = [000]00E9L  Timer            = [000]00CEL  
+ZZZ              = [000]00ECL  adpcm1           = [020]496FL  
+adpcm3           = [020]4954L  adpcm4           = [020]494BL  
+error_note       = [020]4EB1L  freq_table       = [020]4EB7L  
+has_note         = [020]4EA8L  hold_byte1       = [000]00EBL  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page    6
+
+index0           = [000]036AL  index1           = [000]036BL  
+index2           = [000]036CL  index3           = [000]036DL  
+init_isr         = [020]4F59G  mixer0           = [020]4C7DL  
+mixer0_1         = [020]4C95L  mixer1           = [020]4C9AL  
+mixer1_1         = [020]4CB2L  mute_music       = [020]4DC9L  
+mute_music1      = [020]4E62L  mute_speech      = [020]4AB6L  
+new_melody_ptr   = [000]0364L  no_sp            = [020]4ABAL  
+no_toneout0      = [020]4DE3L  no_toneout00     = [020]4DD8L  
+no_toneout1      = [020]4E75L  no_toneout10     = [020]4E6AL  
+normal_timerx    = [020]49A6L  page_ptr1        = [000]0368L  
+process_low_nibb = [020]4950L  ramp_down        = [020]4B13L  
+restore_isr      = [020]4F74G  sound_flag       = [000]00CDL  
+sp_timer         = [020]492BL  sp_timer1        = [020]4932L  
+sp_timer2        = [020]49A6L  sp_timer3        = [020]4977L  
+sp_timer4        = [020]4972L  sp_timerx        = [020]492FL  
+sp_timerxx       = [020]4982L  start_chan0      = [020]4D78G  
+start_chan1      = [020]4E0EG  start_mel0_ret   = [020]4DDEL  
+start_mel1_ret   = [020]4E70L  start_melody0    = [020]4D88L  
+start_melody1    = [020]4E1EL  start_speech1    = [020]4A67G  
+start_speech4    = [020]4A82L  stop_m0          = [020]4DF6L  
+stop_m00         = [020]4E0AL  stop_m1          = [020]4E83L  
+stop_mel1        = [020]4F53L  stop_melody      = [020]4F43G  
+stop_sp1         = [020]4B07L  stop_sp11        = [020]4B0CL  
+stop_sp2         = [020]4B32L  stop_sp3         = [020]4B17L  
+stop_sp4         = [020]4AEBL  stop_sp5         = [020]4AF0L  
+stop_speech      = [020]4ABBL  talk             = [020]4A98L  
+talk1            = [020]4AB3L  talk2            = [020]4AA4L  
+temp0            = [000]00D4L  temp0w           = [000]00D0L  
+temp1            = [000]00D5L  temp1w           = [000]00D2L  
+temp2            = [000]00D6L  test37f          = [000]036EL  
+test_end         = [020]4BDAL  test_end1        = [020]4BE0L  
+test_end1w       = [020]4C52L  test_endw        = [020]4C4CL  
+test_loop        = [020]4BA1L  test_pre         = [020]4BD8L  
+test_prew        = [020]4C4AL  testff           = [000]00F6L  
+tmr11            = [020]49B5L  tmr12            = [020]4A09L  
+tmr13            = [020]49FAL  tmr14            = [020]4A4EL  
+tmr14x           = [020]4A4BL  tmr15            = [020]4A01L  
+tmr16            = [020]4A43L  tmr18            = [020]4A5DL  
+tmr19            = [020]49DFL  tmr20            = [020]49C6L  
+tmr_17           = [020]4A31L  translate_note   = [020]4E96L  
+under_ff_0       = [020]4BE4L  under_ff_0x      = [020]4BF4L  
+under_ff_0xw     = [020]4C66L  under_ff_1       = [020]4C56L  
+upadsr00_1       = [020]4BA1L  upadsr01_1       = [020]4BE4L  
+upadsr03_1       = [020]4BE4L  upadsr10         = [020]4C0AL  
+upadsr11_1       = [020]4C56L  upadsr13_1       = [020]4C56L  
+upadsr_ret       = [020]4C7CL  updatemelody     = [020]4B35L  
+upmel1           = [020]4B8EL  upmel2           = [020]4B40L  
+upmel3           = [020]4B68L  upmel4           = [020]4B89L  
+upmel6           = [020]4B88L  voice_mute1      = [020]493DL  
+vslope_down      = [020]4993L  
+
+
+[ source\fm_key.obj ]  Fighter 
+
+          DATA   :             [000] 00BE - 036D : 02B0 BYTES
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page    7
+
+
+AnimData         = [000]02C8L  Continue         = [000]00C7L  
+CursorX          = [000]00C0L  CursorY          = [000]00C1L  
+DemoCnt          = [000]0367L  DemoMode         = [000]00CCL  
+DemoPtr          = [000]0365L  Difficulty       = [000]00C5L  
+FrogArtX         = [000]00E5L  FrogArtY         = [000]00E6L  
+FrogCnt          = [000]00E2L  FrogDir          = [000]00E1L  
+FrogFlags        = [000]00E3L  FrogMinY         = [000]00DFL  
+FrogPage         = [000]00E4L  FrogRest         = [000]00E7L  
+FrogTick         = [000]00E0L  FrogX            = [000]00DCL  
+FrogY            = [000]00DEL  GameMode         = [000]00C4L  
+GameState        = [000]00C2L  HoldSP           = [000]00BEL  
+LastKey          = [000]00EAL  LevelAddr        = [000]00DAL  
+LevelData        = [000]0238L  Lives            = [000]00C6L  
+MusicOn          = [000]00CBL  NextPlayer       = [000]00D7L  
+NumPlayers       = [000]00C3L  Paused           = [000]00C9L  
+PlayerData       = [000]0208L  PlayerVAddr      = [000]00D8L  
+SAnimData        = [000]0340L  SfxOn            = [000]00CAL  
+StartLevel       = [000]00C8L  TargetX          = [000]00E8L  
+TargetY          = [000]00E9L  Timer            = [000]00CEL  
+ZZZ              = [000]00ECL  hold_byte1       = [000]00EBL  
+index0           = [000]036AL  index1           = [000]036BL  
+index2           = [000]036CL  index3           = [000]036DL  
+new_melody_ptr   = [000]0364L  page_ptr1        = [000]0368L  
+sound_flag       = [000]00CDL  temp0            = [000]00D4L  
+temp0w           = [000]00D0L  temp1            = [000]00D5L  
+temp1w           = [000]00D2L  temp2            = [000]00D6L  
+test37f          = [000]036EL  testff           = [000]00F6L  
+
+
+[ source\misc.obj ]  FIGHTER 
+
+          DATA   :             [000] 00BE - 036D : 02B0 BYTES
+
+AnimData         = [000]02C8L  Continue         = [000]00C7L  
+CursorX          = [000]00C0L  CursorY          = [000]00C1L  
+DemoCnt          = [000]0367L  DemoMode         = [000]00CCL  
+DemoPtr          = [000]0365L  Difficulty       = [000]00C5L  
+FrogArtX         = [000]00E5L  FrogArtY         = [000]00E6L  
+FrogCnt          = [000]00E2L  FrogDir          = [000]00E1L  
+FrogFlags        = [000]00E3L  FrogMinY         = [000]00DFL  
+FrogPage         = [000]00E4L  FrogRest         = [000]00E7L  
+FrogTick         = [000]00E0L  FrogX            = [000]00DCL  
+FrogY            = [000]00DEL  GameMode         = [000]00C4L  
+GameState        = [000]00C2L  HoldSP           = [000]00BEL  
+LastKey          = [000]00EAL  LevelAddr        = [000]00DAL  
+LevelData        = [000]0238L  Lives            = [000]00C6L  
+MusicOn          = [000]00CBL  NextPlayer       = [000]00D7L  
+NumPlayers       = [000]00C3L  Paused           = [000]00C9L  
+PlayerData       = [000]0208L  PlayerVAddr      = [000]00D8L  
+SAnimData        = [000]0340L  SfxOn            = [000]00CAL  
+StartLevel       = [000]00C8L  TargetX          = [000]00E8L  
+TargetY          = [000]00E9L  Timer            = [000]00CEL  
+ZZZ              = [000]00ECL  hold_byte1       = [000]00EBL  
+index0           = [000]036AL  index1           = [000]036BL  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page    8
+
+index2           = [000]036CL  index3           = [000]036DL  
+new_melody_ptr   = [000]0364L  page_ptr1        = [000]0368L  
+sound_flag       = [000]00CDL  temp0            = [000]00D4L  
+temp0w           = [000]00D0L  temp1            = [000]00D5L  
+temp1w           = [000]00D2L  temp2            = [000]00D6L  
+test37f          = [000]036EL  testff           = [000]00F6L  
+
+
+[ source\game.obj ]  Fighter 
+
+          PROGRAM:             [023] 6000 - 703D : 103E BYTES
+          DATA   :             [000] 00BE - 036D : 02B0 BYTES
+
+AnimData         = [000]02C8L  Continue         = [000]00C7L  
+CursorX          = [000]00C0L  CursorY          = [000]00C1L  
+DemoCnt          = [000]0367L  DemoMode         = [000]00CCL  
+DemoPtr          = [000]0365L  Difficulty       = [000]00C5L  
+DisplayALeft     = [023]6BD5L  DisplayALeftJ0   = [023]6BECL  
+DisplayALeftJ1   = [023]6C09L  DisplayALeftJ2   = [023]6C0DL  
+DisplayARight    = [023]6C10L  DisplayARightJ0  = [023]6C27L  
+DisplayARightJ1  = [023]6C41L  DisplayARightJ2  = [023]6C45L  
+DisplayAnims     = [023]6B2BL  DisplayAnimsJ0   = [023]6BCBL  
+DisplayAnimsJ1   = [023]6BC2L  DisplayAnimsJ2   = [023]6BBFL  
+DisplayAnimsJ3   = [023]6BC7L  DisplayAnimsL0   = [023]6B3AL  
+DisplayAnimsP1   = [023]6B35L  DisplayBands     = [023]6D1CL  
+DisplayBandsEnd  = [023]6E14L  DisplayBandsL0   = [023]6D24L  
+DisplayBandsMov  = [023]6D67L  DisplayBandsP1   = [023]6D61L  
+DisplayBandsP3   = [023]6D9DL  DisplayBandsP4   = [023]6DFAL  
+DisplayBandsP5   = [023]6DFAL  DisplayBandsP6   = [023]6DC4L  
+DisplayBandsP7   = [023]6E11L  DisplayBandsP9   = [023]6DD7L  
+DisplayFrog      = [023]6C48L  DisplayFrogCont  = [023]6CE1L  
+DisplayFrogE     = [023]6CA8L  DisplayFrogJ0    = [023]6D14L  
+DisplayFrogL1    = [023]6CF7L  DisplayFrogN     = [023]6CA0L  
+DisplayFrogP1    = [023]6C64L  DisplayFrogS     = [023]6C95L  
+DisplayFrogW     = [023]6CB3L  DisplayFrogXL    = [023]6CCFL  
+DisplayFrogXW    = [023]6CBBL  DisplayGame      = [023]6A6CL  
+DisplayOlays     = [023]6A7CL  DisplayOlays0p   = [023]6B16L  
+DisplayOlays1    = [023]6B23L  DisplayOlays2    = [023]6B27L  
+DisplayOlaysJ1   = [023]6A8BL  DisplayOlaysJ2   = [023]6B07L  
+DisplayOlaysL1   = [023]6AF0L  DisplayOlaysT1   = [023]6B1AL  
+DisplayOlaysT2   = [023]6B1EL  FrogAnimE0       = [023]68F3L  
+FrogAnimE1       = [023]68FEL  FrogAnimE2       = [023]68EDL  
+FrogAnimJ0       = [023]68A4L  FrogAnimL0       = [023]6880L  
+FrogAnimation    = [023]6873L  FrogArtX         = [000]00E5L  
+FrogArtY         = [000]00E6L  FrogCnt          = [000]00E2L  
+FrogDir          = [000]00E1L  FrogFlags        = [000]00E3L  
+FrogMinY         = [000]00DFL  FrogPage         = [000]00E4L  
+FrogRest         = [000]00E7L  FrogTick         = [000]00E0L  
+FrogX            = [000]00DCL  FrogY            = [000]00DEL  
+Game             = [023]6000G  GameDone         = [023]604AL  
+GameEnd          = [023]60FBL  GameL0           = [023]6007L  
+GameL1           = [023]6021L  GameL2           = [023]6045L  
+GameL3           = [023]603CL  GameL4           = [023]601EL  
+GameL5           = [023]600CL  GameMode         = [000]00C4L  
+GameState        = [000]00C2L  GetFrogByte      = [023]6863L  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page    9
+
+GetFrogByteJ0    = [023]6872L  GetScrnByte      = [023]69FDL  
+GetStripByte     = [023]6A20L  GetStripByteL1   = [023]6A3FL  
+GetStripByteR    = [023]6A54L  HoldSP           = [000]00BEL  
+InitAnim1        = [023]6FA1L  InitAnim1E0      = [023]703AL  
+InitAnim1J0      = [023]702FL  InitAnim1L0      = [023]6FBDL  
+InitAnim1L1      = [023]6FB7L  InitAnim2        = [023]703DL  
+InitFrog         = [023]6285L  InitFrogClassic  = [023]6299L  
+InitGame         = [023]6050L  InitGameL1       = [023]6060L  
+InitLevel        = [023]60FCL  InitLevelA0      = [023]61CDL  
+InitLevelAE      = [023]623AL  InitLevelAF      = [023]6273L  
+InitLevelAH      = [023]61E3L  InitLevelANo     = [023]6237L  
+InitLevelC0      = [023]6229L  InitLevelClassic = [023]6124L  
+InitLevelEnd     = [023]6277L  InitLevelL0      = [023]6146L  
+InitLevelL1      = [023]6189L  InitLevelL2      = [023]6104L  
+InitLevelLeft    = [023]6166L  InitPlayer       = [023]6079L  
+InitPlayerDone   = [023]60A9L  InitPlayerE0     = [023]60AEL  
+InitPlayerL0     = [023]6084L  InitPlayerOK     = [023]608CL  
+InitRoutines     = [023]6F9BL  LastKey          = [000]00EAL  
+LevelAddr        = [000]00DAL  LevelData        = [000]0238L  
+LevelDie         = [023]60EDL  LevelOK          = [023]60B3L  
+LevelOKFive      = [023]60C3L  LevelOKWon       = [023]60E9L  
+LevelStart       = [023]60B2L  Lives            = [000]00C6L  
+MoveFrog         = [023]65B9L  MoveFrogAdj      = [023]6627L  
+MoveFrogCont     = [023]664CL  MoveFrogDie      = [023]6657L  
+MoveFrogE        = [023]6606L  MoveFrogL        = [023]6646L  
+MoveFrogN        = [023]65F6L  MoveFrogS        = [023]65E6L  
+MoveFrogSAdj     = [023]6624L  MoveFrogStop     = [023]6652L  
+MoveFrogW        = [023]6616L  MoveFrogXL       = [023]65D9L  
+MoveFrogXW       = [023]65D9L  MusicOn          = [000]00CBL  
+NextPlayer       = [000]00D7L  NextStrip        = [023]6E28L  
+NextStripL2      = [023]6E66L  NextStripL3      = [023]6E78L  
+NextStripL4      = [023]6EA0L  NumPlayers       = [000]00C3L  
+Paused           = [000]00C9L  PlayerData       = [000]0208L  
+PlayerVAddr      = [000]00D8L  PriorStrip       = [023]6EE2L  
+PriorStripL1     = [023]6F22L  PriorStripL2     = [023]6F1BL  
+PriorStripL3     = [023]6F31L  PriorStripL4     = [023]6F59L  
+SAnimData        = [000]0340L  SfxOn            = [000]00CAL  
+SitFrog          = [023]6772L  SitFrogCont      = [023]6813L  
+SitFrogHome      = [023]6819L  SitFrogJ0        = [023]679CL  
+SitFrogJ1        = [023]6849L  SitFrogJ2        = [023]6842L  
+SitFrogL         = [023]67F2L  SitFrogL1        = [023]6822L  
+SitFrogS1        = [023]67AEL  SitFrogS2        = [023]67C9L  
+SitFrogWDie      = [023]67FFL  SitFrogXDie      = [023]680AL  
+StartFrog        = [023]665DL  StartFrogExit    = [023]6771L  
+StartFrogM       = [023]6665L  StartFrogMD      = [023]671FL  
+StartFrogMJ      = [023]6759L  StartFrogML      = [023]66DCL  
+StartFrogMM      = [023]667AL  StartFrogMR      = [023]66BEL  
+StartFrogMU      = [023]66FAL  StartFrogStill   = [023]676FL  
+StartFrogWDie    = [023]6743L  StartFrogXDie    = [023]674EL  
+StartLevel       = [000]00C8L  TargetX          = [000]00E8L  
+TargetY          = [000]00E9L  Timer            = [000]00CEL  
+UpdateAMove      = [023]69A4L  UpdateAMoveJ0    = [023]69C9L  
+UpdateAMoveR     = [023]69CEL  UpdateAMoveRJ0   = [023]69F8L  
+UpdateAnims      = [023]6905L  UpdateAnimsE0    = [023]699AL  
+UpdateAnimsJ1    = [023]6935L  UpdateAnimsJ2    = [023]693BL  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page   10
+
+UpdateAnimsJ3    = [023]6996L  UpdateAnimsJ4    = [023]6984L  
+UpdateAnimsJ5    = [023]6961L  UpdateAnimsJ6    = [023]696AL  
+UpdateAnimsJ7    = [023]6959L  UpdateAnimsL0    = [023]690AL  
+UpdateBands      = [023]62CEL  UpdateBandsE3    = [023]6449L  
+UpdateBandsE3a   = [023]63A7L  UpdateBandsL     = [023]62F9L  
+UpdateBandsL0    = [023]62D6L  UpdateBandsL1    = [023]630CL  
+UpdateBandsLH    = [023]638BL  UpdateBandsLNA   = [023]639CL  
+UpdateBandsLNew  = [023]6346L  UpdateBandsR     = [023]63AAL  
+UpdateBandsR1    = [023]63B6L  UpdateBandsRNA   = [023]643EL  
+UpdateBandsRNew  = [023]63D4L  UpdateBandsRNew0 = [023]63DEL  
+UpdateBandsRNew1 = [023]63E1L  UpdateBandsRNew2 = [023]63E5L  
+UpdateBandsRNew3 = [023]63F5L  UpdateBandsRT    = [023]642DL  
+UpdateFrog       = [023]65ADL  UpdateFrogE      = [023]65B8L  
+UpdateS1Anim     = [023]64EFL  UpdateS1AnimE    = [023]65ACL  
+UpdateS1AnimsL1  = [023]6520L  UpdateS1AnimsL2  = [023]6571L  
+UpdateSAnims     = [023]648CL  UpdateSAnimsE    = [023]64DEL  
+UpdateSAnimsL0   = [023]6495L  UpdateSAnimsL2   = [023]64BEL  
+UpdateSAnimsL3   = [023]64D9L  ZZZ              = [000]00ECL  
+hold_byte1       = [000]00EBL  index0           = [000]036AL  
+index1           = [000]036BL  index2           = [000]036CL  
+index3           = [000]036DL  new_melody_ptr   = [000]0364L  
+page_ptr1        = [000]0368L  sound_flag       = [000]00CDL  
+temp0            = [000]00D4L  temp0w           = [000]00D0L  
+temp1            = [000]00D5L  temp1w           = [000]00D2L  
+temp2            = [000]00D6L  test37f          = [000]036EL  
+testff           = [000]00F6L  zzz1             = [023]6200L  
+zzz11            = [023]6355L  zzz12            = [023]6350L  
+zzz2             = [023]636EL  zzz3             = [023]6410L  
+zzza2            = [023]632EL  zzza3            = [023]6456L  
+zzza4            = [023]647EL  zzza5            = [023]647AL  
+
+
+[ source\levels.obj ]          
+
+          PROGRAM:             [023] 703E - 7656 : 0619 BYTES
+
+ClassLev1        = [023]759CL  ClassLev1A       = [023]72A8L  
+ClassLev1B       = [023]7314L  ClassLev1C       = [023]7380L  
+ClassLev1D       = [023]73ECL  ClassLev1E       = [023]7458L  
+ClassLev1F       = [023]74C4L  ClassLev1G       = [023]7530L  
+ClassicGame      = [023]703EG  StripAnims       = [023]7608G  
+Updated1         = [023]708CL  Updated2         = [023]70F8L  
+Updated3         = [023]7164L  Updated4         = [023]71D0L  
+Updated5         = [023]723CL  UpdatedGame      = [023]706EG  
+gator01          = [023]763CL  gator02          = [023]7640L  
+gator03          = [023]7644L  gator04          = [023]7648L  
+gator05          = [023]764EL  gator06          = [023]7653L  
+turtle01         = [023]761CL  turtle02         = [023]7624L  
+turtle03         = [023]762CL  turtle04         = [023]7634L  
+
+
+[ source\sprites.obj ]          
+
+          PROGRAM:             [023] 7657 - 78BD : 0267 BYTES
+
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page   11
+
+ANIMATIONS       = [023]7657L  bigtruck         = [023]77E7G  
+bonus_bug        = [023]7709G  bus              = [023]77D3G  
+c_dozer          = [023]772DG  c_fastcar1       = [023]7739G  
+c_fastcar2       = [023]7754G  c_gator          = [023]788CG  
+c_slowcar        = [023]7721G  c_truck          = [023]7744G  
+copcar           = [023]77A3G  dozer            = [023]7760G  
+ferry            = [023]78ACG  frogger_ground   = [023]76DCG  
+frogger_home     = [023]76EEG  frogger_left     = [023]76BBG  
+frogger_right    = [023]7712G  frogger_up       = [023]76ACG  
+frogger_water    = [023]76CAG  gator            = [023]785FG  
+gatorhead        = [023]7880G  gmcpickup        = [023]7795G  
+limo             = [023]77B1G  miata            = [023]7787G  
+otter            = [023]7853G  otter2           = [023]7847G  
+score_100        = [023]76F7G  score_200        = [023]7700G  
+snake            = [023]7697G  speedboat        = [023]78A0G  
+train            = [023]7801G  transam1         = [023]776BG  
+transam2         = [023]7779G  truck            = [023]77C3G  
+turtle           = [023]7813G  turtle2          = [023]7826G  
+
+
+[ source\readword.obj ]  Fighter 
+
+          DATA   :             [000] 00BE - 036D : 02B0 BYTES
+
+AnimData         = [000]02C8L  Continue         = [000]00C7L  
+CursorX          = [000]00C0L  CursorY          = [000]00C1L  
+DemoCnt          = [000]0367L  DemoMode         = [000]00CCL  
+DemoPtr          = [000]0365L  Difficulty       = [000]00C5L  
+FrogArtX         = [000]00E5L  FrogArtY         = [000]00E6L  
+FrogCnt          = [000]00E2L  FrogDir          = [000]00E1L  
+FrogFlags        = [000]00E3L  FrogMinY         = [000]00DFL  
+FrogPage         = [000]00E4L  FrogRest         = [000]00E7L  
+FrogTick         = [000]00E0L  FrogX            = [000]00DCL  
+FrogY            = [000]00DEL  GameMode         = [000]00C4L  
+GameState        = [000]00C2L  HoldSP           = [000]00BEL  
+LastKey          = [000]00EAL  LevelAddr        = [000]00DAL  
+LevelData        = [000]0238L  Lives            = [000]00C6L  
+MusicOn          = [000]00CBL  NextPlayer       = [000]00D7L  
+NumPlayers       = [000]00C3L  Paused           = [000]00C9L  
+PlayerData       = [000]0208L  PlayerVAddr      = [000]00D8L  
+SAnimData        = [000]0340L  SfxOn            = [000]00CAL  
+StartLevel       = [000]00C8L  TargetX          = [000]00E8L  
+TargetY          = [000]00E9L  Timer            = [000]00CEL  
+ZZZ              = [000]00ECL  hold_byte1       = [000]00EBL  
+index0           = [000]036AL  index1           = [000]036BL  
+index2           = [000]036CL  index3           = [000]036DL  
+new_melody_ptr   = [000]0364L  page_ptr1        = [000]0368L  
+sound_flag       = [000]00CDL  temp0            = [000]00D4L  
+temp0w           = [000]00D0L  temp1            = [000]00D5L  
+temp1w           = [000]00D2L  temp2            = [000]00D6L  
+test37f          = [000]036EL  testff           = [000]00F6L  
+
+
+[ source\teams.obj ]  Statisti
+
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page   12
+
+
+
+
+[ source\mel.obj ]          
+
+          PROGRAM:             [025] 6000 - 69F5 : 09F6 BYTES
+
+game_mel1H       = [025]6000G  game_mel1L       = [025]6549G  
+game_mel2H       = [025]6105G  game_mel2L       = [025]663FG  
+game_mel3H       = [025]61A7G  game_mel3L       = [025]66E4G  
+game_mel4H       = [025]6288G  game_mel4L       = [025]67A4G  
+h_end_melH       = [025]63C0G  h_end_melL       = [025]694EG  
+open_melH        = [025]633CG  open_melL        = [025]6843G  
+option_melH      = [025]64E6G  option_melL      = [025]69C3G  
+s_end_melH       = [025]6495G  s_end_melL       = [025]689AG  
+
+
+[ source\option.obj ]  Fighter 
+
+          PROGRAM:             [025] 69F6 - 7782 : 0D8D BYTES
+          DATA   :             [000] 00BE - 036D : 02B0 BYTES
+
+AnimData         = [000]02C8L  BLOCK_MENU_STR1A = [025]7783L  
+BLOCK_MENU_STR2A = [025]7783L  BLOCK_MENU_STR3A = [025]7783L  
+Bexit            = [025]76F4G  Black_back       = [025]76F2G  
+Boption          = [025]76F4G  CK_page          = [025]76F8L  
+CMENU3_OPT3A     = [025]7783L  CMENU3_OPT3B     = [025]7783L  
+CMENU3_OPT3C     = [025]7783L  CMENU3_OPT3D     = [025]7783L  
+CMENU3_OPT7A     = [025]7783L  CMENU3_OPT7B     = [025]7783L  
+CREATE1_MENU_DES = [025]7783L  CREATE1_MENU_NAM = [025]7783L  
+CREATE1_MENU_OPT = [025]7783L  CREATE1_MENU_S0  = [025]7783L  
+CREATE1_MENU_S1  = [025]7783L  CREATE1_OPT1     = [025]7783L  
+CREATE2_MENU_DES = [025]7783L  CREATE2_MENU_NAM = [025]7783L  
+CREATE2_MENU_OPT = [025]7783L  CREATE2_MENU_S0  = [025]7783L  
+CREATE2_MENU_S1  = [025]7783L  CREATE2_OPT1     = [025]7783L  
+CREATE3_MENU_DES = [025]7783L  CREATE3_MENU_NAM = [025]7783L  
+CREATE3_MENU_OPT = [025]7783L  CREATE3_MENU_S0  = [025]7783L  
+CREATE3_MENU_S1  = [025]7783L  CREATE3_MENU_S2  = [025]7783L  
+CREATE3_MENU_S3  = [025]7783L  CREATE3_MENU_S4  = [025]7783L  
+CREATE3_MENU_S5  = [025]7783L  CREATE3_MENU_S6  = [025]7783L  
+CREATE3_MENU_S7  = [025]7783L  CREATE3_MENU_S8  = [025]7783L  
+CREATE3_MENU_S9  = [025]7783L  CREATE3_OPT1     = [025]7783L  
+CREATE3_OPT1F    = [025]7783L  CREATE3_OPT1L    = [025]7783L  
+CREATE3_OPT3     = [025]7783L  CREATE3_OPT4     = [025]7783L  
+CREATE3_OPT5     = [025]7783L  CREATE3_OPT6     = [025]7783L  
+CREATE3_OPT7     = [025]7783L  CREATE3_OPT8     = [025]7783L  
+CREATE3_OPT9     = [025]7783L  CREATE4_MENU_DES = [025]7783L  
+CREATE4_MENU_NAM = [025]7783L  CREATE4_MENU_OPT = [025]7783L  
+CREATE4_MENU_S0  = [025]7783L  CREATE4_MENU_S1  = [025]7783L  
+CREATE4_MENU_S2  = [025]7783L  CREATE4_MENU_S3  = [025]7783L  
+CREATE4_MENU_S4  = [025]7783L  CREATE4_MENU_S5  = [025]7783L  
+CREATE4_OPT1     = [025]7783L  Continue         = [000]00C7L  
+CursorX          = [000]00C0L  CursorY          = [000]00C1L  
+DELETE_MENU_DESC = [025]7783L  DELETE_MENU_NAME = [025]7783L  
+DELETE_MENU_OPTI = [025]7783L  DELETE_MENU_STR0 = [025]7783L  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page   13
+
+DELETE_MENU_STR1 = [025]7783L  DELETE_OPT1      = [025]7783L  
+DISPLAY_stage    = [025]76F6G  DemoCnt          = [000]0367L  
+DemoMode         = [000]00CCL  DemoPtr          = [000]0365L  
+Difficulty       = [000]00C5L  DrawExit         = [025]72E1L  
+DrawExit1        = [025]7313L  DrawExit2        = [025]7317L  
+DrawExitCurs     = [025]731BL  DrawExitCurs21   = [025]7345L  
+DrawExitCursTab  = [025]734CL  DrawExitT1       = [025]7302L  
+DrawExitT2       = [025]730CL  DrawLogo         = [025]6C21L  
+DrawLogo1        = [025]6C99L  DrawLogoL15      = [025]6D1DL  
+DrawLogoLBOK     = [025]6D02L  DrawLogoLLBad    = [025]6CDFL  
+DrawLogoLLOK     = [025]6CEFL  DrawLogoLROK     = [025]6D13L  
+DrawLogoLSkip    = [025]6D20L  DrawLogoLTBad    = [025]6CB9L  
+DrawLogoLTOK     = [025]6CCBL  DrawLogoR15      = [025]6DA7L  
+DrawLogoRBOK     = [025]6D8CL  DrawLogoRLBad    = [025]6D6DL  
+DrawLogoRLOK     = [025]6D79L  DrawLogoRROK     = [025]6D9DL  
+DrawLogoRSkip    = [025]6DAAL  DrawLogoRTBad    = [025]6D40L  
+DrawLogoRTOK     = [025]6D52L  DrawMain         = [025]6AEAL  
+DrawMain1        = [025]6BF9L  DrawMain1c       = [025]6BFDL  
+DrawMain1u       = [025]6C01L  DrawMain2        = [025]6C05L  
+DrawMain2p       = [025]6C09L  DrawMain3        = [025]6C0DL  
+DrawMain4        = [025]6C1DL  DrawMain4s       = [025]6C19L  
+DrawMain4s10     = [025]6C15L  DrawMainCurs     = [025]6DD9L  
+DrawMainCurs21   = [025]6E03L  DrawMainCursTab  = [025]6E0AL  
+DrawMainHead     = [025]6DABL  DrawMainHead21   = [025]6DD5L  
+DrawMainJ8       = [025]6B8CL  DrawMainJ9       = [025]6B94L  
+DrawMainS        = [025]6C11L  DrawMainT1       = [025]6BBEL  
+DrawMainT1c      = [025]6BC4L  DrawMainT1u      = [025]6BCCL  
+DrawMainT2       = [025]6BD4L  DrawMainT3       = [025]6BE2L  
+DrawMainT4       = [025]6BEFL  DrawMainTS       = [025]6BDCL  
+DrawMains        = [025]6B5DL  DrawMenu1        = [025]6B00L  
+DrawMenu2        = [025]6B02L  DrawMenuHead2    = [025]6B14L  
+DrawOpt          = [025]6EEEL  DrawOpt1         = [025]7016L  
+DrawOpt1e        = [025]701AL  DrawOpt1h        = [025]701EL  
+DrawOpt2         = [025]7022L  DrawOpt2l        = [025]7026L  
+DrawOpt3         = [025]702AL  DrawOpt30        = [025]702EL  
+DrawOpt31        = [025]7032L  DrawOpt4         = [025]7036L  
+DrawOpt4s        = [025]703EL  DrawOpt4s10      = [025]703AL  
+DrawOpt5         = [025]7042L  DrawOptCurs      = [025]7074L  
+DrawOptCurs21    = [025]709EL  DrawOptCursTab   = [025]70A5L  
+DrawOptHead      = [025]7046L  DrawOptHead1     = [025]6F04L  
+DrawOptHead2     = [025]6F18L  DrawOptHead21    = [025]7070L  
+DrawOptHead3     = [025]6F06L  DrawOptHead9     = [025]6FB9L  
+DrawOptHeade     = [025]6F61L  DrawOptHeadx     = [025]6F89L  
+DrawOptT1        = [025]6FCFL  DrawOptT1e       = [025]6FDAL  
+DrawOptT1h       = [025]6FDFL  DrawOptT2        = [025]6FE4L  
+DrawOptT3        = [025]6FEAL  DrawOptT30       = [025]6FF3L  
+DrawOptT31       = [025]6FF7L  DrawOptT4        = [025]6FFAL  
+DrawOptT5        = [025]7006L  DrawPause        = [025]70C4L  
+DrawPause1       = [025]70E4L  DrawPauseT1      = [025]70D8L  
+DrawRestart      = [025]73FEL  DrawRestart1     = [025]745BL  
+DrawRestart2     = [025]745FL  DrawRestart3     = [025]7463L  
+DrawRestart4     = [025]7467L  DrawRestartCurs  = [025]746BL  
+DrawRestartCurs2 = [025]7495L  DrawRestartCursT = [025]749CL  
+DrawRestartT1    = [025]7433L  DrawRestartT2    = [025]7440L  
+DrawRestartT3    = [025]744AL  DrawRestartT4    = [025]7454L  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page   14
+
+DrawSound        = [025]718BL  DrawSound1       = [025]720FL  
+DrawSound2       = [025]7213L  DrawSound20      = [025]721BL  
+DrawSound21      = [025]7217L  DrawSound3       = [025]721FL  
+DrawSound30      = [025]7227L  DrawSound31      = [025]7223L  
+DrawSound4       = [025]722BL  DrawSoundCurs    = [025]722FL  
+DrawSoundCurs21  = [025]7259L  DrawSoundCursTab = [025]7260L  
+DrawSoundT1      = [025]71E8L  DrawSoundT2      = [025]71F5L  
+DrawSoundT20     = [025]71FEL  DrawSoundT21     = [025]71FBL  
+DrawSoundT3      = [025]7202L  DrawSoundT30     = [025]71FEL  
+DrawSoundT31     = [025]71FBL  DrawSoundT4      = [025]720AL  
+DrawSounde       = [025]71DDL  DrawSoundm       = [025]71C9L  
+DrawWarn         = [025]752EL  DrawWarn1        = [025]75B7L  
+DrawWarn2        = [025]75BBL  DrawWarn3        = [025]75BFL  
+DrawWarn41       = [025]75C3L  DrawWarn42       = [025]75C7L  
+DrawWarn43       = [025]75CBL  DrawWarn5        = [025]75CFL  
+DrawWarnCurs     = [025]75D3L  DrawWarnCurs21   = [025]75FDL  
+DrawWarnCursTab  = [025]7604L  DrawWarnT1       = [025]757DL  
+DrawWarnT2       = [025]758BL  DrawWarnT3       = [025]759AL  
+DrawWarnT5       = [025]75A9L  DrawWarnw        = [025]7568L  
+ExitMenu         = [025]7263G  ExitMenu1        = [025]7291L  
+ExitMenu2        = [025]72A3L  ExitMenuDo0      = [025]72DBL  
+ExitMenuDo1      = [025]72DEL  ExitMenuDone     = [025]72CFL  
+ExitMenuExit     = [025]72DEL  ExitMenuL0       = [025]7272L  
+ExitMenuL01      = [025]72CDL  ExitMenuL1       = [025]7274L  
+Fi_graph3        = [025]76DEG  Fi_graph4        = [025]76DFG  
+Fi_graph5        = [025]76E0G  FixCursor        = [025]7606L  
+FixCursorExit    = [025]764DL  FixCursorInit    = [025]764EL  
+FixCursorLeft    = [025]7642L  FixCursorUp      = [025]7621L  
+FixCursorX       = [025]762CL  FrogArtX         = [000]00E5L  
+FrogArtY         = [000]00E6L  FrogCnt          = [000]00E2L  
+FrogDir          = [000]00E1L  FrogFlags        = [000]00E3L  
+FrogMinY         = [000]00DFL  FrogPage         = [000]00E4L  
+FrogRest         = [000]00E7L  FrogTick         = [000]00E0L  
+FrogX            = [000]00DCL  FrogY            = [000]00DEL  
+GameMode         = [000]00C4L  GameOpt1         = [025]6E3DL  
+GameOpt2         = [025]6E4FL  GameOptDo0       = [025]6EAFL  
+GameOptDo1       = [025]6EBCL  GameOptDo1a      = [025]6EC7L  
+GameOptDo2       = [025]6ECDL  GameOptDo3       = [025]6EDAL  
+GameOptDo3a      = [025]6EE5L  GameOptDo4       = [025]6EEBL  
+GameOptDone      = [025]6E99L  GameOptExit      = [025]6EEBL  
+GameOptL0        = [025]6E1EL  GameOptL01       = [025]6E97L  
+GameOptL1        = [025]6E20L  GameOptions      = [025]6E0FL  
+GameState        = [000]00C2L  HIDDEN_FIG       = [025]76F7G  
+HoldSP           = [000]00BEL  LastKey          = [000]00EAL  
+LevelAddr        = [000]00DAL  LevelData        = [000]0238L  
+Lives            = [000]00C6L  MAIN_MENU_DESC   = [025]7783G  
+MAIN_MENU_NAME   = [025]7783L  MAIN_MENU_OPTION = [025]7783L  
+MAIN_MENU_STR0   = [025]7783L  MAIN_MENU_STR1   = [025]7783L  
+MAIN_MENU_STR2   = [025]7783L  MAIN_MENU_STR3   = [025]7783L  
+MAIN_MENU_STR4   = [025]7783L  MAIN_MENU_STR5   = [025]7783L  
+MAIN_MENU_STR6   = [025]7783L  MAIN_MENU_STR7   = [025]7783L  
+MMENU_OPT1       = [025]7783L  MMENU_OPT1A      = [025]7783L  
+MMENU_OPT1B      = [025]7783L  MMENU_OPT1C      = [025]7783L  
+MMENU_OPT1D      = [025]7783L  MMENU_OPT2       = [025]7783L  
+MMENU_OPT2A      = [025]7783L  MMENU_OPT2B      = [025]7783L  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page   15
+
+MMENU_OPT2C      = [025]7783L  MMENU_OPT3       = [025]7783L  
+MMENU_OPT3A      = [025]7783L  MMENU_OPT3B      = [025]7783L  
+MMENU_OPT3C      = [025]7783L  MMENU_OPT4       = [025]7783L  
+MMENU_OPT4A      = [025]7783L  MMENU_OPT4B      = [025]7783L  
+MMENU_OPT4C      = [025]7783L  MMENU_OPT4D      = [025]7783L  
+MMENU_OPT5       = [025]7783L  MMENU_OPT6       = [025]7783L  
+MMENU_OPT7       = [025]7783L  MainMenu         = [025]6A09L  
+MainMenu1        = [025]6A3CL  MainMenu2        = [025]6A4EL  
+MainMenuDo0      = [025]6AAEL  MainMenuDo1      = [025]6ABBL  
+MainMenuDo1y     = [025]6AC6L  MainMenuDo2      = [025]6AE7L  
+MainMenuDo3      = [025]6AE3L  MainMenuDoS      = [025]6ACCL  
+MainMenuDoSy     = [025]6ADBL  MainMenuDone     = [025]6A98L  
+MainMenuExit     = [025]6AE7L  MainMenuL0       = [025]6A1AL  
+MainMenuL00      = [025]6A96L  MainMenuL1       = [025]6A1CL  
+Menus            = [025]69F6G  MenusL1          = [025]69FEL  
+MenusOut         = [025]6A08L  MusicOn          = [000]00CBL  
+NULL_OPTION_STR  = [025]7783L  NextPlayer       = [000]00D7L  
+NumPlayers       = [000]00C3L  OMENU_OPT1       = [025]7783L  
+OMENU_OPT1A      = [025]7783L  OMENU_OPT1B      = [025]7783L  
+OMENU_OPT2       = [025]7783L  OMENU_OPT3       = [025]7783L  
+OMENU_OPT4       = [025]7783L  OMENU_OPT5       = [025]7783L  
+OMENU_OPT6       = [025]7783L  OMENU_OPT6A      = [025]7783L  
+OMENU_OPT6B      = [025]7783L  OMENU_OPT7       = [025]7783L  
+OMENU_OPT7A      = [025]7783L  OMENU_OPT7B      = [025]7783L  
+OMENU_OPT8       = [025]7783L  OPTION_MENU_DESC = [025]7783G  
+OPTION_MENU_NAME = [025]7783L  OPTION_MENU_OPTI = [025]7783L  
+OPTION_MENU_STR0 = [025]7783L  OPTION_MENU_STR1 = [025]7783L  
+OPTION_MENU_STR2 = [025]7783L  OPTION_MENU_STR3 = [025]7783L  
+OPTION_MENU_STR4 = [025]7783L  OPTION_MENU_STR5 = [025]7783L  
+OPTION_MENU_STR6 = [025]7783L  OPTION_MENU_STR7 = [025]7783L  
+OPTION_MENU_STR8 = [025]7783L  PauseMenu        = [025]70AAG  
+PauseMenuL1      = [025]70B3L  Paused           = [000]00C9L  
+PlayerData       = [000]0208L  PlayerVAddr      = [000]00D8L  
+REORDER_MENU_DES = [025]7783L  REORDER_MENU_NAM = [025]7783L  
+REORDER_MENU_STR = [025]7783L  REORDER_OPT1     = [025]7783L  
+RMENU_OPT1       = [025]7783L  RMENU_OPT10      = [025]7783L  
+RMENU_OPT11      = [025]7783L  RMENU_OPT12      = [025]7783L  
+RMENU_OPT13      = [025]7783L  RMENU_OPT1A      = [025]7783L  
+RMENU_OPT1B      = [025]7783L  RMENU_OPT1C      = [025]7783L  
+RMENU_OPT1D      = [025]7783L  RMENU_OPT1E      = [025]7783L  
+RMENU_OPT1F      = [025]7783L  RMENU_OPT1G      = [025]7783L  
+RMENU_OPT1H      = [025]7783L  RMENU_OPT1I      = [025]7783L  
+RMENU_OPT1J      = [025]7783L  RMENU_OPT2       = [025]7783L  
+RMENU_OPT3       = [025]7783L  RMENU_OPT3A      = [025]7783L  
+RMENU_OPT3B      = [025]7783L  RMENU_OPT4       = [025]7783L  
+RMENU_OPT5       = [025]7783L  RMENU_OPT6       = [025]7783L  
+RMENU_OPT7       = [025]7783L  RMENU_OPT8       = [025]7783L  
+RMENU_OPT9       = [025]7783L  ROSTER_MENU_DESC = [025]7783L  
+ROSTER_MENU_NAME = [025]7783L  ROSTER_MENU_OPTI = [025]7783L  
+ROSTER_MENU_STR0 = [025]7783L  ROSTER_MENU_STR1 = [025]7783L  
+ROSTER_MENU_STR2 = [025]7783L  ROSTER_MENU_STR3 = [025]7783L  
+ROSTER_MENU_STR4 = [025]7783L  ROSTER_MENU_STR5 = [025]7783L  
+ROSTER_MENU_STR6 = [025]7783L  ROSTER_OPT1      = [025]7783L  
+ROSTER_OPT2      = [025]7783L  ROSTER_OPT3      = [025]7783L  
+ROSTER_OPT4      = [025]7783L  ROSTER_OPT5      = [025]7783L  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page   16
+
+ROSTER_OPT6      = [025]7783L  RULES_MENU_DESC  = [025]7783G  
+RULES_MENU_NAME  = [025]7783L  RULES_MENU_OPTIO = [025]7783L  
+RULES_MENU_STR0  = [025]7783L  RULES_MENU_STR1  = [025]7783L  
+RULES_MENU_STR10 = [025]7783L  RULES_MENU_STR11 = [025]7783L  
+RULES_MENU_STR12 = [025]7783L  RULES_MENU_STR13 = [025]7783L  
+RULES_MENU_STR2  = [025]7783L  RULES_MENU_STR3  = [025]7783L  
+RULES_MENU_STR4  = [025]7783L  RULES_MENU_STR5  = [025]7783L  
+RULES_MENU_STR6  = [025]7783L  RULES_MENU_STR7  = [025]7783L  
+RULES_MENU_STR8  = [025]7783L  RULES_MENU_STR9  = [025]7783L  
+RestartMenu      = [025]734EG  RestartMenu1     = [025]737CL  
+RestartMenu2     = [025]738EL  RestartMenuDo0   = [025]73E0L  
+RestartMenuDo1   = [025]73E9L  RestartMenuDo2   = [025]73F2L  
+RestartMenuDo3   = [025]73FBL  RestartMenuDone  = [025]73CEL  
+RestartMenuExit  = [025]73FBL  RestartMenuL0    = [025]735DL  
+RestartMenuL01   = [025]73CCL  RestartMenuL1    = [025]735FL  
+SAnimData        = [000]0340L  SEASON_STR0      = [025]7783L  
+SEASON_STRING    = [025]7783L  SEASON_STRING2   = [025]7783L  
+SEL_fighter      = [025]76F4G  STATS_STR0A      = [025]7783L  
+STATS_STR10A     = [025]7783L  STATS_STR12A     = [025]7783L  
+STATS_STR14A     = [025]7783L  STATS_STR14B     = [025]7783L  
+STATS_STR15A     = [025]7783L  STATS_STR16A     = [025]7783L  
+STATS_STR17A     = [025]7783L  STATS_STR18A     = [025]7783L  
+STATS_STR19A     = [025]7783L  STATS_STR1A      = [025]7783L  
+STATS_STR20A     = [025]7783L  STATS_STR21A     = [025]7783L  
+STATS_STR2A      = [025]7783L  STATS_STR2B      = [025]7783L  
+STATS_STR3B      = [025]7783L  STATS_STR4A      = [025]7783L  
+STATS_STR4B      = [025]7783L  STATS_STR5A      = [025]7783L  
+STATS_STR5B      = [025]7783L  STATS_STR6A      = [025]7783L  
+STATS_STR6B      = [025]7783L  STATS_STR7A      = [025]7783L  
+STATS_STR7B      = [025]7783L  STATS_STR8A      = [025]7783L  
+STATS_STR8B      = [025]7783L  STATS_STR9B      = [025]7783L  
+SfxOn            = [000]00CAL  SmallFrame       = [025]7655L  
+SmallFrame2      = [025]76A7L  SmallFrame3      = [025]7693L  
+SmallFrame4      = [025]766CL  SmallFrameL1     = [025]769DL  
+SoundMenu        = [025]70E8G  SoundMenu1       = [025]7116L  
+SoundMenu2       = [025]7128L  SoundMenuDo0     = [025]716EL  
+SoundMenuDo1     = [025]717BL  SoundMenuDo2     = [025]7188L  
+SoundMenuDone    = [025]715EL  SoundMenuExit    = [025]7188L  
+SoundMenuL0      = [025]70F7L  SoundMenuL01     = [025]715CL  
+SoundMenuL1      = [025]70F9L  StartLevel       = [000]00C8L  
+TRADE_MENU_DESC  = [025]7783L  TRADE_MENU_NAME  = [025]7783L  
+TRADE_MENU_OPTIO = [025]7783L  TRADE_MENU_STR0  = [025]7783L  
+TRADE_MENU_STR1  = [025]7783L  TRADE_OPT1       = [025]7783L  
+TargetX          = [000]00E8L  TargetY          = [000]00E9L  
+Timer            = [000]00CEL  WarnMenu         = [025]74A0G  
+WarnMenu1        = [025]74CEL  WarnMenu2        = [025]74E0L  
+WarnMenuDo0      = [025]7516L  WarnMenuDo01     = [025]7522L  
+WarnMenuDo02     = [025]7525L  WarnMenuDo03     = [025]7528L  
+WarnMenuDo1      = [025]752BL  WarnMenuDone     = [025]750CL  
+WarnMenuExit     = [025]752BL  WarnMenuL0       = [025]74AFL  
+WarnMenuL01      = [025]750AL  WarnMenuL1       = [025]74B1L  
+White_back       = [025]76F3G  ZZZ              = [000]00ECL  
+advance_create   = [025]772AL  back2roster_all  = [025]770AL  
+copy_with_pad    = [025]7724L  do_menu_key      = [025]7782G  
+f_back2create1   = [025]7726L  f_back2create2   = [025]7727L  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page   17
+
+f_back2create3   = [025]7729L  f_back2main4     = [025]7700L  
+f_back2main5     = [025]7701L  f_back2main6     = [025]7702L  
+f_back2roster0   = [025]770AL  f_back2roster1   = [025]770AL  
+f_back2roster2   = [025]770AL  f_back2roster3   = [025]770AL  
+f_back2roster4   = [025]770AL  f_dec_letter     = [025]771FL  
+f_dec_letter10   = [025]7721L  f_dec_pheight    = [025]771AL  
+f_dec_player     = [025]7714L  f_dec_pnum       = [025]7718L  
+f_dec_position   = [025]7716L  f_dec_pweight    = [025]771CL  
+f_dec_select     = [025]770CL  f_dec_statloc    = [025]7712L  
+f_dec_team       = [025]7710L  f_dec_teamx      = [025]7710L  
+f_dec_value      = [025]770EL  f_delete_letter  = [025]7723L  
+f_down2create    = [025]7708L  f_down2create4   = [025]7728L  
+f_down2delete    = [025]7709L  f_down2options   = [025]7703L  
+f_down2reorder   = [025]7707L  f_down2roster    = [025]7705L  
+f_down2rules     = [025]7704L  f_down2trade     = [025]7706L  
+f_end_create     = [025]771EL  f_enter_letter   = [025]772CL  
+f_inc_letter     = [025]7720L  f_inc_letter10   = [025]7722L  
+f_inc_pheight    = [025]771BL  f_inc_player     = [025]7715L  
+f_inc_pnum       = [025]7719L  f_inc_position   = [025]7717L  
+f_inc_pweight    = [025]771DL  f_inc_select     = [025]770DL  
+f_inc_statloc    = [025]7713L  f_inc_team       = [025]7711L  
+f_inc_teamx      = [025]7711L  f_inc_value      = [025]770FL  
+f_null_function  = [025]770BL  get_str_maxlen   = [025]772BL  
+graph1           = [025]76EDG  graphT           = [025]76E1G  
+hidden_case2x    = [025]76F7G  hidden_casex     = [025]76F4G  
+hold_byte1       = [000]00EBL  index0           = [000]036AL  
+index1           = [000]036BL  index2           = [000]036CL  
+index3           = [000]036DL  keyboard_table   = [025]7763L  
+new_melody_ptr   = [000]0364L  page_ptr1        = [000]0368L  
+ply1_life        = [025]76F4G  ply1_life1       = [025]76F4G  
+ply2_life        = [025]76F4G  ply2_life1       = [025]76F4G  
+position_str00   = [025]772DL  position_str01   = [025]7734L  
+position_str02   = [025]773EL  position_str03   = [025]7748L  
+position_str04   = [025]7750L  position_table   = [025]7758L  
+select_record    = [025]76F6G  show_1P          = [025]76F4G  
+show_1pa         = [025]76F4L  show_2P          = [025]76F4G  
+show_CPU         = [025]76F4G  show_RESULT      = [025]76F4G  
+show_create3_inf = [025]7762L  show_delete_info = [025]7725L  
+show_keyboard_in = [025]7781L  sound_flag       = [000]00CDL  
+stats_stableA    = [025]7783L  stats_stableB    = [025]7783L  
+stop1Z           = [025]76FFL  takeA            = [025]76E5G  
+takeA1           = [025]76F1G  takeAB0          = [025]76F1G  
+takeAB1          = [025]76F1L  takeABx          = [025]76F0G  
+takeABy          = [025]76F0L  takeB1           = [025]76E9G  
+temp0            = [000]00D4L  temp0w           = [000]00D0L  
+temp1            = [000]00D5L  temp1w           = [000]00D2L  
+temp2            = [000]00D6L  test37f          = [000]036EL  
+testff           = [000]00F6L  white_lineA      = [025]76F5G  
+
+
+[ source\strips.obj ]          
+
+          PROGRAM:             [026] 8000 - 91FF : 1200 BYTES
+
+StripTable       = [026]8000G  
+
+
+SM85 Link Map    Wed Dec 23 17:45:16 1998      Page   18
+
+
+

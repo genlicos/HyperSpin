@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: Icons and Messages
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="Icons and Messages">Icons and Messages</a></h1>
+
+<ul>
+<li><a href="#CMD_ADDCREDIT">CMD_ADDCREDIT</a> 
+<li><a href="#CMD_NEXTPG">CMD_NEXTPG</a> 
+<li><a href="#CMD_PREVPG">CMD_PREVPG</a> 
+<li><a href="#MSG_ADDEDCREDIT">MSG_ADDEDCREDIT</a> 
+<li><a href="#MSG_ADDINGCREDITS">MSG_ADDINGCREDITS</a> 
+<li><a href="#MSG_ALLOWSELECTFULLCD">MSG_ALLOWSELECTFULLCD</a> 
+<li><a href="#MSG_CREDITS">MSG_CREDITS</a> 
+<li><a href="#MSG_DUPSONG">MSG_DUPSONG</a> 
+<li><a href="#MSG_FILTERED">MSG_FILTERED</a> 
+<li><a href="#MSG_FREEPLAY">MSG_FREEPLAY</a> 
+<li><a href="#MSG_IDLE">MSG_IDLE</a> 
+<li><a href="#MSG_INTERSONG">MSG_INTERSONG</a> 
+<li><a href="#MSG_INVALID">MSG_INVALID</a> 
+<li><a href="#MSG_ISDOS">MSG_ISDOS</a> 
+<li><a href="#MSG_LOOP">MSG_LOOP</a> 
+<li><a href="#MSG_MUTE">MSG_MUTE</a> 
+<li><a href="#MSG_NOCREDITS">MSG_NOCREDITS</a> 
+<li><a href="#MSG_PLAYSTIMULATOR">MSG_PLAYSTIMULATOR</a> 
+<li><a href="#MSG_POPULAR">MSG_POPULAR</a> 
+<li><a href="#MSG_POSTSONG">MSG_POSTSONG</a> 
+<li><a href="#MSG_PRESONG">MSG_PRESONG</a> 
+<li><a href="#MSG_QUEUE">MSG_QUEUE</a> 
+<li><a href="#MSG_QUEUEFULL">MSG_QUEUEFULL</a> 
+<li><a href="#MSG_RADIO">MSG_RADIO</a> 
+<li><a href="#MSG_SCREENSAVER">MSG_SCREENSAVER</a> 
+<li><a href="#MSG_SELECTEDALL">MSG_SELECTEDALL</a> 
+<li><a href="#MSG_SELECTEDSOME">MSG_SELECTEDSOME</a> 
+<li><a href="#MSG_SELECTING">MSG_SELECTING</a> 
+<li><a href="#MSG_SELECTIONREADY">MSG_SELECTIONREADY</a> 
+<li><a href="#MSG_SKIPLASTOK">MSG_SKIPLASTOK</a> 
+<li><a href="#MSG_SONGPAUSE">MSG_SONGPAUSE</a> 
+<li><a href="#MSG_SONGSELECTED">MSG_SONGSELECTED</a> 
+<li><a href="#MSG_SONGSTART">MSG_SONGSTART</a> 
+<li><a href="#MSG_START">MSG_START</a> 
+<li><a href="#MSG_START_SKIN">MSG_START_SKIN</a> 
+</ul>
+
+<p>
+In order to interact with the skin, the jukebox sends status 
+messages to the skin and can receive control messages from icons
+mapped to locations on the screen.
+
+<p>
+When a message is received that matches the Action setting of an 
+icon, that icon's OnImage is displayed, and when the negative 
+version of the message is received, the icon reverts to its OffImage.
+More than one icon can have the same Action, but each icon can only 
+have one Action. If no OnImage is defined, the OffImage will appear 
+down and to the right as if "pressed" in like a button.  If no 
+OffImage is specified, the background image in the area specified 
+by the icon is used.
+
+<p>
+An Action may contain any of the button definitions listed above.  
+When a button definition is used, the icon will move to the OnImage 
+state for a tenth of a second, and then return to the OffImage state.
+If the icon is marked as Clickable, it will send the button command as 
+well as receive it. 
+
+<p>
+In addition to button messages, there are several state messages that 
+can be assigned as actions.  State messages should not be marked as 
+Clickable, as they are not commands.  State messages are often used 
+to activate "lights" on the jukebox, indicating credits being 
+available, that a song is paused, that radio mode is turned on, etc.
+This is done by putting an image of a turned-on lamp for the icon's 
+OnImage and of an unlit lamp for the OffImage.
+
+<p>
+The state messages are:
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_FILTERED">MSG_FILTERED</a></b></div><br>
+Activated when a filter is in place; deactivated when the filter is 
+cleared.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_POPULAR">MSG_POPULAR</a></b></div><br>
+Activated when the Most Popular list is shown; deactivated when the 
+Song Queue display is restored.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_CREDITS">MSG_CREDITS</a></b></div><br>
+Activated when one or more credits are available; deactivated when 
+no credits are remaining. When the jukebox is set to not require 
+credits, this message is always active.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_SONGSTART">MSG_SONGSTART</a></b></div><br>
+Activated when a song is playing; deactivated when the song 
+finishes.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_SONGPAUSE">MSG_SONGPAUSE</a></b></div><br>
+Activate when the Pause feature is activated; 
+deactivated when play is resumed. 
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_START">MSG_START</a></b></div><br>
+Activated when the jukebox is started. Note that this message is never
+deactivated, so you cannot use this message to trigger shutdown events,
+as the shutdown happens too quickly for the jukebox to respond to.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_START_SKIN">MSG_START_SKIN</a></b></div><br>
+Activated when a new skin starts. This is the default action, and
+can be used to essentially apply "decals" to the jukebox without having
+to edit the skin background image. Note that this message is never
+deactivated, so you cannot use this message to trigger skin shutdown 
+events, as the shutdown happens too quickly for the jukebox to respond 
+to.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_ISDOS">MSG_ISDOS</a></b></div><br>
+Activated for DOS, deactivated for Windows. Useful if you wanted to 
+show a different decal depending on which version is running.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_RADIO">MSG_RADIO</a></b></div><br>
+Activated when RadioMode is started; deactivated when RadioMode
+is exited.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_RADIO" title="Toggles radio mode on and off">BTN_RADIO</a>,
+<a class="xref" href="juked004.html#RadioMode" title="">RadioMode</a>.</blockquote>
+<div class="al-api"><b> <a name="MSG_LOOP">MSG_LOOP</a></b></div><br>
+Activated when LoopMode is started; deactivated when LoopMode
+is exited.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_LOOP" title="">BTN_LOOP</a>,
+<a class="xref" href="juked004.html#LoopMode" title="">LoopMode</a>.</blockquote>
+<div class="al-api"><b> <a name="MSG_PLAYSTIMULATOR">MSG_PLAYSTIMULATOR</a></b></div><br>
+Activated when the PlayStimulator has been enabled; deactivated 
+when the PlayStimulator has been disabled.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_PLAYSTIMULATOR" title="Toggles the PlayStimulator timer on and off.">BTN_PLAYSTIMULATOR</a>,
+<a class="xref" href="juked004.html#PlayStimulator" title="">PlayStimulator</a>.</blockquote>
+<div class="al-api"><b> <a name="MSG_SCREENSAVER">MSG_SCREENSAVER</a></b></div><br>
+Activated when the screen saver is activated; deactivated 
+when the screen saver has been dismissed.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_MUTE">MSG_MUTE</a></b></div><br>
+Activated when the Mute function is used; deactivated when normal volume
+is restored. This message is only sent if the actual mute function is
+used, not if the volume is simply turned down to minimum.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href=BTN_MUTE" title="">BTN_MUTE</a>.</blockquote>
+<div class="al-api"><b> <a name="MSG_NOCREDITS">MSG_NOCREDITS</a></b></div><br>
+Activated when the user attempts to select a song when credits are
+required and no credits are available. Deactivated two seconds later.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_INVALID">MSG_INVALID</a></b></div><br>
+Activated when the user attempts to select an empty song slot.  
+Deactivated two seconds later.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_DUPSONG">MSG_DUPSONG</a></b></div><br>
+Activated when a song is selected that is already in the queue 
+if AllowDuplicatesInQueue is disabled in jukebox.ini. Deactivated 
+two seconds later.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_FREEPLAY">MSG_FREEPLAY</a></b></div><br>
+Activated or deactivated at jukebox startup depending on the 
+RequireCredits setting in jukebox.ini, and activated or deactivated 
+as appropriate if BTN_FREEPLAY is toggled.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_FREEPLAY" title="">BTN_FREEPLAY</a>.</blockquote>
+<div class="al-api"><b> <a name="MSG_IDLE">MSG_IDLE</a></b></div><br>
+Activated when no songs are playing, paused, or queued. This
+message is sent after the post-song delay on the last song, and it is
+deactivated before the pre-song delay.  It is not activated between 
+queued songs, only when the last queued song has played.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_QUEUE">MSG_QUEUE</a></b></div><br>
+Activated when songs are added to an empty queue; deactivated when 
+the last song in the queue has started playing.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_PRESONG">MSG_PRESONG</a></b></div><br>
+Activated when the delay period before a song starts, and 
+deactivated when the song starts playing.  If no delay is set,
+this message will activate at the beginning of a song and then 
+immediately deactivate.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_POSTSONG">MSG_POSTSONG</a></b></div><br>
+Activated when the delay period after a song starts, and deactivated
+when the post-song delay is over. If no delay is set, this message will
+activate and then immediately deactivate.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_INTERSONG">MSG_INTERSONG</a></b></div><br>
+Activated when the between-song delay period starts, and deactivated
+when the between-song delay is over. If no delay is set, this message
+will not activate at all.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_ADDINGCREDITS">MSG_ADDINGCREDITS</a></b></div><br>
+If the skin is set to add multiple credits one at a time, this message
+is activated while the credits are being added and deactivated when all
+of the credits for that coin have been added.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_ADDEDCREDIT">MSG_ADDEDCREDIT</a></b></div><br>
+Activated for each credit as it is added, deactivated a moment later.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_SKIPLASTOK">MSG_SKIPLASTOK</a></b></div><br>
+Activated when the Skip Last Song function is available, deactivated 
+when the SkipLastTimeLimit timer is reached or another song is 
+queued or the last song is actually skipped.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_QUEUEFULL">MSG_QUEUEFULL</a></b></div><br>
+Activated when the song queue is full; deactivated when the song queue
+is no longer full.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked010.html#MaxQueueSize" title="Sets the maximum number of songs that can be queued.">MaxQueueSize</a>.</blockquote>
+<div class="al-api"><b> <a name="MSG_SELECTING">MSG_SELECTING</a></b></div><br>
+Activated when one or more selection buttons have been pressed but not 
+enough to make a valid selection.  Deactivated when the selection 
+is cleared or a valid selection is ready to be selected.
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_SELECTIONREADY">MSG_SELECTIONREADY</a></b></div><br>
+Activated when enough selection buttons have been pressed to indicate a
+valid selection.  Deactivated when this is no longer the case. 
+
+<p><br>
+<div class="al-api"><b> <a name="MSG_ALLOWSELECTFULLCD">MSG_ALLOWSELECTFULLCD</a></b></div><br>
+Activated at startup if the AllowSelectFullCD option is enabled.
+Deactivated if it is disabled.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked010.html#AllowSelectFullCD" title="">AllowSelectFullCD</a>.</blockquote>
+<div class="al-api"><b> <a name="MSG_SONGSELECTED">MSG_SONGSELECTED</a></b></div><br>
+Activated whenever a song is selected by any user action as opposed to
+by the RadioMode or PlayStimulator. Deactivated two seconds later.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#MSG_SELECTING" title="">MSG_SELECTING</a>,
+<a class="xref" href="#MSG_SELECTIONREADY" title="">MSG_SELECTIONREADY</a>.</blockquote>
+<div class="al-api"><b> <a name="MSG_SELECTEDALL">MSG_SELECTEDALL</a></b></div><br>
+Activated if the user selects the full CD and all tracks are 
+successfully queued.  Deactivated two seconds later.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#MSG_ALLOWSELECTFULLCD" title="">MSG_ALLOWSELECTFULLCD</a>,
+<a class="xref" href="#MSG_SELECTEDSOME" title="">MSG_SELECTEDSOME</a>.</blockquote>
+<div class="al-api"><b> <a name="MSG_SELECTEDSOME">MSG_SELECTEDSOME</a></b></div><br>
+Activated if the user selects the full CD but only some of the tracks 
+are successfully queued due to lack of credits.  Deactivated two 
+seconds later.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#MSG_ALLOWSELECTFULLCD" title="">MSG_ALLOWSELECTFULLCD</a>,
+<a class="xref" href="#MSG_SELECTEDALL" title="">MSG_SELECTEDALL</a>.</blockquote>
+<br><center><h2><a name="Command Messages">Command Messages</a></h2></center><p>
+
+<p>
+A command message is similar to a BTN_ message; however, they are not 
+sent in pairs, i.e. there is never a deactivation for them. Commands
+are meant to trigger actions in the jukebox as opposed to triggering
+GUI actions. These are not usually used as icon actions; they are used 
+internally by timers.  Command messages are not sent to the GUI so 
+they should not be used by non-clickable icons, and clickable icons 
+will not appear to "press" if mapped to a command message.
+
+<p><br>
+<div class="al-api"><b> <a name="CMD_ADDCREDIT">CMD_ADDCREDIT</a></b></div><br>
+If the skin is set to add multiple credits one at a 
+time, this command is sent once for each credit to instruct the jukebox
+to increase the credit counter.
+
+<p><br>
+<div class="al-api"><b> <a name="CMD_NEXTPG">CMD_NEXTPG</a></b></div><br>
+Turns to the next page of songs.
+
+<p><br>
+<div class="al-api"><b> <a name="CMD_PREVPG">CMD_PREVPG</a></b></div><br>
+Turns to the previous page of songs.
+
+<p>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

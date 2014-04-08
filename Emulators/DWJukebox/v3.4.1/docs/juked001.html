@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: Setup and Configuration
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="Setup and Configuration">Setup and Configuration</a></h1>
+
+<ul>
+<li><a href="#Control">Control</a> &mdash; Contains control map definitions.
+<li><a href="#JUKEBOX">JUKEBOX</a> &mdash; Contains program preferences.
+<li><a href="#Skin">Skin</a> &mdash; Defines the look and control scheme of the jukebox.
+</ul>
+
+<p>
+The jukebox has no configuration options available through the program
+itself; all configuration is carried out through text-based
+configuration files.
+
+<p>
+<br><center><h2><a name="First Time Setup:">First Time Setup:</a></h2></center><p>
+
+<p>
+In order to get up and running quickly, please edit the jukebox.ini file
+in a text editor like Windows Notepad or DOS Edit and set the SongPath 
+to point to your music collection. You may set multiple song paths, so 
+if you have more than one folder of music, set SongPath1, SongPath2, etc. 
+Please note that if one of your SongPaths is in a subfolder of another 
+SongPath, songs will get indexed twice and updates may not be stored 
+properly.  This will be enough to get the jukebox running with the 
+default skin and contols.
+
+<p>
+The first time the jukebox is run, it will index all of the song files.
+For large collections, this step can be time-consuming, as each song 
+must be completely loaded into memory to be searched for identification
+information.  This information is saved in a song database, so on 
+subsequent runs, the jukebox only needs to verify the existence of the 
+file.  This verification step allows you to use removable media; songs 
+will only be displayed on the jukebox if they exist when the jukebox is 
+started.
+
+<p>
+<br><center><h2><a name="Configuration Files">Configuration Files</a></h2></center><p>
+
+<p>
+The configuration files used by DWJukebox are plain text files.  They are 
+organized similar to Windows INI files; they contain a number of 
+parameters divided into sections, with the section names starting in 
+square braces. Lines that start with the # character (pound, octothorpe, 
+number sign, whatever you want to call it) are comments and are not
+read by the jukebox.  For example, here is a section with two parameters:
+
+<blockquote class="code"><pre>
+[Settings]
+# This section contains jukebox settings.
+
+<a href="juked004.html#RadioMode" class="autotype" title="">RadioMode</a> = Disabled
+<a href="juked010.html#MaxQueueSize" class="autotype" title="Sets the maximum number of songs that can be queued.">MaxQueueSize</a> = 250
+</pre></blockquote>
+
+
+<p><br>
+Three configuration files are used to determine the operation of
+the jukebox:
+
+<p><br>
+<div class="al-api"><b> <a name="JUKEBOX">JUKEBOX</a>.INI</b></div><br>
+This file contains all settings related to operation of the program
+itself, and general user preferences. Anything related to the physical
+PC, such as resolution or refresh rate, or jukebox operator settings,
+such as whether or not to require credits, are set in this file. You can
+specify a different configuration file on the command line when starting
+the jukebox; for example, starting the jukebox with WINCAB.EXE
+MYPREFS.INI will use MYPREFS.INI instead of JUKEBOX.INI.
+
+<p><br>
+<div class="al-api"><b> <a name="Control">Control</a> Map File</b></div><br>
+The control map file assigns jukebox functions to individual keys,
+joystick or gamepad buttons and axes, or mouse buttons. The default
+control map file is CONTROLS.INI; however, a different file can be
+selected via the Controls parameter in JUKEBOX.INI.
+
+<p><br>
+<div class="al-api"><b> <a name="Skin">Skin</a> File</b></div><br>
+The skin file defines the look of the jukebox and the scheme by which
+songs are selected. All interactive elements of the interface can be
+defined here. The skin file is set via the Skin parameter in
+JUKEBOX.INI; the default is DEFAULT.SKN. Although the skin files
+included have a .SKN extension, they are still effectively INI files and
+can be edited with any text editor.
+
+
+
+<p><br>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

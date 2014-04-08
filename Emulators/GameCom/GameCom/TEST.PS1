@@ -1,0 +1,19 @@
+	type	8521
+	NLIST
+	include	melody.inc
+	LIST
+
+NLH	EQU	1fh
+NLL	EQU	1fh
+A_LEN	EQU	5
+;LABEL0000H:
+	db	E5,NLH,A_LEN*32
+	db	C5,NLH,A_LEN*16
+	db	F5,NLH,A_LEN*32
+	db	PAUSE,NLH,A_LEN*8
+	db	D5,NLH,A_LEN*32
+	db	C5,NLH,A_LEN*32
+	db	E4,NLH,A_LEN*32
+	db	C4,NLH,A_LEN*32
+
+	END

@@ -1,0 +1,402 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: [Settings] Section (JUKEBOX.INI)
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="[Settings] Section (JUKEBOX.INI)">[Settings] Section (JUKEBOX.INI)</a></h1>
+
+<ul>
+<li><a href="#AllowDuplicatesInQueue">AllowDuplicatesInQueue</a> &mdash; Sets whether the same song can be queued more than once.
+<li><a href="#AllowSelectFullCD">AllowSelectFullCD</a> 
+<li><a href="#ArtCacheMB">ArtCacheMB</a> 
+<li><a href="#AutoFlipTimer">AutoFlipTimer</a> 
+<li><a href="#Coin1Credit">Coin1Credit</a> 
+<li><a href="#Coin2Credit">Coin2Credit</a> 
+<li><a href="#Coin3Credit">Coin3Credit</a> 
+<li><a href="#Coin4Credit">Coin4Credit</a> 
+<li><a href="#CPUUsage">CPUUsage</a> 
+<li><a href="#DebugLevel">DebugLevel</a> 
+<li><a href="#DisplayOutputFile">DisplayOutputFile</a> 
+<li><a href="#FileSystemEncoding">FileSystemEncoding</a> 
+<li><a href="#FirstAutoFlipTimer">FirstAutoFlipTimer</a> 
+<li><a href="#KeyboardLEDsOff">KeyboardLEDsOff</a> 
+<li><a href="#LimitSkipLastToMostRecent">LimitSkipLastToMostRecent</a> 
+<li><a href="#LoopMode">LoopMode</a> 
+<li><a href="#MaxQueueSize">MaxQueueSize</a> &mdash; Sets the maximum number of songs that can be queued.
+<li><a href="#MaxRandomSongLength">MaxRandomSongLength</a> 
+<li><a href="#MostPopularDisplayTime">MostPopularDisplayTime</a> 
+<li><a href="#PlayStimulatorDelay">PlayStimulatorDelay</a> 
+<li><a href="#RadioMode">RadioMode</a> 
+<li><a href="#RandomSongPopularityPreference">RandomSongPopularityPreference</a> 
+<li><a href="#RequireCredits">RequireCredits</a> 
+<li><a href="#ResourcePath">ResourcePath</a> 
+<li><a href="#SkipLastTimeLimit">SkipLastTimeLimit</a> 
+<li><a href="#SongDelay">SongDelay</a> 
+<li><a href="#SongSort">SongSort</a> 
+<li><a href="#SystemShutdownEnabled">SystemShutdownEnabled</a> 
+</ul>
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="AllowDuplicatesInQueue">AllowDuplicatesInQueue</a></b></div><br>
+AllowDuplicatesInQueue sets whether or not a duplicate song can be 
+added into the queue.  Real jukeboxes, especially those that use remote
+wallboxes, will usually not allow duplicates, although they will 
+happily accept the money, on the theory that if two patrons want to 
+hear a particular song, they will both hear it even if it is only 
+played once. 
+
+<p>
+If this setting is set to FALSE and the song being added is already in 
+the queue, the song will not be added, a credit will still be taken, 
+and the MSG_DUPSONG message will be fired, with -MSG_DUPSONG being 
+fired two seconds later. This will allow a skin to display an icon
+showing that the song has already been queued, although ordinarily
+such a display would not be desired, at least on a real jukebox.
+
+<p>
+<b>Default value:</b> False.
+
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="AllowSelectFullCD">AllowSelectFullCD</a></b></div><br>
+Sets whether selecting track 0 on a CD selects the full CD.
+AllowSelectFullCD sets whether or not selecting track zero on a CD 
+will select all the songs on a CD. If credits are required, only the 
+number of tracks for which credit is available will be selected.
+
+<p>
+<b>Default value:</b> True.
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="ArtCacheMB">ArtCacheMB</a></b></div><br>
+ArtCacheMB specifies the amount of memory set aside for caching cover
+art images in megabytes.  Note that at least enough memory to cache 
+one page will always be reserved.  The range is 0 to 1024.  The 
+default setting is AUTO, which is 4MB for DOS or 32MB for Windows.
+This setting only applies to album-based skins, as cover art is not 
+supported for classic skins.
+
+<p>
+<b>Default value:</b> Auto.
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="AutoFlipTimer">AutoFlipTimer</a></b></div><br>
+The AutoFlip timer automatically changes pages after a timer 
+expires. If a longer delay before the first automatic flip is 
+desired, set the FirstAutoFlipTimer to the desired time. For 
+example you may want pages to start flipping after 5 minutes 
+but then flip every 30 seconds thereafter.
+
+<p>
+If either timer is disabled the other timer will control all flips. 
+If both timers are disable no automatic flips will occur.  The 
+timers are set in seconds.  
+
+<p>
+<b>Default value:</b> Disabled.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#FirstAutoFlipTimer" title="">FirstAutoFlipTimer</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="Coin1Credit">Coin1Credit</a></b></div><br>
+<div class="al-api-cont"><b>[Settings] <a name="Coin2Credit">Coin2Credit</a></b></div><br>
+<div class="al-api-cont"><b>[Settings] <a name="Coin3Credit">Coin3Credit</a></b></div><br>
+<div class="al-api-cont"><b>[Settings] <a name="Coin4Credit">Coin4Credit</a></b></div><br>
+Coin<i>X</i>Credit sets the number of credits provided by a given 
+coin input. <i>X</i> can range from 1 to 4.  For example, if coin 
+slot 1 took nickels and coin slot 2 took quarters, you might want 
+to set 1 credit for a nickel and 5 credits for a quarter.  You
+would thus set:
+
+<blockquote class="code"><pre>
+<a href="#Coin1Credit" class="autotype" title="">Coin1Credit</a> = 1
+<a href="#Coin2Credit" class="autotype" title="">Coin2Credit</a> = 5
+</pre></blockquote>
+
+<p>
+<b>Default value:</b> 3.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_COIN1" title="Adds credits to the jukebox.">BTN_COIN1</a>,
+<a class="xref" href="#RequireCredits" title="">RequireCredits</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="CPUUsage">CPUUsage</a></b></div><br>
+CPUUsage sets how much CPU time the jukebox gives itself in Windows;
+it has no effect in DOS.  Higher values give more CPU priority
+to the jukebox, lower values give more priority to the system.
+This value can range from 0 to 100.
+
+<p>
+<b>Default value:</b> 10.
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="DebugLevel">DebugLevel</a></b></div><br>
+DebugLevel sets the logging level for the jukebox.  The debug log 
+is stored in jbdebug.log in the same folder as the jukebox. The 
+DebugLevel may be set from DISABLED (no logging) to 5 (maximum 
+logging).  Detail level 5 will show inordinately large amounts of
+detail; usually detail level 3 is the most informative without
+detail overload.  Debug logs can grow quite large, so DebugLevel 
+should only be enabled when troubleshooting.
+
+<p>
+If a fatal error occurs, jbdebug.log will get create whether or
+not the DebugLevel is set,
+
+<p>
+<b>Default value:</b> Disabled.
+
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="DisplayOutputFile">DisplayOutputFile</a></b></div><br>
+DisplayOutputFile sets the location and name of the display output
+file.  This file contains a four-line version of the Now Playing 
+display in plain text, usable by programs that can send the contents
+of a file to an LCD display like LCD Smartie.  Setting this to 
+Disabled will prevent the output file from being created or updated.
+
+<p>
+<b>Default value:</b> display.txt, in the same directory as the jukebox.
+
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="FileSystemEncoding">FileSystemEncoding</a></b></div><br>
+FileSystemEncoding sets the text encoding used by the file system.
+Possible values are ASCII, UTF8, and UNICODE. You should never 
+need  to change this setting.
+
+<p>
+<b>Default value:</b> ASCII.
+
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="FirstAutoFlipTimer">FirstAutoFlipTimer</a></b></div><br>
+
+<p>
+The AutoFlip timers automatically change pages after a timer 
+expires. Usually a longer delay for the first flip is desired, 
+for example you may want pages to start flipping after 
+5 minutes but then flip every 30 seconds thereafter.
+FirstAutoFlipTimer sets the interval for the first flip;
+use AutoFlipTimer to set the interval for the remaining flips. 
+If either timer is disabled the other timer will control all 
+flips. If both timers are disable no automatic flips will occur.
+The timers are set in seconds.  
+
+<p>
+<b>Default value:</b> Disabled.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#AutoFlipTimer" title="">AutoFlipTimer</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="KeyboardLEDsOff">KeyboardLEDsOff</a></b></div><br>
+This setting attempts to turn off the keyboard LED's when the 
+jukebox starts.  This is meant for jukeboxes in game cabinets where 
+the keyboard LED's may be mapped to LEDs on the control panel.
+This setting only works in DOS and Windows 95/98.
+
+<p>
+<b>Default value:</b> Disabled.
+
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="LimitSkipLastToMostRecent">LimitSkipLastToMostRecent</a></b></div><br>
+LimitSkipLastToMostRecent prevents the BTN_SKIPLAST button from
+removing more than a single song from the end of the queue if
+SkipLastTimeLimit is enabled.  If this setting is disabled, the 
+BTN_SKIPLAST button can be used to remove as many songs from the 
+end of the queue as desired until the time limit runs out.
+Note that if SkipLastTimeLimit is set to 0 or DISABLED, this 
+setting has no effect, as in that case BTN_SKIPLAST is not limited.
+
+<p>
+<b>Default value:</b> Enabled.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_SKIPLAST" title="">BTN_SKIPLAST</a>,
+<a class="xref" href="#SkipLastTimeLimit" title="">SkipLastTimeLimit</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="LoopMode">LoopMode</a></b></div><br>
+LoopMode enables loop mode, where songs are re-added to the queue
+automatically as soon as they finish playing.  You usually want to 
+leave this set to FALSE and enable it via BTN_LOOP.
+
+<p>
+<b>Default value:</b> Disabled.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_LOOP" title="">BTN_LOOP</a>,
+<a class="xref" href="juked003.html#MSG_LOOP" title="">MSG_LOOP</a>,
+<a class="xref" href="juked004.html#LoopMode" title="">LoopMode</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="MaxQueueSize">MaxQueueSize</a></b></div><br>
+MaxQueueSize sets the maximum number of songs that can be queued up to
+play, not counting the currently playing song. This value can range from
+1 to 500.
+
+<p>
+<b>Default value:</b> 250.
+
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="MaxRandomSongLength">MaxRandomSongLength</a></b></div><br>
+MaxRandomSongLength sets, in minutes, the longest song that can be played
+by any method that selects a random song, such as the play stimulator or
+radio mode. The default is 6 minutes; the minimum is two minutes. Note 
+that if there are very few songs available below this limit, longer 
+songs may be played as the random song selector will only try a limited 
+number of times to find a matching song to avoid crashes.
+
+<p>
+<b>Default value:</b> 6.
+
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="MostPopularDisplayTime">MostPopularDisplayTime</a></b></div><br>
+MostPopularDisplayTime sets the number of seconds the "most popular" 
+display is shown before returning to the "upcoming songs" display.
+
+<p>
+<b>Default value:</b> 5.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_POPULAR" title="Displays list of most popular songs.">BTN_POPULAR</a>,
+<a class="xref" href="juked003.html#MSG_POPULAR" title="">MSG_POPULAR</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="PlayStimulatorDelay">PlayStimulatorDelay</a></b></div><br>
+PlayStimulatorDelay sets the number of seconds the jukebox must be idle 
+before randomly selecting and playing a song.  If PlayStimulatorDelay is 
+set to 0 or DISABLED, songs will not play randomly while the jukebox is 
+idle.
+
+<p>
+<b>Default value:</b> Disabled.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked004.html#PlayStimulator" title="">PlayStimulator</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="RadioMode">RadioMode</a></b></div><br>
+RadioMode sets whether or not the jukebox will play songs continuously 
+when idle, like a radio.  This mode can be toggled with BTN_RADIO, or 
+specifically turned on or off with BTN_RADIO_ON and BTN_RADIO_OFF.
+
+<p>
+<b>Default value:</b> Disabled.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_RADIO" title="Toggles radio mode on and off">BTN_RADIO</a>,
+<a class="xref" href="juked002.html#BTN_RADIO_OFF" title="Turns radio mode off">BTN_RADIO_OFF</a>,
+<a class="xref" href="juked002.html#BTN_RADIO_ON" title="Turns radio mode on">BTN_RADIO_ON</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="RandomSongPopularityPreference">RandomSongPopularityPreference</a></b></div><br>
+RandomSongPopularityPreference sets the level which the jukebox gives
+preference to songs higher in the popularity list. A value of 0 or
+DISABLED ignores popularity for random selects, giving equal preference
+to all songs regardless of popularity. Values above 0 give more
+preference to popular songs, to a maximum value of 10. Values above 4 or
+so are not recommended unless you have thousands of songs available. The
+default value is 2.
+
+<p>
+Note that this setting only has any effect after at least a quarter of
+the songs in the library have been played at least once.
+
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="RequireCredits">RequireCredits</a></b></div><br>
+If RequireCredits is true, selections cannot be made without credits. If
+RequireCredits is false and the credit display is enabled, it will
+always show 01.
+
+<p>
+Please note that the credits feature is meant only for home use, for
+entertainment purposes only. There are ways to bypass the credit system;
+it is not licensed for, or suitable for, a commercial environment.  See
+<a href="license.html">license.txt</a> for full details.
+
+<p>
+<b>Default value:</b> False.
+
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_COIN1" title="Adds credits to the jukebox.">BTN_COIN1</a>,
+<a class="xref" href="#Coin1Credit" title="">Coin1Credit</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="ResourcePath">ResourcePath</a></b></div><br>
+ResourcePath sets alternate paths for skin resources. Multiple 
+ResourcePaths can be specified as ResourcePath1, ResourcePath2, etc.  
+If no ResourcePath is set, the jukebox will default to the SKINS folder.
+Subfolders are not searched.
+
+<p>
+<b>Default value:</b> skins.
+
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="SkipLastTimeLimit">SkipLastTimeLimit</a></b></div><br>
+SkipLastTimeLimit sets the number of seconds after a song is queued in 
+which is can be removed from the queue with BTN_SKIPLAST.  If 
+SkipLastTimeLimit is set to 0 or DISABLED, the user can always remove the 
+last song in the queue.  To disable this function, simply don't map a key 
+to it.  
+
+<p>
+<b>Default value:</b> 15.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_SKIPLAST" title="">BTN_SKIPLAST</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="SongDelay">SongDelay</a></b></div><br>
+SongDelay sets the length of time the jukebox pauses between songs, in 
+hundredths of a second.  This would be the time a real jukebox would be 
+switching disks. Note that this setting is only used if the skin does
+not provide an InterSongDelay.  
+
+<p>
+<b>Default value:</b> 200 (2 seconds).
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked020.html#PreSongDelay" title="">PreSongDelay</a>,
+<a class="xref" href="juked020.html#PostSongDelay" title="">PostSongDelay</a>,
+<a class="xref" href="juked020.html#InterSongDelay" title="">InterSongDelay</a>.</blockquote>
+<div class="al-api"><b>[Settings] <a name="SongSort">SongSort</a></b></div><br>
+SongSort sets how the jukebox arranges titlestrips. If SongSort is set 
+to Artist, title strips will be sorted by the artist name. If SongSort 
+is set to Random or is not set, title strips will be randomized. If 
+SongSort is set to Album, title strips will be sorted by the album name.
+Note that Album sort only appllies to CD-based skins. 
+
+<p>
+<b>Default value:</b> Artist.
+
+
+<p><br>
+<div class="al-api"><b>[Settings] <a name="SystemShutdownEnabled">SystemShutdownEnabled</a></b></div><br>
+SystemShutdownEnabled sets whether or not the jukebox can shut down
+Windows. If SystemShutdownEnabled=True, Windows will shut down if
+BTN_SHUTDOWN was pressed or if the jukebox is requested to close by
+Windows. Exiting via BTN_EXIT will not shut down the system even if
+SystemShutdownEnabled is enabled. This setting has no effect in the DOS
+version.
+
+<p>
+<b>Default value:</b> False.
+
+
+<p><br>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

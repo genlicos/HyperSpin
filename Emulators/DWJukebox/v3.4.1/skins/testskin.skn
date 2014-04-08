@@ -1,0 +1,183 @@
+# DOSCab/WinCab Jukebox Skin File
+# Version 3.0
+# By Chris La Mantia
+
+# Notes:
+# - Supported image formats at this time are JPG, BMP, LBM, PCX, and TGA.
+# - Colors may be specified as hexadecimal RGB codes (FFA0CC) or by name.
+#   A reference to named colors can be found in docs/colors.htm.
+
+[skin]
+# All of the dimensions of objects in this file are relative to 
+# this image.
+
+background=hidens.jpg
+
+# Display definitions
+#
+# There are four displays: the Now Playing display, the Coming Up/Most 
+# Popular Songs display, the Selection display, and the Credit display.
+# Status messages appear on the Coming Up display.
+#
+# Displays have the following parameters:
+#
+# enabled - Set to True to enable the display, False to disable it.  
+# You may, for example, want to disable the Credit display if your
+# jukebox is not set to accept credits.
+#
+# x, y, w, and h - The position and size of the display.  These are all 
+# relative to the skin background image and not the screen resolution.
+#
+# lines - Sets the number of lines used by the Now Playing and Coming Up 
+# displays.  The size of the dot-matrix display font will automatically
+# be adjusted to fit the specified number of lines in the height of the 
+# display.  The Selection and Credit displays always show only one line.
+#
+# color and bgcolor - Sets the color of the font and the color of the 
+# display background.  See the note on how to specify colors above.
+
+[Selection]
+
+# SelectionMethod: Alphanumeric,Numeric,SingleLetter,SingleNumber
+SelectionMethod=Alphanumeric
+UseZero=False
+HighLetter=E
+HighNumber=6
+DiscAddress=Relative
+
+[Display1]
+# Now Playing display
+enabled=True
+x=20
+y=50
+w=400
+h=120
+lines=4
+color=palegreen
+bgcolor=black
+
+[Display2]
+# Song List display
+enabled=True
+x=600
+y=50
+w=400
+h=120
+lines=4
+color=palegreen
+bgcolor=black
+
+[Display3]
+# Selection display
+enabled=True
+x=480
+y=120
+w=74
+h=50
+color=palegreen
+bgcolor=black
+
+[Display4]
+# Credit Display
+enabled=True
+x=480
+y=50
+w=74
+h=50
+color=palegreen
+bgcolor=black
+
+[TitleStrips]
+# The image file is scaled and stretched to fit the Width and Height below
+
+Background=jb45lb01.jpg
+
+# bgcolor is only seen if no title strip image is specified
+
+bgcolor=white
+
+# If AddQuotes is set to True, song titles will be 
+# displayed in quotes.  This was a common practice on
+# old jukeboxes; it is less common today.
+
+AddQuotes=True
+
+
+# If ForceUpperCaseTitles or ForceUpperCaseArtists is set 
+# to True, song titles or artist names on the title strips
+# will always use uppercase.  This was a common practice 
+# on old jukeboxes; it is less common today.
+
+ForceUpperCaseTitles=True
+ForceUpperCaseArtists=True
+
+SongsPerStrip=Double
+Font=bluehigh.ttf
+FontSize=26
+FontColor=black
+SmallFont=bluecond.ttf
+SmallFontSize=26
+Width=300
+Height=100
+StripCount=15
+FontSmoothing=true
+
+[Strip1]
+x=20
+y=190
+
+[Strip2]
+x=360
+y=190
+
+[Strip3]
+x=700
+y=190
+
+[Strip4]
+x=20
+y=300
+
+[Strip5]
+x=360
+y=300
+
+[Strip6]
+x=700
+y=300
+
+[Strip7]
+x=20
+y=410
+
+[Strip8]
+x=360
+y=410
+
+[Strip9]
+x=700
+y=410
+
+[Strip10]
+x=20
+y=520
+
+[Strip11]
+x=360
+y=520
+
+[Strip12]
+x=700
+y=520
+
+[Strip13]
+x=20
+y=630
+
+[Strip14]
+x=360
+y=630
+
+[Strip15]
+x=700
+y=630

@@ -1,0 +1,400 @@
+! English language file
+!
+!
+!    Created by Rice, 12/08/2003
+!    For further questions, email me at rice1964@yahoo.com
+!
+!    For file format information and other explanation, please refer to the readme.txt file.
+!    
+
+
+!Menu items, must be before dialog sections and string section
+
+1,&File
+2,&Open ROM...
+3,Close ROM
+4,Language
+5,English
+6,Save State
+7,To 1964 Save File...
+8,To PJ64 Save File...
+9,To Slot 0
+10,To Slot 1
+11,To Slot 2
+12,To Slot 3
+13,To Slot 4
+14,To Slot 5
+15,To Slot 6
+16,To Slot 7
+17,To Slot 8
+18,To Slot 9
+19,Load State
+20,From 1964 Save File...
+21,From PJ64 Save File...
+22,From Slot 0
+23,From Slot 1
+24,From Slot 2
+25,From Slot 3
+26,From Slot 4
+27,From Slot 5
+28,From Slot 6
+29,From Slot 7
+30,From Slot 8
+31,From Slot 9
+32,Change ROM Folder...
+33,Refresh ROM List
+34,E&xit
+
+35,&Edit
+36,Cheat Codes...
+37,Window Options...
+38,ROM Properties...
+
+39,E&mulation
+40,&Pause/Play
+41,Reset
+42,&Stop
+43,Kill CPU Thread
+44,Switch Compiler
+45,Interpreter
+46,Dynamic Compiler (Default)
+47,Inject Gameshark Green Button Cheats
+48,Counter Factor
+49,1 x .5 Half Rate
+50,1 x 1 Full Rate
+51,2 x 1 Half Rate (Default)
+52,2 x 2 Full Rate
+53,3 x 1.5 Half Rate
+54,3 x 3 Full Rate
+55,4 x 2 Half Rate
+56,8 x 4 Half Rate
+57,Speed Limit
+58,Screen Shot
+59,Variable Speed Limits
+60,Increase Speed
+61,Decrease Speed
+62,Restore correct Speed
+63,&Plug-ins
+64,Change Plug-ins...
+65,&Video Settings...
+66,&Audio Settings...
+67,&Input Settings...
+68,RSP Settings...
+69,Full Screen
+70,Net Play
+71,Connect to Kaillera Server ...
+72,Lag
+73,1 (less)
+74,2
+75,3
+76,4 (default)
+77,5
+78,6
+79,7 (more)
+80,&Help
+81,Online Help
+82,Help Manual
+83,&1964 Home Page
+84,&About 1964...
+85,Load && Play in Window
+86,Load && Play in Full Screen
+87,Cheat Codes...
+88,Change Rom Folder...
+89,ROM Properties...
+90,Header Popup 1
+91,Show Alternate ROM Name
+92,Show Internal ROM Name
+93,Show ROM File Name
+94,Sort Ascending
+95,Sort Descending
+96,Add/Remove Columns...
+97,Header Popup 2
+98,Sort Asccending
+99,Sort Descending
+100,Add/Remove Columns...
+101,ROM Plugin Setting...
+102,ROM Information...
+103,Assign Box Art Image...
+104,Remove Box Art Image Link
+105,Show Rom List
+106,Show Box Art
+107,Increase Image Size
+108,Decrease Image Size
+109,Increase X Spacing
+110,Decrease X Spacing
+111,Increase Y Spacing
+112,Decrease Y Spacing
+113,Show Alternate ROM Name
+114,Show Internal ROM Name
+115,Show ROM File Name
+116,Sort Ascending
+117,Sort Descending
+118,Add/Remove Columns...
+119,Refresh ROM List
+120,Overclock
+121,25MHz (4x Underclock)
+122,50MHz (2x Underclock)
+123,100MHz (Normal Speed)
+124,200MHx (2x Overclock)
+125,300MHx (3x Overclock)
+126,400MHx (4x Overclock)
+127,500MHx (5x Overclock)
+128,600MHx (6x Overclock)
+
+! Dialog box texts
+
+!ABOUTBOX
+
+!Don't translate the next line, the "Dialog=n" line is a key line
+Dialog=0
+0,\n1964 0.9.9 by schibo and Rice\nCheat codes by  Emu64 Cheats Team\nOfficial ROM_Properties.ini File by Duncan
+1,\n1964 is not affiliated with any company.\nAll logos/trademarks are the property of their respective owner(s).
+2,\n (c) 1999-2003 Joel Middendorf <schibo@emulation64.com>\nThanks: steb, zilmar, anarko, Azimer, Jabo\nhttp://1964emu.emulation64.com/\nHosted by www.emulation64.com
+3,\nGreets: Angelo, ContraSF, Cricket, _Demo_, duddie, Emul8or, epsilon, F|RES, FlyingNR6, hartec, Houe, hWnd, icepir8, LaC, Lemmy Lionel, Niki Waibel, Phrodide, rcp, Scav, slacka, Smiff, SpectRe, Spikez, subice, StrmnNrmn, TNSe
+4,About
+5,System Information
+6,SSE Optimizations Enabled?:
+7,Reason:
+
+!CHEAT_HACK
+!Don't translate the next line, the "Dialog=n" line is a key line
+Dialog=1
+0,Use Cheat Codes
+1,Codes for this game
+2,Select
+3,Unselect
+4,Unselect All
+5,Enter New Code
+6,Name
+7,Country:
+8,Add/Modify
+9,Delete
+10,Notes:
+
+!COL_SELECT
+!Don't translate the next line, the "Dialog=n" line is a key line
+Dialog=2
+0,Enable ROM Browser
+1,Game Name To Display
+2,Alternate Name
+3,Internal ROM Name
+4,Rom File Name
+5,Columns to Display
+
+!FOLDERS DIALOGEX
+!Don't translate the next line, the "Dialog=n" line is a key line
+Dialog=3
+0,ROMs
+1,Use the last opened folder
+2,Game Saves
+3,Use default: $1964.exe\\Save
+4,Plugins
+5,Use default: $1964.exe\\Plugin
+
+!OPTIONS
+!Don't translate the next line, the "Dialog=n" line is a key line
+Dialog=4
+0,Window Behavior
+1,Pause When 1964 Window Is Inactive
+2,Start ROM in Full Screen
+3,Display Error Log Window
+4,Status Bar Monitoring
+5,Counters
+6,Profiler
+7,Disabled
+
+!PLUGINS
+!Don't translate the next line, the "Dialog=n" line is a key line
+Dialog=5
+0,About
+1,About
+2,About
+3,About
+4,&Download Plug-ins Online
+5,Audio
+6,Video
+7,RSP
+8,Input
+9,Display default plugin setting
+10,Display ROM plugin setting
+
+!ROM_INFO
+!Don't translate the next line, the "Dialog=n" line is a key line
+Dialog=6
+0,File name:
+1,Rom Internal Name:
+2,Country:
+3,File Location:
+
+!ROM_OPTIONS
+!Don't translate the next line, the "Dialog=n" line is a key line
+Dialog=7
+0,Hardware
+1,Expansion Pak:
+2,Save Type:
+3,Use TLB:
+4,EEPROM Size:
+5,Max VI Limit:
+6,Compiler
+7,Core:
+8,DMA in Segments:
+9,Self-Modifying Code:
+10,Assume 32bit:
+11,Register Caching:
+12,CP1 Unusable Exceptions:
+13,Link Code Blocks:
+14,Two-Pass Compiler:
+15,With plugins
+16,Frame Buffer R/W:
+17,RSP/RDP Timing:
+18,Alternate Title (100 characters max.):
+19,Comments (80 characters max.)
+
+!UNAVAILABLE DIALOGEX
+!Don't translate the next line, the "Dialog=n" line is a key line
+Dialog=8
+0,Not Available at this time.
+
+
+!Don't translate the next line, the "String Section" is a key
+String Section
+
+0,Cheat Codes
+1,Window
+2,Plug-ins
+3,ROM Properties
+4,ROM Browser
+5,ROM Information
+6,Folders
+7,About 1964
+8,ROM Name
+9,Country
+10,Size
+11,Compatibility Status
+12,Save Type
+13,CIC Chip
+14,Players
+15,Open ROM
+16,Select a ROM folder
+17,Exit
+18,Could not get a windows handle.
+19,Load Rom Setting from ROM_Properties.ini
+20,Looking for ROM files in the ROM directory and Generating List
+21,Error
+22,CreateWindow() failed: Cannot create a window.
+23,Running
+24,Loaded
+25,Kaillera player %d dropped
+26,Saving State
+27,Loading State
+28,State File
+29,All Files
+30,Select Game Save Folder
+31,Select Plugin Folder
+32,Select ROM Folder
+33,Stopped
+34,Ready
+35,Loading RSP Plugin:
+36,Init RSP Plugin ...
+37,Loading Video Plugin:
+38,Init Video Plugin ...
+39,Loading Input Plugin:
+40,Init Input Plugin ...
+41,Loading Audio Plugin:
+42,not available
+43,System Default Video Plugin
+44,System Default Audio Plugin
+45,System Default Input Plugin
+46,System Default RSP Plugin
+47,Video Plugin For Current ROM
+48,Audio Plugin For Current ROM
+49,Input Plugin For Current ROM
+50,RSP Plugin For Current ROM
+51,Error opening this file. Please refresh the ROM list.
+52,Exception in emulation thread
+53,File could not be opened.
+54,This savestate is incompatible with this version of 1964.
+55,Version Conflict
+56,Loading
+56,default
+57,Kaillera timeout
+58,Upload game setting to other players
+59,Upload cheat codes to other players
+60,Kaillera starts the game
+61,Kaillera wait for 1 second
+62,default
+63,Default
+64,No
+65,Yes
+66,Dyna-Compiler
+67,Interpreter
+68,EEPROM
+69,MEMPAK
+70,SRAM
+71,FLASHRAM
+72,First Used
+73,All Used Types
+74,No Check
+75,Check DMA only
+76,Check DWORD
+77,Check QWORD
+78,Check QWORD & DMA
+79,Check Block
+80,Check Block & DMA
+81,Protect Memory
+82,No Limit
+83,Auto Sync
+84,No EEPROM
+85,4Kb EEPROM
+86,16Kb EEPROM
+87,All Countries
+88,USA - NTSC
+89,Japan - NTSC
+90,USA & Japan - NTSC
+91,Europe - PAL
+92,Australia - PAL
+93,France - PAL
+94,Germany - PAL
+95,(country code mismatch)
+96,Updating ROM browser...
+97,All Countries
+98,USA - NTSC
+99,Japan - NTSC
+100,Are you sure to delete this code?
+101,No Hardware Support Detected
+102,Disabled in this build
+103,Hardware and OS Support Detected
+104,Hardware Support, but No OS Support Detected
+105,Use system default setting
+106,Full Screen (Alt+Enter)
+107,1964 Home Page
+108,ROM Properties (Ctrl+S)
+109,Open (Ctrl+O)
+110,Pause (F3)
+111,Play (F3)
+112,Stop (F4)
+113,Change Plugins (Ctrl+P)
+114,Reset (F2)
+115,Help (F1)
+116,Automatic Frame Skip (F11)
+117,Speed Limit (F9)
+118,Inject Green Button Cheat (F8)
+119,Paused
+120,core
+121,video
+122,audio
+123,compiler
+124,idle
+125,netplay
+126,kaillera
+127,Demo
+128,Beta
+129,USA/Japan
+130,German
+131,France
+132,Italy
+133,Japan
+134,Europe
+135,Spain
+136,Australia
+137,None

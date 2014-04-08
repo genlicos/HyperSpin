@@ -1,0 +1,371 @@
+# DOSCab/WinCab Jukebox Skin File
+# Version 3.1
+# By Chris La Mantia
+
+# Notes:
+# - Supported image formats at this time are BMP, LBM, PCX, and TGA.
+# - Colors may be specified as hexadecimal RGB codes (FFA0CC) or by name.
+#   A reference to named colors can be found in docs/colors.htm.
+
+[skin]
+# All of the dimensions of objects in this file are relative to 
+# this image.
+
+Author = Chris La Mantia
+Description = Album-based layout, 4 albums visible
+Notes = 
+background = cdbg1.jpg
+
+
+[Timers]
+# These timers are specified in hundredths of a second.  
+# Pre and Post song delays default to 0, Inter (between)
+# song delay defaults to 200 (2 seconds) if Pre and 
+# Post are 0, otherwise it defaults to 0.
+
+PreSongDelay = 0
+PostSongDelay = 100
+InterSongDelay = 0
+IncrementalCreditDelay = Disabled
+
+[Fonts]
+# Note: The "Small" fonts are not yet implemented.
+
+TitleFont = dvsans.ttf
+TitleFontSize = 14
+TitleFontCondensed = dvsansc.ttf
+TitleFontCondensedSize = 12
+TitleFontSmall = dvsansc.ttf
+TitleFontSmallSize = 8
+TitleFontColor = ghostwhite
+TitleFontCase = Normal
+TitleFontAddQuotes = False
+TitleFontQuoteSymbol = "
+
+
+ArtistFont = dvsans.ttf
+ArtistFontSize = 12
+ArtistFontCondensed = dvsansc.ttf
+ArtistFontCondensedSize = 11
+ArtistFontSmall
+ArtistFontColor = lightgrey
+ArtistFontCase = Normal
+ArtistFontAddQuotes = False
+
+AlbumFont = dvsansb.ttf
+AlbumFontSize = 14
+AlbumFontCondensed = dvsansbc.ttf
+AlbumFontCondensedSize = 12
+AlbumFontSmall = dvsansbc.ttf
+AlbumFontSmallSize = 8
+AlbumFontColor = ghostwhite
+AlbumFontCase = Uppercase
+AlbumFontAddQuotes = False
+
+#CDAddressFont = bluecond.ttf
+CDAddressFont = steelfis.ttf
+CDAddressFontSize = 32
+CDAddressFontColor = lightblue
+
+FixedFont=jbdotmat.fnt
+
+
+
+# Display definitions
+#
+# There are four displays: the Now Playing display, the Coming Up/Most 
+# Popular Songs display, the Selection display, and the Credit display.
+# Status messages appear on the Coming Up display.
+#
+# Displays have the following parameters:
+#
+# enabled - Set to True to enable the display, False to disable it.  
+# You may, for example, want to disable the Credit display if your
+# jukebox is not set to accept credits.
+#
+# x, y, w, and h - The position and size of the display.  These are all 
+# relative to the skin background image and not the screen resolution.
+#
+# lines - Sets the number of lines used by the Now Playing and Coming Up 
+# displays.  The size of the dot-matrix display font will automatically
+# be adjusted to fit the specified number of lines in the height of the 
+# display.  The Selection and Credit displays always show only one line.
+#
+# color and bgcolor - Sets the color of the font and the color of the 
+# display background.  See the note on how to specify colors above.
+
+[Selection]
+
+# SelectionMethod: Alphanumeric,Numeric,Alpha
+SelectionMethod=Numeric
+UseZero=True
+UseTrackZero=False
+HighNumber=9
+DiscAddress=Absolute
+
+[Display1]
+# Now Playing display
+enabled=True
+x=101
+y=545
+w=400
+h=80
+lines=4
+color=palegreen
+bgcolor=black
+
+[Display2]
+# Song List display
+enabled=True
+x=525
+y=545
+w=484
+h=80
+lines=4
+color=palegreen
+bgcolor=black
+
+[Display3]
+# Selection display
+enabled=True
+x=817
+y=700
+w=117
+h=32
+color=orangered
+bgcolor=black
+
+[Display4]
+# Credit Display
+enabled=True
+x=948
+y=700
+w=48
+h=32
+color=orangered
+bgcolor=black
+
+[Display5]
+# Cover art display
+enabled=True
+x=12
+y=545
+w=80
+h=80
+bgcolor=black
+
+
+[TitleStrips]
+# The background file is scaled and stretched to fit the Width and Height below
+
+# Background=jb45lb01.jpg
+
+# bgcolor is only seen if no title strip image is specified
+
+bgcolor=101010
+
+SongsPerStrip=13
+Width=480
+Height=244
+FontSmoothing=true
+DefaultAlbumArt=defcdart.jpg
+CDHeader=Top
+
+FontFocusColor=cyan
+FocusColor=ivory
+ShadowColor=lightslategray
+
+# Animation types: None, FlipHorizontal, FlipVertical, SlideHorizontal, or SlideVertical
+Animation=SlideHorizontal
+
+
+[StripGrid]
+x=18
+y=21
+rows=2
+cols=2
+rowspace=7
+colspace=27
+CoverArtSide=left
+CoverArtSpace=4
+
+[Icon1]
+x=37
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_PREVPG
+
+[Icon2]
+x=83
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_NEXTPG
+
+[Icon3]
+x=151
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_1
+
+[Icon4]
+x=198
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_2
+
+[Icon5]
+x=244
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_3
+
+[Icon6]
+x=291
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_4
+
+[Icon7]
+x=338
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_5
+
+[Icon8]
+x=384
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_6
+
+[Icon9]
+x=431
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_7
+
+[Icon10]
+x=477
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_8
+
+[Icon11]
+x=524
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_9
+
+[Icon12]
+x=570
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_0
+
+[Icon13]
+x=617
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_SELECT
+
+[Icon14]
+x=663
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_POPULAR
+
+[Icon15]
+x=710
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_CLEAR
+
+[Icon16]
+x=755
+y=687
+w=40
+h=57
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_RANDOM
+
+##########################################################
+#
+# Sounds Section
+#
+# Sets sound effects to respond to jukebox messages.
+# To respond to a message being "un-set", put a minus sign
+# before the message name.  The message BTN_ANY will 
+# respond to any BTN message.  See readme.txt for a list 
+# of available messages.
+#
+##########################################################
+
+[Sounds]
+BTN_COIN1=coin.wav
+BTN_COIN2=coin.wav
+BTN_COIN3=coin.wav
+BTN_COIN4=coin.wav
+MSG_INVALID=invalid.wav
+
+

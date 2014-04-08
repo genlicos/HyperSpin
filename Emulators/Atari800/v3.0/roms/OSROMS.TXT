@@ -1,0 +1,140 @@
+Atari 8-bit Operating Systems
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Version 3.3, 6/27/1999.
+By Freddy Offenga (mailto:F.Offenga@student.kun.nl)
+
+
+400/800 10kB OS roms
+~~~~~~~~~~~~~~~~~~~~
+
+Rev. TV    Date        CRC-32      Part Nr(s)
+~~~~ ~~~~~ ~~~~~~~~~~~ ~~~~~~~~~~~ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A    NTSC  (?)         (?)         (?)
+A    PAL   (?)         0x72b3fed4  CO15199, CO15299, CO12399B
+B    NTSC  (?)         0x0e86d61d  CO12499B, CO14599B, 12399B
+B    PAL   (?)         (?)         (?)
+
+
+XL/XE 16kB OS roms
+~~~~~~~~~~~~~~~~~~
+
+Rev. System  Date        CRC-32      Part Nr(s)
+~~~~ ~~~~~~  ~~~~~~~~~~~ ~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~
+10   1200XL  10/26/1982  0xc5c11546  CO60616A, CO60617A
+11   1200XL  12/23/1982  (?)         CO60616B, CO60617B
+1    600XL   03/11/1983  0x643bcc98  CO62024
+2    XL/XE   05/10/1983  0x1f9cd270  CO61598B
+3    800XE   03/01/1985  0x29f133f7  C300717
+4    XEGS    05/07/1987  0x1eaf4002  C101687
+
+
+(?)  This information is missing. If someone can supply this info,
+     please write me an e-mail.
+
+
+NOTES:
+The 400/800 O.S's consist of three ROMs (two 4kB and one 2kB).
+The 1200XL contains two ROMs for the OS (8k each), XL/XE's use a single
+16k ROM and the 16k XEGS OS is stored in a 32k ROM (together with 8k
+BASIC and 8k for Missile Command).
+
+
+Origins of ROM information
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+400/800 rev.A NTSC      Could exist, since the PAL version exists and
+                        rev.A is mentioned in the rev.B source code.
+400/800 rev.A PAL       All info found in two Atari 400's and Atari 800
+                        ROM module CX801.P
+400/800 rev.B NTSC      Information from a ROM dump and the rev.B source
+                        listing. The part numbers were listed in the
+                        catalog from 'Best Electronics'. According to
+                        'Mapping the Atari' rev.B ROMs have a 'B' at the
+                        end of the part number, therefore I figure these
+                        part numbers are from rev.B.
+400/800 rev.B PAL       Could exist, since the NTSC version exists and
+                        there's some conditional PAL/NTSC assembly in
+                        the rev.B source code
+1200XL rev.10 PAL/NTSC  All info found in an Atari 1200XL. The XL/XE
+                        rev.2 source code refers to it as rev.10.
+                        'Best Electronics' calls it rev.A.
+1200XL rev.11 PAL/NTSC  Refered to rev.11 by the XL/XE source code.
+                        'Best Electronics' calls it rev.B.
+XL/XE rev.1             All info found in an Atari 600XL
+XL/XE rev.2             All info found in an Atari 800XL
+XL/XE rev.3             All info found in an 800XE
+XL/XE rev.4             All info found in an Atari XE Game System
+
+
+O.S. Authors and dates
+~~~~~~~~~~~~~~~~~~~~~~
+The following info is from the Atari XL/XE rev.2 source code.
+
+Revision A (400/800)
+D.Crane / A.Miller / L.Kaplan / R.Whitehead
+
+Revision B (400/800)
+Fix several problems.
+M.Mahar / R.S.Scheiman
+
+Revision 10 (1200XL)
+Support 1200XL, add new features.
+H.Stewart / L.Winner / R.S.Scheiman /
+Y.M.Chen / M.W.Colburn                          10/26/82
+
+Revision 11 (1200XL)
+Fix several problems.
+R.S.Scheiman                                    12/23/82
+
+Revision 1 (600XL/800XL)
+Support PBI and on-board BASIC.
+R.S.Scheiman / R.K.Nordin / Y.M.Chen            03/11/83
+
+Revision 2 (600XL/800XL)
+Fix several problems.
+R.S.Scheiman                                    05/10/83
+Bring closer to coding standard (object unchanged)
+R.K.Nordin                                      11/01/83
+
+
+Vapour-ware
+~~~~~~~~~~~
+The following OS roms originate from rare Atari 8-bit systems.
+Since I don't own any of these (unfortunately), I don't have much
+information about these roms. Who can help me?
+
+I've got two 16K rom dumps from the 1450XLD. Both ID's are rev.3.
+The first dated 3/23/1984 comes from the 'Pooldisk Too' CD-ROM
+(filename: 1540os3.v0) and the second dated 6/21/1984 was send to
+me by Nir Dary (filename: os1450.128). Main differences between
+these two are in the first 3K ($C000 - $CBFF).
+
+The XL/XE OS rev.3B is from an Atari from Arabia. It's probably based
+on rev.3. There are changes in the fonts (Arab characters) and several
+patches in the code. More info at:
+http://www.savetz.com/vintagecomputers/arabic65xe/
+
+Rev. Found in Size  CRC-32      Date
+~~~~ ~~~~~~~~ ~~~~~ ~~~~~~~~~~~ ~~~~~~~~~~
+3    1450XLD  16kB  0x0d477aa1  3/23/1984
+3    1450XLD  16kB  0xd425a9cf  6/21/1984
+3B   65XE     16kB  0xf0a236d3  7/21/1984
+
+
+References
+~~~~~~~~~~
+- The modified september Atari 400/800 computer operating system
+  listing, revision B, (c)1982 Atari.
+- The Atari O.S. source code rev.2, (c)1984 Atari.
+- Atari XL addendum Atari home computer system operating system
+  manual: supplement to Atari 400/800 technical reference notes.
+- Best Electronics, catalog of Atari 8-bit parts.
+- Mapping the Atari, revised edition, Ian Chadwick, Compute! books
+  publication, 1985.
+
+
+Credits
+~~~~~~~
+Special thanks to Nir Dary for the rev.2 source code, rom dumps and
+the 1200XL. It's in good hands.
+

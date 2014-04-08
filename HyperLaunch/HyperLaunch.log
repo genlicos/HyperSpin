@@ -1,0 +1,40 @@
+[code]
+18:39:47:547 | HL |     INFO  | +N/A   | Main - HyperLaunch v3.0.0.9
+18:39:47:548 | HL |     INFO  | +0     | Main - System Specs:
+					HyperLaunch Dir: C:\Projects\HyperSpin\HyperLaunch
+					OS: WIN_8
+					Architecture: 64-bit (might not be accurate)
+					OS Language: English_United_States
+					OS Admin Status: No
+					Monitor #1 (\\.\DISPLAY1): 1920x1080 (1920x1040 work)
+					Monitor #2 (\\.\DISPLAY2): 3840x1080 (3840x1080 work)
+					AutoHotkey Path: C:\Program Files\AutoHotkey\AutoHotkey.exe
+					AHK Version: 1.1.09.04
+					Unicode: No
+18:39:47:548 | HL |     INFO  | +0     | Main - HyperSpin.exe coordinates are x y w h
+18:39:47:548 | HL |     INFO  | +0     | CheckFile - Checking if C:\Projects\HyperSpin\HyperLaunch\HyperLaunch.exe exists
+18:39:47:548 | HL |     INFO  | +0     | CheckFile - Checking if C:\Projects\HyperSpin\Databases\Main Menu\Main Menu.xml exists
+18:39:47:598 | HL |     INFO  | +47    | Main - HyperLaunch launched directly
+18:39:53:404 | HL |     INFO  | +5819  | Main - HyperLaunch received "Nintendo Game Boy" and "Asteroids"
+18:39:53:411 | HL |     INFO  | +0     | Main - Asteroids is using the default emulator: Bgb
+18:39:53:411 | HL |     INFO  | +0     | Main - Checking for a [Bgb] section in C:\Projects\HyperSpin\HyperLaunch\Settings\Nintendo Game Boy\Emulators.ini
+18:39:53:411 | HL |     INFO  | +0     | Main - Checking for a [Bgb] section in C:\Projects\HyperSpin\HyperLaunch\Settings\Global Emulators.ini
+18:39:53:411 | HL |     INFO  | +0     | Main - Found [Bgb] in C:\Projects\HyperSpin\HyperLaunch\Settings\Global Emulators.ini
+18:39:53:411 | HL |     INFO  | +0     | CheckFile - Checking if C:\Projects\HyperSpin\HyperLaunch\Modules\Bgb\Bgb.ahk exists
+18:39:53:416 | HL |     INFO  | +0     | Main - CRC Check - CRC matches, this is an official unedited module.
+18:39:53:416 | HL |     INFO  | +0     | Main - Asteroids will use module: C:\Projects\HyperSpin\HyperLaunch\Modules\Bgb\Bgb.ahk
+18:39:53:427 | HL |     INFO  | +16    | Main - Using standard method with "Rom Extensions" SkipChecks or without any SkipChecks.
+18:39:53:435 | HL |     INFO  | +15    | Main - INI Keys read
+18:39:53:435 | HL |     INFO  | +0     | CheckFile - Checking if C:\Projects\HyperSpin\HyperLaunch\Module Extensions\7z.exe exists
+18:39:53:479 | HL |     INFO  | +31    | CheckFile - Checking if C:\Projects\HyperSpin\HyperLaunch\Module Extensions\7z.dll exists
+18:39:53:502 | HL |     INFO  | +32    | CheckPaths - Started
+18:39:56:190 | HL |    ERROR  | +2683  | Cannot find Rom
+"Asteroids"
+In any Rom_Paths provided:
+"C:\Projects\HyperSpin\Roms\Nintendo Game Boy"
+With any provided Rom_Extension:
+"7z|zip|gb|gbc"
+18:39:56:190 | HL |     INFO  | +0     | ExitScript - Started
+18:39:56:208 | HL |     INFO  | +15    | SystemCursor - Restoring mouse cursor
+18:39:56:218 | HL |     INFO  | +16    | ExitScript - Ended
+[/code]

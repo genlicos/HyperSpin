@@ -1,0 +1,392 @@
+# DOSCab/WinCab Jukebox Skin File
+# Version 3.1
+# By Chris La Mantia
+
+# Notes:
+# - Supported image formats at this time are JPG, BMP, LBM, PCX, and TGA.
+# - Colors may be specified as hexadecimal RGB codes (FFA0CC) or by name.
+#   A reference to named colors can be found in docs/colors.htm.
+
+[skin]
+# All of the dimensions of objects in this file are relative to 
+# the background image.
+
+Author = Chris La Mantia
+Description = Classic 45RPM-based jukebox
+SkinVersion = 4.0
+FormatVersion = 2
+Notes = 
+background = bgmain.jpg
+
+[Timers]
+# These timers are specified in hundredths of a second.  
+# Pre and Post song delays default to 0, Inter (between)
+# song delay defaults to 200 (2 seconds) if Pre and 
+# Post are 0, otherwise it defaults to 0.
+
+PreSongDelay = 200
+PostSongDelay = 100
+InterSongDelay = 0
+
+
+[Fonts]
+# Note: The "Small" fonts are not yet implemented.
+
+TitleFont = bluehigh.ttf
+TitleFontSize = 26
+TitleFontCondensed = bluecond.ttf
+TitleFontCondensedSize = 24
+TitleFontSmall = bluecond.ttf
+TitleFontSmallSize = 13
+TitleFontColor = Black
+TitleFontCase = UpperCase
+TitleFontAddQuotes = True
+TitleFontQuoteSymbol = "
+
+
+# ArtistFont = bluehigh.ttf
+# ArtistFontSize = 22
+# ArtistFontCondensed = bluecond.ttf
+# ArtistFontCondensedSize = 18
+# ArtistFontSmall
+# ArtistFontColor = Black
+# ArtistFontAddQuotes = False
+
+# AlbumFont
+# AlbumFontCondensed
+# AlbumFontSmall
+# AlbumFontColor
+
+# TitleAddressFont
+# TitleAddressFontColor
+
+# CDAddressFont
+# CDAddressFontColor
+
+FixedFont=jbdotmat.fnt
+
+
+[Selection]
+
+# SelectionMethod: Alphanumeric,Numeric
+SelectionMethod=AlphaNumeric
+
+# SelectionPattern: Normal, GridIndex (Single or Double strip only), SideIndex (Double strip only)
+SelectionPattern=Normal
+UseZero=False
+HighLetter=D
+HighNumber=4
+
+
+# Display definitions
+#
+# There are four displays: the Now Playing display, the Coming Up/Most 
+# Popular Songs display, the Selection display, and the Credit display.
+# Status messages appear on the Coming Up display.
+#
+# Displays have the following parameters:
+#
+# enabled - Set to True to enable the display, False to disable it.  
+# You may, for example, want to disable the Credit display if your
+# jukebox is not set to accept credits.
+#
+# x, y, w, and h - The position and size of the display.  These are all 
+# relative to the skin background image and not the screen resolution.
+#
+# lines - Sets the number of lines used by the Now Playing and Coming Up 
+# displays.  The size of the dot-matrix display font will automatically
+# be adjusted to fit the specified number of lines in the height of the 
+# display.  The Selection and Credit displays always show only one line.
+#
+# color and bgcolor - Sets the color of the font and the color of the 
+# display background.  See the note on how to specify colors above.
+
+
+[Display1]
+# Now Playing display
+enabled=True
+fontcase=UpperCase
+x=152
+y=200
+w=292
+h=78
+lines=4
+color=palegreen
+bgcolor=transparent
+
+[Display2]
+# Song List display
+enabled=True
+fontcase=UpperCase
+x=577
+y=200
+w=292
+h=78
+lines=4
+color=palegreen
+bgcolor=transparent
+
+[Display3]
+# Selection display
+enabled=True
+x=485
+y=347
+w=56
+h=24
+color=palegreen
+bgcolor=202020
+
+[Display4]
+# Credit Display
+enabled=True
+x=485
+y=299
+w=56
+h=24
+color=palegreen
+bgcolor=202020
+
+[TitleStrips]
+# The image file is scaled and stretched to fit the Width and Height below
+
+Background=jb45lb01.jpg
+
+# bgcolor is only seen if no title strip image is specified
+
+bgcolor=white
+
+SongsPerStrip=Double
+Width=301
+Height=100
+StripCount=8
+FontSmoothing=true
+FontFocusColor=Navy
+FocusColor=MediumBlue
+ShadowColor=Black
+
+# Animation types: None, FlipHorizontal, FlipVertical, SlideHorizontal, or SlideVertical
+Animation=SlideHorizontal
+
+[StripGrid]
+x=165
+y=319
+rows=4
+cols=2
+rowspace=30
+colspace=92
+order=Horizontal
+
+[Icon1]
+x=464
+y=193
+w=93
+h=94
+OnImage=instron.bmp
+OffImage=instroff.bmp
+Clickable=False
+Action=MSG_CREDITS
+
+[Icon2]
+x=624
+y=281
+w=11
+h=11
+OnImage=r-ledoff.bmp
+OffImage=r-ledon.bmp
+Clickable=False
+Action=MSG_POPULAR
+
+[Icon3]
+x=738
+y=281
+w=11
+h=11
+OnImage=r-ledon.bmp
+OffImage=r-ledoff.bmp
+Clickable=False
+Action=MSG_POPULAR
+
+[Icon4]
+x=477
+y=413
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_A
+
+[Icon5]
+x=514
+y=413
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_1
+
+[Icon6]
+x=477
+y=450
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_B
+
+[Icon7]
+x=514
+y=450
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_2
+
+[Icon8]
+x=477
+y=487
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_C
+
+[Icon9]
+x=514
+y=487
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_3
+
+[Icon10]
+x=477
+y=524
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_D
+
+[Icon11]
+x=514
+y=524
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_4
+
+[Icon12]
+x=477
+y=561
+w=70
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_SELECT
+
+[Icon13]
+x=477
+y=598
+w=70
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_CLEAR
+
+[Icon14]
+x=477
+y=635
+w=70
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_POPULAR
+
+[Icon15]
+x=477
+y=672
+w=33
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_PREVPG
+
+[Icon16]
+x=514
+y=672
+w=33
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_NEXTPG
+
+[Icon17]
+x=477
+y=746
+w=70
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_PAUSE
+
+[Icon18]
+x=477
+y=783
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_VOL_DOWN
+OffImage=btnvoldn.jpg
+
+[Icon19]
+x=514
+y=783
+w=33
+h=33
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_VOL_UP
+OffImage=btnvolup.jpg
+
+
+
+##########################################################
+#
+# Sounds Section
+#
+# Sets sound effects to respond to jukebox messages.
+# To respond to a message being "un-set", put a minus sign
+# before the message name.  The message BTN_ANY will 
+# respond to any BTN message.  See readme.txt for a list 
+# of available messages.
+#
+##########################################################
+
+[Sounds]
+BTN_COIN1=coin.wav
+BTN_COIN2=coin.wav
+BTN_COIN3=coin.wav
+BTN_COIN4=coin.wav
+MSG_PRESONG=recpop.wav
+MSG_INVALID=invalid.wav
+

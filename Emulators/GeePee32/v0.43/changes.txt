@@ -1,0 +1,59 @@
+VERSION 0.43
+------------
+* fixed : DirectX joystick/gamepad code is now anti-polling proof.
+* fixed : smartmedia file/directory corruption.
+* fixed : flash verify failure at address 0x2AAA.
+* added : automatic refresh option for memory editor.
+
+VERSION 0.40
+------------
+* added : improved keyboard and joypad configuration.
+* added : more layouts for gamepads (thanks to Don Miguel, Darkfader, Clem and FagEmul).
+* added : keyboard and joystick/gamepad can be used simultaneously.
+
+VERSION 0.39
+------------
+* added : joypad support (both in DirectX and SDL version).
+* added : pause, resume and reset button to the main window.
+* added : UART0/1 can be re-routed to host COM port.
+* fixed : improved compatibitly with newer video cards.
+
+PRIVATE 36
+----------
+* added   : emulation of 1BPP LCD, primarily used by Mr.Spiv's "boot firmware selector" and "BIOS monitor".
+* added   : emulation of UART0/1 hardware (please note that only "none" and "loopback" work right now).
+* added   : emulation of eeprom writes, primarily used by Mr.Spiv's "boot firmware selector" and PacRom.
+* added   : eeprom is now saved to file (iic.bin) when emulator is closed.
+* changed : removed splash screen.
+* added   : eeprom data is accessible with memory editor, starting at address 0x15400100 (for debug purposes).
+* added   : loading of AXF and ELF files (buggy, but who cares?).
+* changed : SMC file is only changed/saved after user confirmation.
+* ... and a lot of other stuff I did not keep track of ... (sorry, no sound in this version).
+
+PRIVATE 33
+----------
+* fixed : IIS offset started at 0x15500000 instead of 0x15508000 in Memory Editor window (DirectX version)
+* added : preliminary sound support.
+
+PRIVATE 32
+----------
+* added : frameskip option.
+* fixed : options (zoom, frameskip, ..) are saved when closing program.
+
+PRIVATE 31
+----------
+* added : LCD scanline + DMA emulation (for wicked.fxe, offscr.fxe, scr1.fxe).
+* added : DMA0 emulation (for mummu.fxe).
+* added : cheat finder window (alpha stage).
+
+PRIVATE 26
+----------
+* fixed : when you pressed a key, smc emulation could get corrupted, resulting in a crash.
+* added : controls are now configurable.
+* fixed : memory editor page up/down moved only 1 row instead of whole page.
+
+PRIVATE 25
+----------
+* SMC emulation works directly on virtual smc file instead of being loaded into mem, no caching yet.
+* Improved IIC emulation to make pacrom firmware run (very long IIC read time for now).
+  Simply place a IIC.BIN file in the same dir as the emu, I've included my own to get you started.

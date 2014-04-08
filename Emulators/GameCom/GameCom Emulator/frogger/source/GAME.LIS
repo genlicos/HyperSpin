@@ -1,0 +1,4532 @@
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page    1
+
+
+      1                 	title   Fighter Mega Mix Common Bank program/Entry Point
+      2                 	type    8521
+      3                 
+      4                 	include frogger.tmp
+      4+                             data
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; Game Equates
+      4+                ;
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+     0008       MaxPlayers	equ	8
+      4+     000C       MaxLevels	equ	12
+      4+     0009       NumBands	equ	9
+      4+     0004       NumStrips	equ	4
+      4+     0008       NumAnims	equ	8
+      4+     0012       NumSAnims	equ	NumBands*2
+      4+     0013       NumSounds	equ	19
+      4+                
+      4+     4E00       TimerFull	equ	04e00h	;78*256 is full time per level
+      4+     0007       TimerDec	equ	7	;timer decrease per loop
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; Game Equates: Game.Com Control
+      4+                ;
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+     0000       ini_game        EQU     0   ; INITIAL
+      4+     0001       exe_game        EQU     1   ; EXECUTE
+      4+     0002       close_game      EQU     2   ; CLOSE GAME
+      4+     0003       reset_game      EQU     3   ; RESET
+      4+     0426       frogger_id      equ     0426h
+      4+                
+      4+     0000       override        equ     00h
+      4+     0001       composite       equ     01h
+      4+     0040       left_right      equ     40h
+      4+     0080       up_down         equ     80h
+      4+     00C0       lr_up           equ     0c0h
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; Game Equates: Scoring
+      4+                ;
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+     000A       SCORE_forward equ	10
+      4+     0032       SCORE_home	equ	50
+      4+     03E8       SCORE_five	equ	1000
+      4+     00C8       SCORE_lady	equ	200
+      4+     00C8       SCORE_fly	equ	200
+      4+     000A       SCORE_time	equ	10
+      4+                
+      4+                ;============================================================================
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page    2
+
+
+      4+                ;
+      4+                ; Game Equates: Home Bases
+      4+                ;
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+     000C       HomeBase1	equ	12
+      4+     0034       HomeBase2	equ	52
+      4+     005C       HomeBase3	equ	92
+      4+     0084       HomeBase4	equ	132
+      4+     00AC       HomeBase5	equ	172
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; Game Structures
+      4+                ;
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+                ; ROM
+      4+                
+      4+                	; Game Data
+      4+                                         ;                 struct      
+      4+     0000       GameLevel        equ 0   ;GameLevel        word    1   
+      4+     0002       GameMult         equ 2   ;GameMult         byte    1   
+      4+     0003       GameDiv          equ 3   ;GameDiv          byte    1   
+      4+     0004       GameFrogX        equ 4   ;GameFrogX        byte    1   
+      4+     0005       GameFrogY        equ 5   ;GameFrogY        byte    1   
+      4+     0006       GameSize         equ 6   ;GameSize         size        
+      4+                
+      4+                	; Level Data
+      4+                                         ;                 struct      
+      4+     0000       LevelFlags       equ 0   ;LevelFlags       byte    1   
+      4+                ;                equ 1   ;;                byte    1   
+      4+     0002       LevelBaseU       equ 2   ;LevelBaseU       byte    1   
+      4+     0003       LevelBaseF       equ 3   ;LevelBaseF       byte    1   
+      4+     0004       LevelIncM        equ 4   ;LevelIncM        byte    1   
+      4+     0005       LevelIncD        equ 5   ;LevelIncD        byte    1   
+      4+     0006       LevelDecM        equ 6   ;LevelDecM        byte    1   
+      4+     0007       LevelDecD        equ 7   ;LevelDecD        byte    1   
+      4+     0008       LevelStrips      equ 8   ;LevelStrips      byte    4   ;NumStrips
+      4+     000C       LevelSize        equ 12  ;LevelSize        size        
+      4+                
+      4+                	;Level Data: strip byte values
+      4+                
+      4+     0000       StripStill	equ	0	;Frog doesn't move and is safe
+      4+     0001       StripMove	equ	1	;Frog is moving and is safe
+      4+     0002       StripHome	equ	2	;Frog has reached home
+      4+     0003       StripWall	equ	3	;Frog can't go here: wall
+      4+     0004       StripWDead	equ	4	;Frog dies in water
+      4+     0005       StripXDead	equ	5	;Frog Dies not in water
+      4+     000A       StripBDead	equ	10	;Frog can't move here, trying dies
+      4+                
+      4+                	; Anim Data
+      4+                                         ;                 struct      
+      4+     0000       AnimStrip        equ 0   ;AnimStrip        byte    1   ;the art strip holding the anim
+      4+     0001       AnimWidth        equ 1   ;AnimWidth        byte    1   ;width of anim in 8 pixel pieces
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page    3
+
+
+      4+     0002       AnimNum          equ 2   ;AnimNum          byte    1   ;Number of frames in animation
+      4+     0003       AnimPal          equ 3   ;AnimPal          byte    1   ;Palette
+      4+     0004       AnimStripX       equ 4   ;AnimStripX       byte    1   ;Number of 8 bit pixels into strip
+      4+     0005       AnimMove         equ 5   ;AnimMove         byte    1   ;Number of pixels movement each frame
+      4+     0006       AnimSize         equ 6   ;AnimSize         size        ;size of header
+      4+     0006       AnimTicks        equ 6   ;AnimTicks        byte    1   ;start of frame tickers
+      4+                
+      4+                	; Strip Animation
+      4+                                         ;                 struct      
+      4+     0000       SAnimNum         equ 0   ;SAnimNum         byte    1   ;number of frames in the animation
+      4+     0001       SAnimTick        equ 1   ;SAnimTick        byte    1   ;Number of ticks between frames
+      4+     0002       SAnimStrips      equ 2   ;SAnimStrips      byte    1   ;The first strip in the list of animating strips
+      4+                
+      4+                ; RAM
+      4+                	; Player Data
+      4+                                         ;                 struct      
+      4+     0000       PlayerScore      equ 0   ;PlayerScore      word    1   
+      4+     0002       PlayerLevel      equ 2   ;PlayerLevel      byte    1   
+      4+     0003       PlayerLives      equ 3   ;PlayerLives      byte    1   
+      4+     0004       PlayerHomeF      equ 4   ;PlayerHomeF      byte    1   
+      4+     0005       PlayerUnused     equ 5   ;PlayerUnused     byte    1   
+      4+     0006       PlayerVSize      equ 6   ;PlayerVSize      size        
+      4+                
+      4+                	; Level Data
+      4+                                         ;                 struct      
+      4+     0000       LevelSpeedU      equ 0   ;LevelSpeedU      byte    1   ;composite (current) speed
+      4+     0001       LevelSpeedF      equ 1   ;LevelSpeedF      byte    1   ;
+      4+     0002       LevelVFlags      equ 2   ;LevelVFlags      byte    1   
+      4+     0003       LevelOffset      equ 3   ;LevelOffset      byte    1   ;offset (LevelStrips - +3) to left strip number
+      4+     0004       LevelPageA       equ 4   ;LevelPageA       byte    1   ;Art page
+      4+     0005       LevelYoffA       equ 5   ;LevelYoffA       byte    1   ;Art yoffset
+      4+     0006       LevelAddr1       equ 6   ;LevelAddr1       word    1   ;Left Strip table address
+      4+     0008       LevelAddr2       equ 8   ;LevelAddr2       word    1   ;Right strip table address
+      4+     000A       LevelPage1       equ 10  ;LevelPage1       byte    1   ;Left or unmoving art page
+      4+     000B       LevelPage2       equ 11  ;LevelPage2       byte    1   ;Right or unused art page
+      4+     000C       LevelYoff1       equ 12  ;LevelYoff1       byte    1   ;Left or unmoving art offset
+      4+     000D       LevelYoff2       equ 13  ;LevelYoff2       byte    1   ;Right or unused art offset
+      4+     000E       LevelXoff1       equ 14  ;LevelXoff1       byte    1   ;Left X offset for art (pixels)
+      4+     000F       LevelXofff       equ 15  ;LevelXofff       byte    1   ;Left X offset fraction (pixels)
+      4+     0010       LevelVSize       equ 16  ;LevelVSize       size        
+      4+                
+      4+                	; Animation Data
+      4+                                         ;                 struct      
+      4+     0000       AnimBand         equ 0   ;AnimBand         word    1   ;Band animation is on
+      4+     0002       AnimAnim         equ 2   ;AnimAnim         word    1   ;which animation am I controlling
+      4+     0004       AnimXOff         equ 4   ;AnimXOff         word    1   ;offset from left edge of screen (+100h)
+      4+     0006       AnimXOffH        equ 6   ;AnimXOffH        byte    1   ;X offset high value
+      4+     0007       AnimFNum         equ 7   ;AnimFNum         byte    1   ;the frame number currently diplayed
+      4+     0008       AnimFTick        equ 8   ;AnimFTick        byte    1   ;how many ticks left till anim changes
+      4+     0009       AnimRange        equ 9   ;AnimRange        byte    1   ;width of animation area in pixels
+      4+     000A       AnimVFlags       equ 10  ;AnimVFlags       byte    1   ;flags
+      4+     000B       AnimXRel         equ 11  ;AnimXRel         word    1   ;relative position in area U.F
+      4+     000D       AnimYOff         equ 13  ;AnimYOff         byte    1   ;offset from top of screen
+      4+     000E       AnimCall         equ 14  ;AnimCall         byte    1   ;routine to call (1 to ...)
+      4+     000F       AnimVSize        equ 15  ;AnimVSize        size        
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page    4
+
+
+      4+                
+      4+                	;Strip Animation
+      4+                                         ;                 struct      
+      4+     0000       SAnimTime        equ 0   ;SAnimTime        byte    1   ;Time left before change
+      4+     0001       SAnimCur         equ 1   ;SAnimCur         byte    1   ;current strip in animation
+      4+     0002       SAnimVSize       equ 2   ;SAnimVSize       size        
+      4+                
+      4+                ; these two flags are also copied to LevelVFlag
+      4+     0001       LevelFlagS	equ	01h  	;Art does not move
+      4+     0002       LevelFlagH	equ	02h	;Art doesn't h-flip on direction change
+      4+                
+      4+     0080       LevelVFlagD	equ	80h	;80h= left to right
+      4+     0040       LevelVFlagH	equ	40h	;last byte processed was anim header
+      4+     0020       LevelVFlagT	equ	20h	;last byte processed was anim non-header
+      4+                
+      4+     0080       AnimVFlagD	equ	80h	;anim moving left to right
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; Game States
+      4+                ;
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+     0000       Game_Open	equ	0
+      4+     0001       Game_Menus	equ	1
+      4+     0002       Game_Init	equ	2
+      4+     0003       Game_Next	equ	3	;go to next (or first, or only)
+      4+     0004       Game_Play	equ	4
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; Zero Page Ram (0beh-0ffh)
+      4+                ;
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+00BE                         org     0beh
+      4+00BE            HoldSP      defs    2                   ;hold the game SP
+      4+00C0            CursorX     defs    1                   ;Cursor X,Y
+      4+00C1            CursorY     defs    1                   ;
+      4+00C2            GameState   defs    1                   ;game state
+      4+00C3            NumPlayers  defs    1                   ;1-MaxPlayers
+      4+00C4            GameMode    defs    1                   ;0=Arcade, 1=Tiger
+      4+00C5            Difficulty  defs    1                   ;0=Easy, 1=Arcade
+      4+00C6            Lives       defs    1                   ;3-5
+      4+00C7            Continue    defs    1                   ;0=Off, 1=On
+      4+00C8            StartLevel  defs    1                   ;1-5
+      4+00C9            Paused      defs    1                   ;1=game paused
+      4+00CA            SfxOn       defs    1                   ;1=Sound Effects on
+      4+00CB            MusicOn     defs    1                   ;1=Music On
+      4+00CC            DemoMode    defs    1                   ;1=Demo, 0=regular
+      4+00CD            sound_flag	defs	1
+      4+00CE            Timer	defs	2	;Time on level remaining (4E00h=full time)
+      4+                
+      4+00D0            temp0w      defs    2                   ;work areas word
+      4+00D2            temp1w      defs    2                   ;work areas word
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page    5
+
+
+      4+00D4            temp0       defs    1                   ;work areas
+      4+00D5            temp1       defs    1                   ;work areas
+      4+00D6            temp2       defs    1                   ;work areas
+      4+                
+      4+                	; Game Data
+      4+                
+      4+00D7            NextPlayer	defs	1
+      4+00D8            PlayerVAddr	defs	2
+      4+00DA            LevelAddr	defs	2
+      4+                
+      4+                	; Frog animation controls
+      4+                
+      4+00DC            FrogX	defs	2	;Current screen X
+      4+00DE            FrogY	defs	1	;Current screen Y
+      4+00DF            FrogMinY	defs	1	;Current minimum Y for scoring
+      4+00E0            FrogTick	defs	1	;Ticks till next move
+      4+00E1            FrogDir	defs	1	;1=S, 2=N, 3=E, 4=W, 0=sitting
+      4+00E2            FrogCnt	defs	1	;Count of remaining animations
+      4+00E3            FrogFlags	defs	1	;Frog Flags
+      4+00E4            FrogPage	defs	1	;page of frog art
+      4+00E5            FrogArtX	defs	1	;x of frog art
+      4+00E6            FrogArtY	defs	1	;y of frog art
+      4+00E7            FrogRest	defs	1	;resting animation
+      4+                
+      4+00E8            TargetX	defs	1	;Where Frog will be for texting
+      4+00E9            TargetY	defs	1	;
+      4+                
+      4+00EA            LastKey	defs	1	;Last Key entered
+      4+                
+      4+00EB            hold_byte1	defs	1
+      4+                
+      4+     0080       FrogFlagM	equ	80h	;on if moving with strip
+      4+                
+      4+     0001       FrogDirS	equ	1	;moving south
+      4+     0002       FrogDirN	equ	2	;moving north
+      4+     0003       FrogDirE	equ	3	;moving east
+      4+     0004       FrogDirW	equ	4	;moving west
+      4+     0005       FrogDirXW	equ	5	;dying waterdeath
+      4+     0006       FrogDirXL	equ	6	;dying landdeath
+      4+                
+      4+     0002       FrogSpeed	equ	2	;Number of ticks per move
+      4+     0004       FrogMoves	equ	4	;Number of movement pixels
+      4+     0004       FrogFrames	equ	4	;Number of frames
+      4+                
+      4+00EC            ZZZ	defs	10
+      4+                
+      4+00F6            testff:
+      4+                            if      testff .gt. 0ffh
+      4+                            error 	Too much data in zero page ram
+      4+                            endif
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; Non-Zero page Ram (208h-37fh)
+      4+                ;
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page    6
+
+
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+0208             	org	208h
+      4+0208            PlayerData	defs	MaxPlayers*PlayerVSize
+      4+0238            LevelData	defs	NumBands*LevelVSize
+      4+02C8            AnimData	defs	NumAnims*AnimVSize
+      4+0340            SAnimData	defs	NumSAnims*SAnimVSize
+      4+                
+      4+0364            new_melody_ptr defs 1
+      4+0365            DemoPtr	defs	2
+      4+0367            DemoCnt	defs	1
+      4+                
+      4+0368            page_ptr1	defs	2
+      4+036A            index0	defs	1
+      4+036B            index1	defs	1
+      4+036C            index2	defs	1
+      4+036D            index3	defs	1
+      4+                
+      4+036E            test37f:
+      4+                	if	test37f .gt. 37fh
+      4+                	error	Too much data in non-zero page ram
+      4+                	endif
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; User input equates
+      4+                ;
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+                ;	001-013	 ;row 0 of screen, column 0 to 12
+      4+                ;	...	 ;...
+      4+                ;	118-082h ;row 9 of screen, column 0 to 12
+      4+                ;
+      4+                ;	spot on screen = row*13+column+1
+      4+                
+      4+     0082       UserScreen	equ	082h	;highest screen press
+      4+                
+      4+     0083       UserUp	equ	083h	;joypad up
+      4+     0084       UserDown	equ	084h	;joypad down
+      4+     0085       UserLeft	equ	085h	;joypad left
+      4+     0086       UserRight	equ	086h	;joypad right
+      4+                
+      4+     0087       UserMenu	equ	087h	;Menu button
+      4+     0089       UserSound	equ	089h	;Sound button
+      4+     008A       UserPause	equ	08ah	;Pause button
+      4+                
+      4+     008B       UserA	equ	08bh	;A button
+      4+     008C       UserB	equ	08ch	;B button
+      4+     008D       UserC	equ	08dh	;C button
+      4+     008E       UserD	equ	08eh	;D button
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; Bank definitions
+      4+                ;
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page    7
+
+
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+     0020       program_bank1   equ     020h
+      4+     0021       program_bank2   equ     021h
+      4+     0023       program_bank3   equ     023h
+      4+     0024       program_bank4   equ     024h
+      4+     0025       program_bank5   equ     025h
+      4+     0026       program_bank6   equ     026h
+      4+                
+      4+     0020       bankno_front0 equ   20h
+      4+     0021       bankno_front1 equ   21h
+      4+     0022       bankno_front2 equ   22h
+      4+     0023       bankno_sprite equ   23h
+      4+     0024       bankno_strip  equ   24h
+      4+     0072       bankno_winpic10 equ 72h ;    bankno_winpic9+2
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; Macros
+      4+                ;
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+                ;	; long conditional branches
+      4+                ;
+      4+                ;breq:	macro	?dest
+      4+                ;	br	ne,cont???
+      4+                ;	jmp	eq,?dest
+      4+                ;cont???:
+      4+                ;	endm
+      4+                ;
+      4+                ;brne:	macro	?dest
+      4+                ;	br	eq,cont???
+      4+                ;	jmp	ne,?dest
+      4+                ;cont???:
+      4+                ;	endm
+      4+                ;
+      4+                ;brnz:	macro	?dest
+      4+                ;	br	z,cont???
+      4+                ;	jmp	nz,?dest
+      4+                ;cont???:
+      4+                ;	endm
+      4+                ;
+      4+                ;bruge:	macro	?dest
+      4+                ;	br	ult,cont???
+      4+                ;	jmp	uge,?dest
+      4+                ;cont???:
+      4+                ;	endm
+      4+                ;
+      4+                ;brugt:	macro	?dest
+      4+                ;	br	ule,cont???
+      4+                ;	jmp	ugt,?dest
+      4+                ;cont???:
+      4+                ;	endm
+      4+                ;
+      4+                ;brule:	macro	?dest
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page    8
+
+
+      4+                ;	br	ugt,cont???
+      4+                ;	jmp	ule,?dest
+      4+                ;cont???:
+      4+                ;	endm
+      4+                ;
+      4+                ;brz:	macro	?dest
+      4+                ;	br	nz,cont???
+      4+                ;	jmp	z,?dest
+      4+                ;cont???:
+      4+                ;	endm
+      4+                
+      4+                ;============================================================================
+      4+                ;
+      4+                ; The old stuff here
+      4+                ;
+      4+                ;----------------------------------------------------------------------------
+      4+                
+      4+                ;ASB	include oldstuff.inc
+      4+                
+      4+                            program
+      5                 	include equate.inc
+      5+     0000       DEMO_ROM	equ	0
+      5+                ;------------------------------------------
+      5+                ;	test program
+      5+                ;------------------------------------------
+      5+     0000       KEYTEST		equ	0
+      5+     0000       QWSOUND_TEST	equ	0
+      5+     0001       NEW_GRAPHIC1	equ	1
+      5+     0000       HALTTEST	equ	0
+      5+     0000       SOUND_TEST	EQU	0
+      5+     0001       CURSOR_ENABLE	EQU	1
+      5+     0000       FAST_OPEN	EQU	0
+      5+     0001       NEW_SPEECH	EQU	1		;IMPROVED SPEECH SPEED
+      5+     0000       MANUEL_TEST	EQU	0
+      5+                					;ENABLE BANK SWITCH FOR ISR
+      5+     0050       STARTYR		equ	80		;1994 starting year
+      5+     0120       SKRAM		equ	120h		;start of the kernel RAM
+      5+     0005       TBase		equ	5		;about 5ms timebase of Timer #1
+      5+     0008       MAX_UT		equ	8
+      5+                ;--- Scan key equate -------;
+      5+     0010       MAXKEY		equ	16
+      5+     000A       REPEATTM	equ	10		;500ms
+      5+     0004       SCANFREQ	equ	20/5		;10ms
+      5+     0010       DEBOU_TM	equ	16
+      5+     00A4       ALARM_ALERT_KEY	equ	0a4h
+      5+     00A5       COMM_ERROR	equ	0a5h
+      5+     00A8       WARN_BEEP	equ	0a8h
+      5+     000A       UT_CLK_		equ	50/5	;49.152 ms per count
+      5+                
+      5+     0001       PHONEBOOK_APPL	EQU	1
+      5+     0002       CALENDAR_APPL	EQU	2
+      5+     0003       CALCULATOR_APPL	EQU	3
+      5+     0004       CART_APPL	EQU	4
+      5+     0005       DLO_APPL	EQU	5
+      5+     0006       SOLITAIRE_APPL	EQU	6
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page    9
+
+
+      5+     0007       HISCR_APPL	EQU	7
+      5+                
+      5+     00FF       ENDKEY		EQU	0FFH
+      5+     0088       KEY_ONOFF	EQU	88H
+      5+     0089       KEY_MUTE	EQU	89H
+      5+     0087       KEY_MENU	EQU	87H
+      5+     008A       KEY_PAUSE	EQU	8AH
+      5+     00A0       SPEECH_END	EQU	0A0H
+      5+                
+      5+     0005       MainDataBank	equ	5
+      5+     000C       DSPBANK0	EQU	0ch
+      5+     000D       DSPBANK1	EQU	0dh
+      5+     0005       MainProgBank	equ	5
+      5+     0002       KernelBank	equ	2
+      5+     0003       MainProgBank2	equ	3
+      5+                
+      5+     FC60       START_HISCR	equ	0fc60h
+      5+     FEE0       END_HISCR	equ	0fEE0h
+      5+     0020       LEN_HISCR	equ	32		;32 bytes per hi score record
+      5+     0040       NEW_LEN_HISCR	equ	64		;32 bytes per hi score record
+      5+     0003       DATA_OFFSET	equ	3		;4th position from the record head
+      5+     0001       SEP_CHAR	equ	01h
+      5+                
+      5+     0008       SYS_TX_QSIZE	equ	8
+      5+     0008       SYS_RX_QSIZE	equ	8
+      5+     0000       UT_STOP		equ	00h
+      5+     0001       UT_RUN		equ	01h
+      5+     0002       UT_PAUSE	equ	02h
+      5+                
+      5+                IF DEMO_ROM
+      5+                START_STACK	equ	3ffh
+      5+                ELSE
+      5+     03C0       START_STACK	equ	3c0h
+      5+                ENDIF
+      5+                
+      5+                ;===============================;
+      5+                ;	RP pre-defined value
+      5+                ;===============================;
+      5+     0000       KERNEL_RP	equ	00h
+      5+     0008       DISPLAY_RP	equ	08h
+      5+     0018       CLOCKISR_RP	equ	18h
+      5+     0028       UARTISR_RP	equ	28h
+      5+     0038       SP_TIMER1ISR_RP	equ	38h
+      5+     0048       N_TIMER1ISR_RP	equ	48h
+      5+     0058       SYSTEM_RP	equ	58h
+      5+                
+      6                 	include ram.inc
+      6+     00A0       RX_head		equ	0a0h
+      6+     00A2       RX_tail		equ	0a2h
+      6+     00A4       STPID		equ	0a4h		
+      6+                IF .NOT. NEW_SPEECH
+      6+                sp_end_bank	equ	0a5h
+      6+                sp_end_address	equ	0a6h
+      6+                ELSE
+      6+     00A5       UART_new_ibank	equ	0a5h
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   10
+
+
+      6+     00A6       TMR1_new_ibank	equ	0a6h
+      6+     00A7       PIO_new_ibank	equ	0a7h
+      6+                ENDIF
+      6+     00A8       sp_control	equ	0a8h		;--------------------------
+      6+                					;bit 0 : 0 - stop
+      6+                					;        1 - start
+      6+                					;bit 1 : 0 - PCM
+      6+                					;        1 - ADPCM
+      6+                					;bit 2 : 0 - low nibble
+      6+                					;	 1 - high nibble
+      6+                					;bit 3 : 0 - pause disable
+      6+                					;	 1 - pause enable
+      6+                					;bit 4 : 0 - play mode
+      6+                					;        1 - pause mode
+      6+                					;bit 5 : 0 - enable time out
+      6+                					;        1 - disable time out
+      6+                					;bit 6 : 0 - main menu spinning mode
+      6+                					;        1 - main menu cursor mode
+      6+                					;bit 7 : 0 - normal
+      6+                					;        1 - sound selection screen 
+      6+                					;            entered
+      6+                					;--------------------------
+      6+                IF .NOT. NEW_SPEECH
+      6+                sp_bank		equ	0a9h		;speech data bank
+      6+                sp_address	equ	0aah		;speech data address
+      6+                ELSE
+      6+     00A9       TMR0_new_ibank	equ	0a9h
+      6+     00AA       CLK_new_ibank	equ	0aah
+      6+     00AB       INT_new_ibank	equ	0abh
+      6+                ENDIF
+      6+     00AC       SP_CTR1		equ	0ach		;speech timer
+      6+     00AD       SP_CTR2		equ	0adh		;
+      6+     00AE       TX_head		equ	0aeh		;head pointer of tx queue
+      6+                ;TX_tail		equ	0ach		;tail pointer of tx queue
+      6+     00B0       PVOICE		equ	0b0h
+      6+     00B1       UART_control	equ	0b1h		;-------------------------
+      6+                					;bit 0 : 0 - TX disable
+      6+                					;        1 - TX enable
+      6+                					;bit 1 : 0 - RX disable
+      6+                					;        1 - RX enable
+      6+                					;bit 2 : 0 - system UART isr
+      6+                					;        1 - application defined isr
+      6+                					;bit 3 : 0 - system TX queue
+      6+                					;        1 - appl. TX defined queue
+      6+                					;bit 4 : 0 - system RX queue
+      6+                					;        1 - appl. RX defined queue
+      6+                					;------------------------------------
+      6+                ;kstemp0		equ	0b2h		;kernel use temp 0
+      6+                IF NEW_SPEECH
+      6+     00B2       WDT_new_ibank	equ	0b2h
+      6+     00B3       NMI_new_ibank	equ	0b3h
+      6+                ENDIF
+      6+     00B4       UT_clk		equ	0b4h		;User timer clock
+      6+     00B5       ScanTMR		equ	0b5h		;Key scan timer
+      6+     00B6       RepeatRate	equ	0b6h		;repeat rate counter
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   11
+
+
+      6+     00B7       Oldkey		equ	0b7h		;key history
+      6+     00B8       KEYHEAD		equ	0b8h		;head pointer of key buffer
+      6+     00BA       KEYTAIL 	equ	0bah		;tail pointer of key buffer
+      6+     00BC       SYSFLAG		equ	0bch		;--------------------------
+      6+                					;bit 0 : 1 - initialize from power on
+      6+                					;        0 - no data destroy
+      6+                					;bit 1 : 0 - not turn on unit
+      6+                					;        1 - turn on unit
+      6+                					;bit 2 : 0 - 3 minute time out
+      6+                					;        1 - 5 minute time out
+      6+                					;bit 3 : 0 - even second
+      6+                					;        1 - odd second
+      6+                					;bit 4 : 0 - none
+      6+                					;        1 - warning beep in progress
+      6+                					;bit 5 : 0 - normal sound output
+      6+                					;        1 - no sound output (MUTE)
+      6+                					;bit 6 : 0 - normal timer (4.9152ms)
+      6+                					;	 1 - Speech processing (41.6us)
+      6+                					;bit 7 : 0 - ---
+      6+                					;        1 - quit box asking screen
+      6+                					;--------------------------
+      6+                					
+      6+     00BD       KBDFLAG		equ	0bdh		;--------------------------
+      6+                					;bit 0 : 0 - scan membrane
+      6+                					;        1 - not to scan membrane
+      6+                					;bit 1 : 0 - scan keypad
+      6+                					;        1 - not to scan keypad
+      6+                					;bit 2 : 0 - sleep if no event
+      6+                					;        1 - no sleep if no event
+      6+                					;bit 3 : 0 - scan cycle
+      6+                					;        1 - not a scan cycle
+      6+                					;bit 4 : 0 - repeat key is not allowed
+      6+                					;        1 - repeat key is allowed
+      6+                					;bit 5 : 0 - 
+      6+                					;	 1 - Delay of repeat key
+      6+                					;bit 6 : 0 -
+      6+                					;	 1 - debounce of the key
+      6+                					;bit 7 : 0 -
+      6+                					;        1 - key is held down
+      6+                					;-------------------------
+      6+                ;**************************************************
+      6+                ;
+      6+                ;	User defined vector table
+      6+                ;
+      6+                ;**************************************************
+      6+     0100       UART_new_isr	equ	100h
+      6+     0102       TMR1_new_isr	equ	102h
+      6+     0104       PIO_new_isr	equ	104h
+      6+     0106       TMR0_new_isr	equ	106h
+      6+     0108       CLK_new_isr	equ	108h
+      6+     010A       INT_new_isr	equ	10ah
+      6+     010C       NMI_new_isr	equ	10ch
+      6+     010E       WDT_new_isr	equ	10eh
+      6+     0110       PRN_PORT	equ	110h	;image of the printer port address
+      6+                				;default = 0fff0h
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   12
+
+
+      6+     0112       DMG_timer	equ	112h
+      6+                ;Attack_Buffer	equ	112h
+      6+                ;Defense_Buffer	equ	114h
+      6+                ;Max_attack	equ	116h
+      6+                ;Max_defense	equ	117h
+      6+                ;hit_infoa	equ	118h
+      6+                ;hit_infod	equ	11ah
+      6+     011C       cursor_pos	equ	11ch
+      6+     011D       cursor_tmr	equ	11dh
+      6+     011E       TX_tail		equ	11eh
+      6+     0120       SIGN		equ	SKRAM
+      6+     0124       Year		equ	SIGN+4
+      6+     0125       Month		equ	Year+1
+      6+     0126       Day		equ	Month+1
+      6+     0127       Hour		equ	Day+1
+      6+     0128       Minute		equ	Hour+1
+      6+     0129       Second		equ	Minute+1
+      6+     012A       AYear		equ	Second+1
+      6+     012B       AMonth		equ	AYear+1
+      6+     012C       ADay		equ	AMonth+1
+      6+     012D       AHour		equ	ADay+1
+      6+     012E       AMinute		equ	AHour+1
+      6+     012F       ASecond		equ	AMinute+1
+      6+     0130       KBuff		equ	ASecond+1
+      6+                ;=================================;
+      6+     012A       Call_dest	equ	AYear
+      6+     012D       Cart_Prog_Bank	equ	AHour
+      6+                ;----------------------------------;
+      6+                ;	Main/Kernel
+      6+                ;----------------------------------;
+      6+     0150       UTimer1C	equ	150h		;-------------------------
+      6+                					;User timer 1 control
+      6+                					; 00 - Idle
+      6+                					; 01 - Run
+      6+                					; 02 - Pause
+      6+                					;-------------------------
+      6+     0151       UTimer1H	equ	151h
+      6+     0152       UTimer1L	equ	152h
+      6+     0168       appl_no		equ	168h
+      6+     0169       Melody_Register	equ	169h		;-------------------------
+      6+                					;bit 0 : channel 0 enable
+      6+                					;bit 1-2 : channel 0 instrument
+      6+                					;          00 : piano
+      6+                					;          01 : organ
+      6+                					;          10 : -----
+      6+                					;          11 : -----
+      6+                					;bit 3 : channel 0 output enable
+      6+                					;bit 4 : channel 1 enable
+      6+                					;bit 5,6 : channel 1 instrument
+      6+                					;          00 : piano
+      6+                					;          01 : organ
+      6+                					;          10 : -----
+      6+                					;          11 : -----
+      6+                					;bit 7 : channel 1 output enable
+      6+                					;-------------------------
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   13
+
+
+      6+     016A       Mel_address0	equ	16ah
+      6+     016C       Mel_address1	equ	16ch
+      6+     016E       Mel_bank0	equ	16eh
+      6+     016F       Mel_bank1	equ	16fh
+      6+     0170       ADSR_register	equ	170h		;-------------------------
+      6+                					;bit 0 - Channel 0 attack
+      6+                					;bit 1 - channel 0 decay
+      6+                					;bit 2 - channel 0 sustain
+      6+                					;bit 3 - channel 0 release
+      6+                					;bit 4 - channel 1 attack
+      6+                					;bit 5 - channel 1 decay
+      6+                					;bit 6 - channel 1 sustain
+      6+                					;bit 7 - channel 1 release
+      6+                					;-------------------------
+      6+     0171       Tone0content	equ	171h		;amplitdue control for channel 0
+      6+     0172       Tone1content	equ	172h		;amplitude control for channel 1
+      6+     0173       ToneLength0	equ	173h		;length of the tone in channel 0
+      6+     0174       ToneLength1	equ	174h		;length of the tone in channel 1
+      6+     0175       no_of_voice	equ	175h
+      6+     0176       Melody_timer	equ	176h		;count = 10 --> 49ms per unit
+      6+     0177       Tone0Holdtimer	equ	177h
+      6+     0178       Tone1Holdtimer	equ	178h
+      6+     0179       menu_mode	equ	179h		;--------------------
+      6+                				; MAIN MENU SPINNING MODE :
+      6+                					;bit 0 - bit 2 : Timer ID
+      6+                					;bit 3-6 : starting speech progress
+      6+                					;  0 : starting speech
+      6+                					;  1 : screen #1	(00001XXX)
+      6+                					;  2 : screen #2	(00010XXX)
+      6+                					;  3 : screen #3	(00011XXX)
+      6+                					;  4 : screen #4	(00100XXX)
+      6+                					;  5 : screen #5	(00101XXX)
+      6+                					;  6 : screen #6	(00110XXX)
+      6+                					;  7 : screen #7	(00111XXX)
+      6+                					;  8 : screen #6	(01000XXX)
+      6+                					;  9 : screen #5	(01001XXX)
+      6+                					;  a : screen #4	(01010XXX)
+      6+                					;  b : screen #3	(01011XXX)
+      6+                					;  c : screen #2	(01100XXX)
+      6+                					;  10h : icon pressed	(10000XXX)
+      6+                				; MAIN MENU CURSOR MODE
+      6+                					;---------------------
+      6+     017A       Cart_dest	equ	17ah		;Cart jump address
+      6+     017C       Cart_mode	equ	17ch		;-------------------------
+      6+                					;bit 0 - 0 no cart in slot #1
+      6+                					;	 1 cartridge existed in #1
+      6+                					;bit 1 - 0 no cart in slot #2
+      6+                					;	 1 cartridge existed in #2
+      6+                					;bit 2 - 0 current cartridge is #1
+      6+                					;	 1 current cartridge is #2
+      6+                					;bit 3 - 0 cart 1 contains program
+      6+                					;        1 cart 1 contains data only
+      6+                					;bit 4 - 0 cart 2 contains program
+      6+                					;        1 cart 2 contains data only
+      6+                					;-------------------------
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   14
+
+
+      6+     017D       Cart_bank1	equ	17dh		;0 - no cart, non-zero, header bank #
+      6+     017E       Cart_bank2	equ	17eh		;0 - no cart, non-zero, header bank #
+      6+     017F       KBDTMR		equ	17fh		;keyboard use timer
+      6+     0180       Sys_TX_queue	equ	180h
+      6+     0188       Sys_RX_queue	equ	188h
+      6+     0190       User_TX_qq	equ	190h		;tx queue from user
+      6+     0192       User_RX_qq	equ	192h		;rx queue from user
+      6+     0194       User_TX_qsize	equ	194h		;tx queue size from  user
+      6+     0196       User_RX_qsize	equ	196h		;rx queue size from  user
+      6+                
+      7                 	include disp_ram.inc
+      7+                ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      7+                ;               WORKING RAMs
+      7+                ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      7+                ;;  00 -  7F : RP = 3, Display
+      7+                ;;  80 -  9F : Display Working RAM (32 bytes)
+      7+                ;; 1A0 - 1BF : Display (32 bytes)
+      7+                
+      7+     0080       cur_pos_x       equ     80h
+      7+     0081       cur_pos_y       equ     cur_pos_x+1
+      7+     0082       win_left_x      equ     cur_pos_y+1
+      7+     0083       win_left_y      equ     win_left_x+1
+      7+     0084       win_width       equ     win_left_y+1
+      7+     0085       win_height      equ     win_width+1
+      7+     0086       RP_image        equ     win_height+1            ;??
+      7+     0087       font_x          equ     RP_image+1
+      7+     0088       font_y          equ     font_x+1      ;font_no??
+      7+     0089       font_bank       equ     font_y+1      ;reserved space for user defined fonts??
+      7+     008A       font_offset     equ     font_bank+1
+      7+                
+      7+                ;font_table_hi   equ     font_offset+1             ;??
+      7+                ;font_table_lo   equ     font_table_hi+1         ;??
+      7+                ;text_no_x       equ     font_table_lo+1
+      7+                ;text_no_y       equ     text_no_x+1
+      7+                
+      7+     008B       temp_left_x     equ     font_offset+1
+      7+     008C       temp_left_y     equ     temp_left_x+1
+      7+     008D       temp_width      equ     temp_left_y+1
+      7+     008E       temp_height     equ     temp_width+1
+      7+     008F       temp_pos_x      equ     temp_height+1
+      7+     0090       temp_pos_y      equ     temp_pos_x+1
+      7+     0091       work_ram1       equ     temp_pos_y+1
+      7+     0092       work_ram2       equ     work_ram1+1
+      7+     0093       dmc_image       equ     work_ram2+1
+      7+     0094       cur_page        equ     dmc_image+1     ;!! for page swapping & block clear
+      7+     0095       local_global    equ     cur_page+1
+      7+     0096       local_global_1  equ     local_global+1
+      7+     0097       local_global_2  equ     local_global_1+1
+      7+     0098       local_global_3  equ     local_global_2+1
+      7+     0099       local_global_4  equ     local_global_3+1
+      7+     009A       temp_1          equ     local_global_4+1
+      7+     009B       temp_2          equ     temp_1+1
+      7+     009C       temp_3          equ     temp_2+1        ;!! text background color
+      7+     009D       cur_status      equ     temp_3+1        ;!! cursor status
+      7+     009E       font_id         equ     cur_status+1
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   15
+
+
+      7+     009F       font_num        equ     font_id+1
+      7+                
+      7+     01E8       font3a          equ     01e8h
+      7+     01E9       font3b          equ     font3a+1
+      7+     01EA       font3c          equ     font3b+1
+      7+     01EB       font4a          equ     font3c+1
+      7+     01EC       font4b          equ     font4a+1
+      7+     01ED       font4c          equ     font4b+1
+      7+     01EE       font5a          equ     font4c+1
+      7+     01EF       font5b          equ     font5a+1
+      7+     01F0       font5c          equ     font5b+1
+      7+     01F1       font6a          equ     font5c+1
+      7+     01F2       font6b          equ     font6a+1
+      7+     01F3       font6c          equ     font6b+1
+      7+     01F4       font7a          equ     font6c+1
+      7+     01F5       font7b          equ     font7a+1
+      7+     01F6       font7c          equ     font7b+1
+      7+     01F7       font8a          equ     font7c+1
+      7+     01F8       font8b          equ     font8a+1
+      7+     01F9       font8c          equ     font8b+1
+      7+     01FA       font9a          equ     font8c+1
+      7+     01FB       font9b          equ     font9a+1
+      7+     01FC       font9c          equ     font9b+1
+      7+     01FD       fontaa          equ     font9c+1
+      7+     01FE       fontab          equ     fontaa+1
+      7+     01FF       fontac          equ     fontab+1
+      7+     0200       font_start      equ     fontac+1
+      7+     0201       timer_ovr       equ     font_start+1
+      7+     0202       inverse         equ     timer_ovr+1
+      7+     0203       intnet          equ     inverse+1
+      7+     0204       scroll          equ     intnet+1
+      7+     0205       scroll1         equ     scroll+1
+      7+     0206       text_dest       equ     scroll1+1
+      7+     0207       cart_flag       equ     text_dest+1 ;0: cart1 ;1:cart2
+      7+                
+      7+     01A8       mel_counter     equ     01a8h
+      7+     01A9       mel_counter1    equ     mel_counter+1
+      7+     01AA       mel_flag        equ     mel_counter1+1
+      7+     01AB       mel_flag1       equ     mel_flag+1
+      7+                
+      7+                
+      8                 	include disp_equ.inc
+      8+                ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      8+                ;	       CONSTANT
+      8+                ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      8+                ;MainProgBank  equ 5
+      8+     0000       a_2_a		equ	0
+      8+     0002       a_2_b		equ	2
+      8+     0003       b_2_b		equ	3
+      8+     0001       b_2_a		equ	1
+      8+                
+      8+     0007       CUR_SHAPE_BIT	EQU	7; 80H	   ;0 - BLOCK CURSOR, 1 - LINE CURSOR
+      8+     0080       CUR_SHAPE_LOC	EQU	80H
+      8+                
+      8+     0006       CUR_DISP_CYCLE	EQU	6; 40H	   ;0 - OFF, 1 - ON
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   16
+
+
+      8+     0040       CUR_DISP_LOC	EQU	40H
+      8+                
+      8+     0005       CUR_ON_BIT	EQU	5; 20H	   ;0 - OFF, 1 - ON
+      8+     0020       CUR_ON_BIT_LOC	EQU	20H
+      8+                
+      8+                
+      8+     00C8       MAX_WIDTH	EQU	200
+      8+     00A0       MAX_HEIGHT	EQU	160
+      8+                
+      8+                
+      9                 
+     10                 
+     11                 	program
+     12                 
+     13                 ;============================================================================
+     14                 ;
+     15                 ; The Game Loop
+     16                 ;
+     17                 ;----------------------------------------------------------------------------
+     18                 
+     19                 Game:       global  Game
+     20                 
+     21 0000 490050'    	call	InitGame
+     22 0003 C003       	mov	r0,#Game_Next
+     23 0005 B8C2       	mov	GameState,r0
+     24                 
+     25                 	;call	start_melody
+     26                 
+     27                 	; Get here when changing player
+     28 0007            GameL0:
+     29                 
+     30                 	; find next player to play
+     31                 	
+     32 0007 490079'    	call	InitPlayer
+     33 000A D63E       	br	z,GameDone	;no player still has levels to play
+     34                 	
+     35                 	; show player a status screen to start from
+     36                 	
+     37 000C            GameL5:
+     38 000C 4900B2'    	call	LevelStart
+     39                 	
+     40                 	; initialize level for play
+     41                 	
+     42 000F 4900FC'    	call	InitLevel
+     43 0012 C004       	mov	r0,#Game_Play
+     44 0014 B8C2       	mov	GameState,r0
+     45                 
+     46                 	; Standard game playing loop
+     47                 
+     48 0016 AFCD       	bset    sound_flag,#7         ;set start melody flag.
+     49 0018 C004       	mov     r0,#04                  ;opening melody.
+     50 001A 39800364   	mov     new_melody_ptr,r0
+     51                 
+     52                 	; initialize next frog
+     53                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   17
+
+
+     54 001E            GameL4:
+     55                 
+     56 001E 490285'    	call	InitFrog
+     57                 
+     58 0021            GameL1:
+     59 0021 490000"    	call	cont_melody
+     60 0024 490000"                call    GetUser	;user input in r0
+     61                 
+     62 0027 4905AD'    	call	UpdateFrog	;everything froggy
+     63 002A D519       	br	mi,GameL2
+     64 002C DE0E       	br	nz,GameL3 
+     65                 
+     66 002E 4902CE'    	call	UpdateBands	;move bands on screen	
+     67                 
+     68 0031 49048C'    	call	UpdateSAnims	;handle strip animations
+     69                 
+     70 0034 490905'    	call	UpdateAnims	;handle real animations
+     71                 
+     72 0037 490A6C'    	Call	DisplayGame	;draw the screen
+     73                 	
+     74 003A D8E5                   br      GameL1
+     75                 	
+     76                 	; Player finished level or frog well-- Display the fact
+     77                 	
+     78 003C            GameL3:
+     79                 
+     80 003C 4900B3'    	call	LevelOK
+     81 003F D5DD       	br	mi,GameL4
+     82 0041 DEC4       	br	nz,GameL0	;player done, go to next player
+     83 0043 D8C7       	br	GameL5	;player has more levels, stay with him
+     84                 	
+     85                 	; player failed to finish level-- Display the fact
+     86                 	
+     87 0045            GameL2:
+     88                 
+     89 0045 4900ED'    	call	LevelDie
+     90 0048 D8BD       	br 	GameL0
+     91                 	
+     92                 	; Game is completely over-- Display the fact and exit
+     93                 
+     94 004A            GameDone:
+     95                 
+     96 004A 4900FB'    	call	GameEnd	
+     97 004D 980000"    	jmp	FromMainMenu
+     98                 
+     99                 ;============================================================================
+    100                 ;
+    101                 ; Initialize a new game
+    102                 ;
+    103                 ;----------------------------------------------------------------------------
+    104                 
+    105 0050            InitGame:
+    106                 	; Set initial player
+    107                 
+    108 0050 0001       	clr	r1
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   18
+
+
+    109 0052 B9D7       	mov	NextPlayer,r1
+    110                 
+    111                 	; initialize player data
+    112                 
+    113 0054 7A0208     	movw	rr2,#PlayerData
+    114 0057 B6C3       	mov	r6,NumPlayers
+    115 0059 780000     	movw	rr0,#0
+    116 005C B4C8       	mov	r4,StartLevel
+    117 005E B5C6       	mov	r5,Lives
+    118 0060            InitGameL1:
+    119 0060 3B820000   	movw	PlayerScore(rr2),rr0
+    120 0064 39820004   	mov	PlayerHomeF(rr2),r0
+    121 0068 39A20002   	mov	PlayerLevel(rr2),r4
+    122 006C 39AA0003   	mov	PlayerLives(rr2),r5
+    123 0070 69020006   	addw	rr2,#PlayerVSize
+    124 0074 0906       	dec	r6
+    125 0076 DEE8       	br	nz,InitGameL1
+    126                 
+    127 0078 F8         	ret
+    128                 
+    129                 ;============================================================================
+    130                 ;
+    131                 ; Initialize the next player
+    132                 ;
+    133                 ;----------------------------------------------------------------------------
+    134                 
+    135 0079            InitPlayer:
+    136                 
+    137                 	; Get Next Player that can still play
+    138                 
+    139 0079 7A0202     	movw	rr2,#PlayerData-PlayerVSize
+    140 007C B1D7       	mov	r1,NextPlayer	;The player who just played
+    141 007E B0C3       	mov	r0,NumPlayers	;The Total number of players
+    142 0080 B600       	mov	r6,r0	;The total plus one (for testing)
+    143 0082 0806       	inc	r6
+    144                 
+    145                 	; find a player
+    146                 
+    147 0084            InitPlayerL0:
+    148                 
+    149                 	; go to next player
+    150                 
+    151 0084 0801       	inc	r1
+    152 0086 100E       	cmp	r1,r6
+    153 0088 DE02       	br	ne,InitPlayerOK
+    154 008A C101       	mov	r1,#1
+    155 008C            InitPlayerOK:
+    156 008C B9D7       	mov	NextPlayer,r1
+    157                 
+    158                 	; locate player's data
+    159                 
+    160 008E 7C0006     	movw	rr4,#PlayerVSize
+    161 0091 4C0104     	mult	rr4,r1
+    162 0094 610204     	addw	rr4,rr2
+    163                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   19
+
+
+    164                 	; use if lives left not zero
+    165                 
+    166 0097 38B40002   	mov	r6,PlayerLevel(rr4)
+    167 009B 500D06     	cmp	r6,#MaxLevels+1
+    168 009E D609       	br	eq,InitPlayerDone
+    169 00A0 38B40003   	mov	r6,PlayerLives(rr4)
+    170 00A4 500006     	cmp	r6,#0
+    171 00A7 DE05       	br	ne,InitPlayerE0
+    172                 
+    173                 	; this player is done, go to next one
+    174                 
+    175 00A9            InitPlayerDone:
+    176                 
+    177 00A9 0900       	dec	r0
+    178 00AB DED7       	br	nz,InitPlayerL0
+    179                 
+    180                 	; oops-- no more players: flag is zero
+    181                 
+    182 00AD F8         	ret
+    183                 
+    184                 	; found a player: remember table address
+    185                 	; flag is non-zero
+    186                 
+    187 00AE            InitPlayerE0:
+    188 00AE 4A04D8     	movw	PlayerVAddr,rr4
+    189 00B1 F8         	ret
+    190                 
+    191                 ;============================================================================
+    192                 ;
+    193                 ; Display Level Start Screen
+    194                 ;
+    195                 ;----------------------------------------------------------------------------
+    196                 
+    197 00B2            LevelStart:
+    198                 	;ZZZ
+    199 00B2 F8         	ret
+    200                 	
+    201                 ;============================================================================
+    202                 ;
+    203                 ; Display Level Won Screen or Game Won Screen
+    204                 ;
+    205                 ;----------------------------------------------------------------------------
+    206                 
+    207 00B3            LevelOK:
+    208                 
+    209 00B3 4AD808     	movw	rr8,PlayerVAddr
+    210                 
+    211                 	; Exit on level, if fifth frog not landed
+    212                 
+    213 00B6 38890004   	mov	r1,PlayerHomeF(rr8)
+    214 00BA 501F01     	cmp	r1,#01fh
+    215 00BD D604       	br	eq,LevelOKFive
+    216 00BF 568001     	or	r1,#80h
+    217 00C2 F8         	ret
+    218                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   20
+
+
+    219                 	; got all five frogs across
+    220                 
+    221 00C3            LevelOKFive:
+    222                 
+    223 00C3 3A910000   	movw	rr2,PlayerScore(rr8)
+    224 00C7 7C03E8     	movw	rr4,#SCORE_five
+    225 00CA 610402     	addw	rr2,rr4
+    226 00CD 3B910000   	movw	PlayerScore(rr8),rr2
+    227                 
+    228                 	; go to next level for player
+    229                 	
+    230 00D1 38890002   	mov	r1,PlayerLevel(rr8)
+    231 00D5 0801       	inc	r1
+    232 00D7 39890002   	mov	PlayerLevel(rr8),r1
+    233                 
+    234 00DB 500D01     	cmp	r1,#MaxLevels+1
+    235 00DE D609       	br	eq,LevelOKWon
+    236                 
+    237                 	; level won
+    238                 
+    239                 	; have to do five more on next level
+    240                 
+    241 00E0 C200       	mov	r2,#0
+    242 00E2 39910004   	mov	PlayerHomeF(rr8),r2
+    243                 
+    244                 	;ZZZ
+    245 00E6 1700       	xor	r0,r0
+    246 00E8 F8         	ret
+    247                 	
+    248                 	; game won
+    249                 
+    250 00E9            LevelOKWon:
+    251                 
+    252                 	;ZZZ
+    253 00E9 560101     	or	r1,#1
+    254 00EC F8         	ret
+    255                 	
+    256                 ;============================================================================
+    257                 ;
+    258                 ; Display Level Lost Screen
+    259                 ;
+    260                 ;----------------------------------------------------------------------------
+    261                 
+    262 00ED            LevelDie:
+    263                 	; one less life to livw
+    264                 	
+    265 00ED 4AD808     	movw	rr8,PlayerVAddr
+    266 00F0 38890003   	mov	r1,PlayerLives(rr8)
+    267 00F4 0901       	dec	r1
+    268 00F6 39890003   	mov	PlayerLives(rr8),r1
+    269                 	
+    270                 	;ZZZ
+    271 00FA F8         	ret
+    272                 	
+    273                 ;============================================================================
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   21
+
+
+    274                 ;
+    275                 ; Display Game over Screen
+    276                 ;
+    277                 ;----------------------------------------------------------------------------
+    278                 
+    279 00FB            GameEnd:
+    280                 	;ZZZ
+    281 00FB F8         	ret
+    282                 	
+    283                 ;============================================================================
+    284                 ;
+    285                 ; Initialize the next level
+    286                 ;
+    287                 ;----------------------------------------------------------------------------
+    288                 
+    289 00FC            InitLevel:
+    290                 
+    291                 	; Clear animation table
+    292                 
+    293 00FC C708       	mov	r7,#NumAnims
+    294 00FE 7B02C8     	movw	rr10,#AnimData
+    295 0101 7A0000     	movw	rr2,#0
+    296 0104            InitLevelL2:
+    297 0104 3B930000   	movw	AnimBand(rr10),rr2
+    298 0108 690A000F   	addw	rr10,#AnimVSize
+    299 010C 0907       	dec	r7
+    300 010E DEF4       	br	nz, InitLevelL2
+    301                 
+    302                 	; get level to play
+    303                 	
+    304 0110 4AD808     	movw	rr8,PlayerVAddr
+    305 0113 38890002   	mov	r1,PlayerLevel(rr8)
+    306                 
+    307                 	; get which game we are playing
+    308                 
+    309 0117 7D0000"    	movw	rr12,#ClassicGame
+    310 011A B0C4       	mov	r0,GameMode
+    311 011C 500000     	cmp	r0,#0
+    312 011F D603       	br	eq,InitLevelClassic
+    313 0121 7D0000"    	movw	rr12,#UpdatedGame
+    314 0124            InitLevelClassic:
+    315                 
+    316                 	; get offset to level entry in game table
+    317                 
+    318 0124 7B0006     	movw	rr10,#GameSize
+    319 0127 0901       	dec	r1
+    320 0129 4C010A     	mult	rr10,r1
+    321 012C 610C0A     	addw	rr10,rr12
+    322                 
+    323                 	; remember level table location
+    324 012F 3AAB0000   	movw	rr12,GameLevel(rr10)
+    325 0133 4A0CDA     	movw	LevelAddr,rr12
+    326                 
+    327                 	; get speed modifiers
+    328                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   22
+
+
+    329 0136 38B30002   	mov	r6,GameMult(rr10)
+    330 013A 38BB0003   	mov	r7,GameDiv(rr10)
+    331 013E 4A06D4     	movw	temp0,rr6
+    332                 
+    333                 	; loop through each level
+    334                 
+    335 0141 C709       	mov	r7,#NumBands
+    336 0143 7B0238     	movw	rr10,#LevelData
+    337 0146            InitLevelL0:
+    338                 
+    339 0146 C107       	mov	r1,#LevelStrips-1
+    340 0148 398B0003   	mov	LevelOffset(rr10),r1
+    341                 	
+    342                 	; reset positions of strips
+    343                 	
+    344 014C 780000     	movw	rr0,#0
+    345 014F 3B83000E   	movw	LevelXoff1(rr10),rr0
+    346                 
+    347                 	; get velocity and separate direction
+    348                 
+    349 0153 0006       	clr	r6
+    350 0155 3A850002   	movw	rr0,LevelBaseU(rr12)
+    351 0159 2F0080     	btst	r0,#80h
+    352 015C D608       	br	z,InitLevelLeft
+    353 015E C680       	mov	r6,#80h
+    354 0160 6F00FFFF   	xorw	rr0,#0ffffh
+    355 0164 1800       	incw	rr0
+    356 0166            InitLevelLeft:
+    357 0166 36B50000   	or	r6,LevelFlags(rr12)
+    358 016A 39B30002   	mov	LevelVFlags(rr10),r6
+    359                 
+    360                 	; get adjusted velocity
+    361                 
+    362 016E B300       	mov	r3,r0	;keep units
+    363 0170 B5D4       	mov	r5,temp0
+    364 0172 4C0502     	mult	rr2,r5
+    365 0175 B203       	mov	r2,r3
+    366 0177 B300       	mov	r3,0
+    367 0179 4C0500     	mult	rr0,r5
+    368 017C 610200     	addw	rr0,rr2
+    369                 
+    370 017F B5D5       	mov	r5,temp0+1
+    371 0181 500005     	cmp	r5,#0
+    372 0184 D603       	br	z,InitLevelL1
+    373 0186 5C0400     	div	rr0,rr4
+    374 0189            InitLevelL1:	
+    375                 
+    376 0189 3B830000   	movw	LevelSpeedU(rr10),rr0
+    377                 
+    378                 	; get are location
+    379                 
+    380 018D 38850008   	mov	r0,LevelStrips(rr12)
+    381 0191 B100       	mov	r1,r0
+    382 0193 0700       	srl	r0
+    383 0195 0700       	srl	r0
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   23
+
+
+    384 0197 0700       	srl	r0
+    385 0199 0700       	srl	r0
+    386 019B 512400     	add	r0,#bankno_strip
+    387 019E 39830004   	mov	LevelPageA(rr10),r0
+    388                 
+    389 01A2 550F01     	and	r1,#15
+    390 01A5 0B01       	sll	r1
+    391 01A7 0B01       	sll	r1
+    392 01A9 0B01       	sll	r1
+    393 01AB 0B01       	sll	r1
+    394 01AD 398B0005   	mov	LevelYoffA(rr10),r1
+    395                 
+    396                 	; establich the two data/drawing strips
+    397                 
+    398 01B1 490E28'    	call	NextStrip
+    399 01B4 490E28'    	call	NextStrip
+    400                 
+    401                 	; scan strip for animations
+    402                 
+    403 01B7 1E0C       	pushw	rr12
+    404 01B9 1E0A       	pushw	rr10
+    405 01BB 0E07       	push	r7
+    406                 
+    407                 	; set up initial conditions
+    408                 
+    409 01BD C509       	mov	r5,#9
+    410 01BF 122F       	sub	r5,r7
+    411 01C1 3AB30008   	movw	rr6,LevelAddr2(rr10)
+    412 01C5 C400       	mov	r4,#0
+    413 01C7 388B0002   	mov	r1,LevelVFlags(rr10)
+    414 01CB C019       	mov	r0,#25
+    415                 
+    416                 	; for each byte in strip table
+    417                 
+    418 01CD            InitLevelA0:
+    419                 
+    420                 	; see if byte inside animation
+    421                 
+    422 01CD 389E0000   	mov	r3,0(rr6)
+    423 01D1 2F0380     	btst	r3,#80h
+    424 01D4 D661       	br	z,InitLevelANo
+    425                 
+    426                 	; see if byte is head or tail
+    427                 
+    428 01D6 508003     	cmp	r3,#80h
+    429 01D9 DE08       	br	ne,InitLevelAH
+    430                 
+    431                 	; tail
+    432                 
+    433 01DB 55BF01     	and	r1,#255-LevelVFlagH
+    434 01DE 562001     	or	r1,#LevelVFlagT
+    435 01E1 D857       	br	InitLevelAE
+    436                 
+    437                 	; head-- is it already processed?
+    438                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   24
+
+
+    439 01E3            InitLevelAH:
+    440                 ;	call	abaker1
+    441 01E3 2F0140     	btst	r1,#LevelVFlagH
+    442 01E6 DE52       	br	nz,InitLevelAE
+    443                 
+    444                 	; new animation
+    445                 
+    446 01E8 564001     	or	r1,#LevelVFlagH
+    447 01EB 55DF01     	and	r1,#255-LevelVFlagT
+    448                 
+    449 01EE 1E00       	pushw	rr0
+    450 01F0 1E04       	pushw	rr4
+    451 01F2 1E06       	pushw	rr6
+    452 01F4 B203       	mov	r2,r3 ;ZZZ
+    453 01F6 0B03       	sll	r3
+    454 01F8 500603     	cmp	r3,#6
+    455 01FB D703       	br	ult,zzz1
+    456 01FD 490000"    	call	abaker2
+    457 0200            zzz1:	
+    458 0200 0002       	clr	r2
+    459 0202 1E08       	pushw	rr8
+    460 0204 1E0C       	pushw	rr12
+    461 0206 3A8A0F9B'  	movw	rr8,InitRoutines(rr2)
+    462 020A 38960001   	mov	r2,1(rr6)
+    463                 
+    464                 	; determine if need to reverse side of screen
+    465                 
+    466 020E 388B0002   	mov	r1,LevelVFlags(rr10)
+    467 0212 2F0180     	btst	r1,#LevelVFlagD
+    468 0215 D612       	br	z,InitLevelC0
+    469 0217 388D0000   	mov	r1,LevelFlags(rr12)
+    470 021B 2F0103     	btst	r1,#LevelFlagS+LevelFlagH
+    471 021E DE09       	br	nz,InitLevelC0
+    472                 
+    473                 	; art reversed
+    474                 
+    475                 	;mov	r1,r2
+    476                 	;sll	r1
+    477                 	;sll	r1
+    478                 	;sll	r1
+    479 0220 B104       	mov	r1,r4
+    480 0222 C4C7       	mov	r4,#199
+    481 0224 1221       	sub	r4,r1
+    482 0226 568005     	or	r5,#80h
+    483                 
+    484 0229            InitLevelC0:
+    485 0229 3F01       	call	@rr8
+    486 022B 1F0C       	popw	rr12
+    487 022D 1F08       	popw	rr8
+    488 022F 1F06       	popw	rr6
+    489 0231 1F04       	popw	rr4
+    490 0233 1F00       	popw	rr0
+    491 0235 D803       	br	InitLevelAE
+    492                 
+    493                 	; outside animation area
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   25
+
+
+    494                 
+    495 0237            InitLevelANo:
+    496 0237 559F01     	and	r1,#255-LevelVFlagH-LevelVFlagT
+    497                 	
+    498 023A            InitLevelAE:
+    499 023A 1806       	incw	rr6
+    500 023C 510804     	add	r4,#8
+    501 023F 0900       	dec	r0
+    502 0241 DE8A       	br	nz,InitLevelA0
+    503                 
+    504 0243 0F07       	pop	r7
+    505 0245 1F0A       	popw	rr10
+    506 0247 1F0C       	popw	rr12
+    507                 
+    508 0249 398B0002   	mov	LevelVFlags(rr10),r1
+    509                 	
+    510                 	; handle anim flags if moving left to right
+    511                 	
+    512 024D 558001     	and	r1,#LevelVFlagD
+    513 0250 D625       	br	z,InitLevelEnd
+    514                 		
+    515                 	; may be to right-- see if reversed art
+    516                 	
+    517 0252 388D0000   	mov	r1,LevelFlags(rr12)
+    518 0256 2F0103     	btst	r1,#LevelFlagS+LevelFlagH
+    519 0259 960277'    	jmp	z,InitLevelEnd
+    520                 	
+    521                 	; art moving left to right without flip
+    522                 
+    523                 	; assume no animation
+    524                 	
+    525 025C 388B0002   	mov	r1,LevelVFlags(rr10)
+    526 0260 559F01     	and	r1,#255-LevelVFlagH-LevelVFlagT
+    527                 	
+    528                 	; determine if animation
+    529                 
+    530 0263 3A930008   	movw	rr2,LevelAddr2(rr10)
+    531 0267 389A0000   	mov	r3,0(rr2)
+    532 026B 2F0380     	btst	r3,#80h
+    533 026E D603       	br	z,InitLevelAF
+    534                 	
+    535                 	; on animation head
+    536                 	
+    537 0270 564001     	or	r1,#LevelVFlagH
+    538                 
+    539                 	; restore flag
+    540                 	
+    541 0273            InitLevelAF:
+    542                 
+    543 0273 398B0002   	mov	LevelVFlags(rr10),r1
+    544                 
+    545                 	; go to next band
+    546                 
+    547 0277            InitLevelEnd:
+    548 0277 690C000C   	addw	rr12,#LevelSize
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   26
+
+
+    549 027B 690A0010   	addw	rr10,#LevelVSize
+    550 027F 0907       	dec	r7
+    551 0281 9E0146'    	jmp	nz,InitLevelL0
+    552                 
+    553 0284 F8         	ret
+    554                 
+    555                 ;============================================================================
+    556                 ;
+    557                 ; Initialize the next frog
+    558                 ;
+    559                 ;----------------------------------------------------------------------------
+    560                 
+    561 0285            InitFrog:
+    562                 
+    563                 	; get level to play
+    564                 	
+    565 0285 4AD808     	movw	rr8,PlayerVAddr
+    566 0288 38890002   	mov	r1,PlayerLevel(rr8)
+    567                 
+    568                 	; get which game we are playing
+    569                 
+    570 028C 7DFFFA"    	movw	rr12,#ClassicGame-GameSize
+    571 028F B0C4       	mov	r0,GameMode
+    572 0291 500000     	cmp	r0,#0
+    573 0294 D603       	br	eq,InitFrogClassic
+    574 0296 7DFFFA"    	movw	rr12,#UpdatedGame-GameSize
+    575 0299            InitFrogClassic:
+    576                 
+    577                 	; get offset to level entry in game table
+    578                 
+    579 0299 7B0006     	movw	rr10,#GameSize
+    580 029C 4C010A     	mult	rr10,r1
+    581 029F 610C0A     	addw	rr10,rr12
+    582                 
+    583                 	; get frog position
+    584                 
+    585 02A2 38830004   	mov	r0,GameFrogX(rr10)
+    586 02A6 0B00       	sll	r0
+    587 02A8 0B00       	sll	r0
+    588 02AA 0B00       	sll	r0
+    589 02AC C100       	mov	r1,#0
+    590 02AE 4A00DC     	movw	FrogX,rr0
+    591 02B1 B9E7       	mov	FrogRest,r1
+    592 02B3 38830005   	mov	r0,GameFrogY(rr10)
+    593 02B7 0900       	dec	r0
+    594 02B9 0B00       	sll	r0
+    595 02BB 0B00       	sll	r0
+    596 02BD 0B00       	sll	r0
+    597 02BF 0B00       	sll	r0
+    598 02C1 B8DE       	mov	FrogY,r0
+    599 02C3 B8DF       	mov	FrogMinY,r0
+    600                 
+    601                 	; and other frog parameters
+    602                 
+    603 02C5 B9E1       	mov	FrogDir,r1
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   27
+
+
+    604                 
+    605                 	; set time to complete level
+    606                 
+    607 02C7 784E00     	movw	rr0,#TimerFull
+    608 02CA 4A00CE     	movw	Timer,rr0
+    609                 	
+    610 02CD F8         	ret
+    611                 
+    612                 ;============================================================================
+    613                 ;
+    614                 ; Update Bands
+    615                 ;
+    616                 ;----------------------------------------------------------------------------
+    617                 
+    618 02CE            UpdateBands:
+    619                 
+    620                 	; get loop information for bands
+    621                 
+    622 02CE 7B0238     	movw	rr10,#LevelData
+    623 02D1 4ADA0C     	movw	rr12,LevelAddr
+    624 02D4 C709       	mov	r7,#NumBands
+    625                 
+    626                 	; for each band
+    627                 
+    628 02D6            UpdateBandsL0:
+    629                 
+    630                 	; get speed and position
+    631                 
+    632 02D6 3A930000   	movw	rr2,LevelSpeedU(rr10)
+    633 02DA 3AA3000E   	movw	rr4,LevelXoff1(rr10)
+    634                 
+    635                 	; determine direction of motion
+    636                 	
+    637 02DE C1C7       	mov	r1,#199
+    638 02E0 B9D4       	mov	temp0,r1
+    639                 
+    640 02E2 388B0002   	mov	r1,LevelVFlags(rr10)
+    641 02E6 558001     	and	r1,#LevelVFlagD
+    642 02E9 D60E       	br	z,UpdateBandsL
+    643                 		
+    644                 	; may be to right-- see if reversed art
+    645                 	
+    646 02EB 388D0000   	mov	r1,LevelFlags(rr12)
+    647 02EF 2F0103     	btst	r1,#LevelFlagS+LevelFlagH
+    648 02F2 9E03AA'    	jmp	nz,UpdateBandsR
+    649                 	
+    650 02F5 C100       	mov	r1,#0
+    651 02F7 B9D4       	mov	temp0,r1 
+    652                 	
+    653                 	; subtract speed from position
+    654                 
+    655 02F9            UpdateBandsL:
+    656 02F9 3C3C       	movw	rr14,rr4
+    657 02FB 190E       	decw	rr14
+    658 02FD 620204     	subw	rr4,rr2
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   28
+
+
+    659 0300 3BA3000E   	movw	LevelXoff1(rr10),rr4
+    660 0304 62020E     	subw	rr14,rr2
+    661 0307 DF03       	br	nc,UpdateBandsL1
+    662                 
+    663                 	; ran off left end of strip, get prior one
+    664                 
+    665 0309 490E28'    	call	NextStrip
+    666                 
+    667                 	; determine if starting an animation 
+    668                 
+    669 030C            UpdateBandsL1:
+    670                 
+    671                 	; is right edge iin first or second strip
+    672                 
+    673 030C B3D4       	mov	r3,temp0
+    674 030E 490A20'    	call	GetStripByte
+    675                 	
+    676 0311 500707     	cmp	r7,#7	;ZZZ
+    677 0314 DE18       	br	ne,zzza2	;ZZZ
+    678 0316 BBF2       	mov	ZZZ+6,r3	;ZZZ
+    679 0318 4A0EF0     	movw	ZZZ+4,rr14	;ZZZ
+    680 031B 388B0002   	mov	r1,LevelVFlags(rr10) ;ZZZ
+    681 031F B9F4       	mov	ZZZ+8,r1	;ZZZ
+    682 0321 500201     	cmp	r1,#2	;ZZZ
+    683 0324 DE08       	br	ne,zzza2	;ZZZ
+    684 0326 508003     	cmp	r3,#80h	;ZZZ
+    685 0329 DE03       	br	ne,zzza2	;ZZZ
+    686 032B 490000"    	call	abaker2	;ZZZ
+    687 032E            zzza2:			;ZZZ	
+    688                 
+    689                 	; get the byte and determine if part of an animation
+    690                 
+    691 032E 2F0380     	btst	r3,#80h
+    692 0331 D669       	br	z,UpdateBandsLNA  
+    693                 
+    694                 	; inside animation: Determine if new
+    695                 
+    696 0333 388B0002   	mov	r1,LevelVFlags(rr10)
+    697 0337 2F0160     	btst	r1,#LevelVFlagH+LevelVFlagT
+    698 033A D60A       	br	z,UpdateBandsLNew
+    699                 	
+    700                 	; we have already processed this animation, wait for it to go by.
+    701                 
+    702 033C 2F0140     	btst	r1,#LevelVFlagH
+    703 033F DE4A       	br	nz,UpdateBandsLH
+    704                 
+    705                 	; already seen the tail-- treat as new if head
+    706                 
+    707 0341 508003     	cmp	r3,#80h
+    708 0344 D661       	br	eq,UpdateBandsE3a
+    709                 
+    710                 	; here we add a new animation
+    711                 
+    712 0346            UpdateBandsLNew:
+    713                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   29
+
+
+    714 0346 508803     	cmp	r3,#88h ;ZZZ
+    715 0349 D605       	br	eq,zzz12
+    716 034B 508003     	cmp	r3,#80h ;ZZZ
+    717 034E DE05       	br	ne,zzz11
+    718 0350            zzz12:	
+    719 0350 B3D4       	mov	r3,temp0
+    720 0352 490000"    	call	abaker1
+    721 0355            zzz11:	
+    722                 
+    723                 	; set flag as head
+    724                 
+    725 0355 564001     	or	r1,#LevelVFlagH
+    726 0358 398B0002   	mov	LevelVFlags(rr10),r1
+    727                 
+    728                 	; do animation
+    729                 
+    730 035C 1E0C       	pushw	rr12
+    731 035E 1E0A       	pushw	rr10
+    732 0360 0E07       	push	r7
+    733 0362 B203       	mov	r2,r3 ;ZZZ
+    734 0364 0B03       	sll	r3
+    735 0366 500603     	cmp	r3,#6
+    736 0369 D703       	br	ult,zzz2
+    737 036B 490000"    	call	abaker2
+    738 036E            zzz2:	
+    739 036E 0002       	clr	r2
+    740 0370 3AAA0F9B'  	movw	rr12,InitRoutines(rr2)
+    741 0374 38970001   	mov	r2,1(rr14)
+    742 0378 B4D4       	mov	r4,temp0
+    743 037A C509       	mov	r5,#9
+    744 037C 122F       	sub	r5,r7
+    745 037E 568005     	or	r5,#80h
+    746 0381 3F05       	call	@rr12
+    747 0383 0F07       	pop	r7
+    748 0385 1F0A       	popw	rr10
+    749 0387 1F0C       	popw	rr12
+    750                 	
+    751 0389 D81C       	br	UpdateBandsE3a
+    752                 
+    753                 	; here we are in tail-- look for head
+    754                 
+    755 038B            UpdateBandsLH:
+    756                 
+    757 038B 508003     	cmp	r3,#80h
+    758 038E DE17       	br	ne,UpdateBandsE3a
+    759                 
+    760 0390 55BF01     	and	r1,#255-LevelVFlagH
+    761 0393 562001     	or	r1,#LevelVFlagT
+    762 0396 398B0002   	mov	LevelVFlags(rr10),r1
+    763 039A D80B       	br	UpdateBandsE3a
+    764                 
+    765                 	; right most byte not an animation: turn off "inside animation flags"
+    766                 
+    767 039C            UpdateBandsLNA:
+    768                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   30
+
+
+    769 039C 388B0002   	mov	r1,LevelVFlags(rr10)
+    770 03A0 559F01     	and	r1,#255-LevelVFlagH-LevelVFlagT
+    771 03A3 398B0002   	mov	LevelVFlags(rr10),r1
+    772                 
+    773 03A7            UpdateBandsE3a:
+    774 03A7 980449'    	jmp	UpdateBandsE3
+    775                 
+    776                 	; add speed to position
+    777                 
+    778 03AA            UpdateBandsR:
+    779 03AA 610204     	addw	rr4,rr2
+    780 03AD 3BA3000E   	movw	LevelXoff1(rr10),rr4
+    781 03B1 DF03       	br	nc,UpdateBandsR1
+    782                 
+    783                 	; ran off right end of strip, get next one
+    784                 
+    785 03B3 490EE2'    	call	PriorStrip
+    786                 
+    787                 	; determine if starting an animation 
+    788                 
+    789 03B6            UpdateBandsR1:
+    790                 
+    791                 	; point to leftmost byte of left strip
+    792                 	; also put number of pixels off screen in r4
+    793                 
+    794 03B6 C300       	mov	r3,#0
+    795 03B8 490A20'    	call	GetStripByte
+    796                 
+    797                 ;	cmp	r3,#88h
+    798                 ;	br	eq,zzz9
+    799                 ;	cmp	r3,#81h
+    800                 ;	br	ne,zzz8
+    801                 ;zzz9:
+    802                 ;	call	abaker3
+    803                 ;zzz8:		
+    804                 
+    805                 	; get the byte and determine if part of an animation
+    806                 
+    807 03BB 2F0380     	btst	r3,#80h
+    808 03BE D67E       	br	z,UpdateBandsRNA
+    809                 
+    810                 	; inside animation: Determine if new
+    811                 
+    812 03C0 388B0002   	mov	r1,LevelVFlags(rr10)
+    813 03C4 2F0160     	btst	r1,#LevelVFlagH+LevelVFlagT
+    814 03C7 D60B       	br	z,UpdateBandsRNew
+    815                 
+    816                 	; we have already processed this animation, wait for it to go by.
+    817                 
+    818 03C9 2F0120     	btst	r1,#LevelVFlagT
+    819 03CC DE5F       	br	nz,UpdateBandsRT
+    820                 
+    821                 	; already seen the head-- treat as new if tail
+    822                 
+    823 03CE 508003     	cmp	r3,#80h
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   31
+
+
+    824 03D1 9E0449'    	jmp	ne,UpdateBandsE3
+    825                 
+    826                 	; here we add a new animation
+    827                 
+    828 03D4            UpdateBandsRNew:
+    829                 
+    830                 	; set flag based on if this is a 2 or a over 3 byte animation
+    831                 
+    832 03D4 508003     	cmp	r3,#80h
+    833 03D7 D605       	br	eq,UpdateBandsRNew0
+    834 03D9 564001     	or	r1,#LevelVFlagH
+    835 03DC D803       	br	UpdateBandsRNew1
+    836 03DE            UpdateBandsRNew0:
+    837 03DE 562001     	or	r1,#LevelVFlagT
+    838 03E1            UpdateBandsRNew1:
+    839 03E1 398B0002   	mov	LevelVFlags(rr10),r1
+    840                 
+    841                 	; loop to find head of animations
+    842                 
+    843 03E5            UpdateBandsRNew2:
+    844 03E5 508003     	cmp	r3,#80h
+    845 03E8 DE0B       	br	ne,UpdateBandsRNew3
+    846 03EA 520804     	sub	r4,#8
+    847 03ED 190E       	decw	rr14
+    848 03EF 389F0000   	mov	r3,0(rr14)
+    849 03F3 D8F0       	br	UpdateBandsRNew2
+    850 03F5            UpdateBandsRNew3:
+    851 03F5 520804     	sub	r4,#8
+    852 03F8 190E       	decw	rr14
+    853 03FA 389F0000   	mov	r3,0(rr14)
+    854                 
+    855 03FE 1E0C       	pushw	rr12
+    856 0400 1E0A       	pushw	rr10
+    857 0402 0E07       	push	r7
+    858 0404 B203       	mov	r2,r3 ;ZZZ
+    859 0406 0B03       	sll	r3
+    860 0408 500603     	cmp	r3,#6
+    861 040B D703       	br	ult,zzz3
+    862 040D 490000"    	call	abaker2
+    863 0410            zzz3:	
+    864 0410 0002       	clr	r2
+    865 0412 3AAA0F9B'  	movw	rr12,InitRoutines(rr2)
+    866 0416 38970001   	mov	r2,1(rr14)
+    867 041A C509       	mov	r5,#9
+    868 041C 122F       	sub	r5,r7
+    869 041E 568005     	or	r5,#80h
+    870 0421 C400       	mov	r4,#0
+    871 0423 3F05       	call	@rr12
+    872 0425 0F07       	pop	r7
+    873 0427 1F0A       	popw	rr10
+    874 0429 1F0C       	popw	rr12
+    875                 	
+    876 042B D81C       	br	UpdateBandsE3
+    877                 
+    878                 	; here we are in tail-- look for head
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   32
+
+
+    879                 
+    880 042D            UpdateBandsRT:
+    881                 
+    882 042D 508003     	cmp	r3,#80h
+    883 0430 D617       	br	eq,UpdateBandsE3
+    884                 
+    885 0432 55DF01     	and	r1,#255-LevelVFlagT
+    886 0435 564001     	or	r1,#LevelVFlagH
+    887 0438 398B0002   	mov	LevelVFlags(rr10),r1
+    888 043C D80B       	br	UpdateBandsE3
+    889                 
+    890                 	; left most byte not an animation: turn off "inside animation flags"
+    891                 
+    892 043E            UpdateBandsRNA:
+    893                 
+    894 043E 388B0002   	mov	r1,LevelVFlags(rr10)
+    895 0442 559F01     	and	r1,#255-LevelVFlagH-LevelVFlagT
+    896 0445 398B0002   	mov	LevelVFlags(rr10),r1
+    897                 
+    898                 	; loop for next band
+    899                 
+    900 0449            UpdateBandsE3:
+    901 0449 500707     	cmp	r7,#7	;ZZZ
+    902 044C DE08       	br	ne,zzza3	;ZZZ
+    903 044E 388B0002   	mov	r1,LevelVFlags(rr10) ;ZZZ
+    904 0452 B9F5       	mov	ZZZ+9,r1	;ZZZ
+    905 0454 D828       	br	zzza4	;ZZZ
+    906 0456            zzza3:			;ZZZ
+    907 0456 DB26       	br	ugt,zzza4	;ZZZ
+    908 0458 1E0A       	pushw	rr10	;ZZZ
+    909 045A 1E0C       	pushw	rr12	;ZZZ
+    910 045C B1F5       	mov	r1,ZZZ+9	;ZZZ
+    911 045E 502201     	cmp	r1,#22h	;ZZZ
+    912 0461 DE17       	br	ne,zzza5	;ZZZ
+    913 0463 7B0238     	movw	rr10,#LevelData	;ZZZ
+    914 0466 7D0010     	movw	rr12,#LevelVSize	;ZZZ
+    915 0469 0B0D       	sll	r13	;ZZZ
+    916 046B 610C0A     	addw	rr10,rr12	;ZZZ
+    917 046E 388B0002   	mov	r1,LevelVFlags(rr10)	;ZZZ
+    918 0472 502201     	cmp	r1,#22h	;ZZZ
+    919 0475 D603       	br	eq,zzza5	;ZZZ
+    920 0477 490000"    	call	abaker3	;ZZZ
+    921 047A            zzza5:			;ZZZ
+    922 047A 1F0C       	popw	rr12	;ZZZ
+    923 047C 1F0A       	popw	rr10	;ZZZ
+    924                 			;ZZZ
+    925 047E            zzza4:			;ZZZ	
+    926 047E 690A0010   	addw	rr10,#LevelVSize
+    927 0482 690C000C   	addw	rr12,#LevelSize
+    928 0486 0907       	dec	r7
+    929 0488 9E02D6'    	jmp	nz,UpdateBandsL0
+    930 048B F8         	ret
+    931                 
+    932                 ;============================================================================
+    933                 ;
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   33
+
+
+    934                 ; Update Strip Anims
+    935                 ;
+    936                 ;----------------------------------------------------------------------------
+    937                 
+    938 048C            UpdateSAnims:
+    939                 
+    940                 	; get loop information for bands
+    941                 
+    942 048C 7B0238     	movw	rr10,#LevelData
+    943 048F 4ADA0C     	movw	rr12,LevelAddr
+    944 0492 7E0008     	movw	rr6,#NumBands-1
+    945                 	
+    946                 	; for each band
+    947                 
+    948 0495            UpdateSAnimsL0:
+    949                 
+    950 0495 0B07       	sll	r7
+    951 0497 0B07       	sll	r7
+    952                 
+    953                 	; get left strip number
+    954                 
+    955 0499 389B0003   	mov	r3,LevelOffset(rr10)
+    956 049D 0002       	clr	r2
+    957 049F 61020C     	addw	rr12,rr2
+    958 04A2 38AD0000   	mov	r5,0(rr12)
+    959 04A6 62020C     	subw	rr12,rr2
+    960                 
+    961                 	; process animation strip if it is
+    962                 
+    963 04A9 1E02       	pushw	rr2
+    964 04AB C001       	mov	r0,#1
+    965 04AD 4904EF'    	call	UpdateS1Anim
+    966 04B0 1F02       	popw	rr2
+    967                 
+    968                 	; go to next strip
+    969                 
+    970 04B2 510207     	add	r7,#2
+    971                 
+    972                 	; return to first if past four
+    973                 
+    974 04B5 0803       	inc	r3
+    975 04B7 500C03     	cmp	r3,#LevelStrips+4
+    976 04BA DE02       	br	nz,UpdateSAnimsL2
+    977 04BC C308       	mov	r3,#LevelStrips
+    978 04BE            UpdateSAnimsL2
+    979                 
+    980                 	; get strip value
+    981                 
+    982 04BE 61020C     	addw	rr12,rr2
+    983 04C1 38AD0000   	mov	r5,0(rr12)
+    984 04C5 62020C     	subw	rr12,rr2
+    985                 
+    986                 	; if strip not valid, use first strip value
+    987                 
+    988 04C8 50FF05     	cmp	r5,#255
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   34
+
+
+    989 04CB DE0C       	br	nz,UpdateSAnimsL3
+    990 04CD C308       	mov	r3,#LevelStrips
+    991 04CF 61020C     	addw	rr12,rr2
+    992 04D2 38AD0000   	mov	r5,0(rr12)
+    993 04D6 62020C     	subw	rr12,rr2
+    994 04D9            UpdateSAnimsL3:
+    995                 
+    996                 	; process animation strip if it is
+    997                 
+    998 04D9 C002       	mov	r0,#2
+    999 04DB 4904EF'    	call	UpdateS1Anim
+   1000                 
+   1001                 	; loop for next band
+   1002                 
+   1003 04DE            UpdateSAnimsE:
+   1004 04DE 0707       	srl	r7
+   1005 04E0 0707       	srl	r7
+   1006 04E2 690A0010   	addw	rr10,#LevelVSize
+   1007 04E6 690C000C   	addw	rr12,#LevelSize
+   1008 04EA 0907       	dec	r7
+   1009 04EC DDA7       	br	pl,UpdateSAnimsL0
+   1010                 
+   1011 04EE F8         	ret
+   1012                 
+   1013                 ;============================================================================
+   1014                 ;
+   1015                 ; Update Aimation in single strip
+   1016                 ;
+   1017                 ;----------------------------------------------------------------------------
+   1018                 
+   1019 04EF            UpdateS1Anim:
+   1020                 
+   1021                 	; if not animated, bail
+   1022                 
+   1023 04EF 2F0580     	btst	r5,#80h
+   1024 04F2 9605AC'    	jmp	z,UpdateS1AnimE
+   1025                 
+   1026                 	; decrement counter
+   1027                 
+   1028 04F5 388E0340   	mov	r1,SAnimData(rr6)
+   1029 04F9 0901       	dec	r1
+   1030 04FB 398E0340   	mov	SAnimData(rr6),r1
+   1031 04FF 9E05AC'    	jmp	nz,UpdateS1AnimE
+   1032                 
+   1033                 	; get number of animations and tick
+   1034                 
+   1035 0502 0B05       	sll	r5
+   1036 0504 0004       	clr	r4
+   1037 0506 3ABC0000"  	movw	rr14,StripAnims(rr4)
+   1038 050A 3AA70000   	movw	rr4,0(rr14)
+   1039                 
+   1040                 	; store new tick
+   1041                 
+   1042 050E 39AE0340   	mov	SAnimData(rr6),r5
+   1043                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   35
+
+
+   1044                 	; increment strip offset
+   1045                 
+   1046 0512 0807       	inc	r7
+   1047 0514 389E0340   	mov	r3,SAnimData(rr6)
+   1048 0518 0803       	inc	r3
+   1049 051A 101C       	cmp	r3,r4
+   1050 051C DE02       	br	nz,UpdateS1AnimsL1
+   1051 051E 0003       	clr	r3
+   1052 0520            UpdateS1AnimsL1:
+   1053 0520 399E0340   	mov	SAnimData(rr6),r3
+   1054 0524 0907       	dec	r7
+   1055                 
+   1056                 	; offset for new table
+   1057                 
+   1058 0526 0002       	clr	r2
+   1059 0528 61020E     	addw	rr14,rr2
+   1060 052B 389F0002   	mov	r3,SAnimStrips(rr14)
+   1061                 
+   1062 052F 500200     	cmp	r0,#2
+   1063 0532 D63D       	br	eq,UpdateS1AnimsL2
+   1064                 
+   1065                 	; convert into art page number
+   1066                 
+   1067 0534 B203       	mov	r2,r3
+   1068 0536 0702       	srl	r2
+   1069 0538 0702       	srl	r2
+   1070 053A 0702       	srl	r2
+   1071 053C 0702       	srl	r2
+   1072 053E 512402     	add	r2,#bankno_strip
+   1073 0541 3993000A   	mov	LevelPage1(rr10),r2
+   1074                 
+   1075                 	; convert into Y offset
+   1076                 
+   1077 0545 B203       	mov	r2,r3
+   1078 0547 550F02     	and	r2,#15
+   1079 054A 0B02       	sll	r2
+   1080 054C 0B02       	sll	r2
+   1081 054E 0B02       	sll	r2
+   1082 0550 0B02       	sll	r2
+   1083 0552 3993000C   	mov	LevelYoff1(rr10),r2
+   1084                 
+   1085                 	; convert into strip table address
+   1086                 
+   1087 0556 0002       	clr	r2
+   1088 0558 610202     	addw	rr2,rr2
+   1089 055B 610202     	addw	rr2,rr2
+   1090 055E 610202     	addw	rr2,rr2
+   1091 0561 610202     	addw	rr2,rr2
+   1092 0564 610202     	addw	rr2,rr2
+   1093 0567 69020000"  	addw	rr2,#StripTable
+   1094 056B 3B930006   	movw	LevelAddr1(rr10),rr2
+   1095                 
+   1096 056F D83B       	br	UpdateS1AnimE
+   1097                 
+   1098 0571            UpdateS1AnimsL2:
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   36
+
+
+   1099                 
+   1100                 	; convert into art page number
+   1101                 
+   1102 0571 B203       	mov	r2,r3
+   1103 0573 0702       	srl	r2
+   1104 0575 0702       	srl	r2
+   1105 0577 0702       	srl	r2
+   1106 0579 0702       	srl	r2
+   1107 057B 512402     	add	r2,#bankno_strip
+   1108 057E 3993000B   	mov	LevelPage2(rr10),r2
+   1109                 
+   1110                 	; convert into Y offset
+   1111                 
+   1112 0582 B203       	mov	r2,r3
+   1113 0584 550F02     	and	r2,#15
+   1114 0587 0B02       	sll	r2
+   1115 0589 0B02       	sll	r2
+   1116 058B 0B02       	sll	r2
+   1117 058D 0B02       	sll	r2
+   1118 058F 3993000D   	mov	LevelYoff2(rr10),r2
+   1119                 
+   1120                 	; convert into strip table address
+   1121                 
+   1122 0593 0002       	clr	r2
+   1123 0595 610202     	addw	rr2,rr2
+   1124 0598 610202     	addw	rr2,rr2
+   1125 059B 610202     	addw	rr2,rr2
+   1126 059E 610202     	addw	rr2,rr2
+   1127 05A1 610202     	addw	rr2,rr2
+   1128 05A4 69020000"  	addw	rr2,#StripTable
+   1129 05A8 3B930008   	movw	LevelAddr2(rr10),rr2
+   1130                 
+   1131 05AC            UpdateS1AnimE:
+   1132 05AC F8         	ret
+   1133                 
+   1134                 ;============================================================================
+   1135                 ;
+   1136                 ; Update Frog:
+   1137                 ;
+   1138                 ;	r0 = user input
+   1139                 ;
+   1140                 ;----------------------------------------------------------------------------
+   1141                 
+   1142 05AD            UpdateFrog:
+   1143                 
+   1144 05AD 49065D'    	call	StartFrog
+   1145                 	
+   1146 05B0 490772'    	call	SitFrog	
+   1147 05B3 DD03       	br	pl,UpdateFrogE
+   1148                 	
+   1149 05B5 4905B9'    	call	MoveFrog
+   1150                 	
+   1151 05B8            UpdateFrogE:
+   1152 05B8 F8         	ret
+   1153                 	
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   37
+
+
+   1154                 ;============================================================================
+   1155                 ;
+   1156                 ; Move Frog:
+   1157                 ;
+   1158                 ;	FrogDir controls motion
+   1159                 ;
+   1160                 ;----------------------------------------------------------------------------
+   1161                 
+   1162 05B9            MoveFrog:
+   1163                 	
+   1164                 	; primary decision is based on what frog is currently doing!
+   1165                 	
+   1166 05B9 B1E1       	mov	r1,FrogDir
+   1167 05BB 500101     	cmp	r1,#FrogDirS
+   1168 05BE D626       	br	eq,MoveFrogS	;South
+   1169 05C0 500201     	cmp	r1,#FrogDirN
+   1170 05C3 D631       	br	eq,MoveFrogN	;North
+   1171 05C5 500301     	cmp	r1,#FrogDirE
+   1172 05C8 D63C       	br	eq,MoveFrogE	;East
+   1173 05CA 500401     	cmp	r1,#FrogDirW
+   1174 05CD D647       	br	eq,MoveFrogW	;West
+   1175 05CF 500501     	cmp	r1,#FrogDirXW
+   1176 05D2 D605       	br	eq,MoveFrogXW	;Death by water
+   1177 05D4 500601     	cmp	r1,#FrogDirXL
+   1178 05D7 DE73       	br	ne,MoveFrogCont	;Death by non-water (land)
+   1179                 	
+   1180                 	; Death by land or water
+   1181                 	
+   1182 05D9            MoveFrogXL:
+   1183 05D9            MoveFrogXW:
+   1184 05D9 09E0       	dec	FrogTick
+   1185 05DB DE4A       	br	nz,MoveFrogAdj
+   1186 05DD 5840E0     	mov	FrogTick,#FrogSpeed*32
+   1187 05E0 09E2       	dec	FrogCnt
+   1188 05E2 DE43       	br	nz,MoveFrogAdj
+   1189 05E4 D871       	br	MoveFrogDie
+   1190                 
+   1191                 	; going south
+   1192                 		
+   1193 05E6            MoveFrogS:
+   1194 05E6 09E0       	dec	FrogTick
+   1195 05E8 DE62       	br	nz,MoveFrogCont
+   1196 05EA 5802E0     	mov	FrogTick,#FrogSpeed
+   1197 05ED 5104DE     	add	FrogY,#FrogMoves
+   1198 05F0 09E2       	dec	FrogCnt
+   1199 05F2 DE58       	br	nz,MoveFrogCont
+   1200 05F4 D85C       	br	MoveFrogStop
+   1201                 	
+   1202                 	; going north
+   1203                 		
+   1204 05F6            MoveFrogN:
+   1205 05F6 09E0       	dec	FrogTick
+   1206 05F8 DE52       	br	nz,MoveFrogCont
+   1207 05FA 5802E0     	mov	FrogTick,#FrogSpeed
+   1208 05FD 5204DE     	sub	FrogY,#FrogMoves
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   38
+
+
+   1209 0600 09E2       	dec	FrogCnt
+   1210 0602 DE48       	br	nz,MoveFrogCont
+   1211 0604 D84C       	br	MoveFrogStop
+   1212                 	
+   1213                 	; going east
+   1214                 		
+   1215 0606            MoveFrogE:
+   1216 0606 09E0       	dec	FrogTick
+   1217 0608 DE1D       	br	nz,MoveFrogAdj
+   1218 060A 5802E0     	mov	FrogTick,#FrogSpeed
+   1219 060D 5104DC     	add	FrogX,#FrogMoves
+   1220 0610 09E2       	dec	FrogCnt
+   1221 0612 DE13       	br	nz,MoveFrogAdj
+   1222 0614 D80E       	br	MoveFrogSAdj
+   1223                 	
+   1224                 	; going west
+   1225                 		
+   1226 0616            MoveFrogW:
+   1227 0616 09E0       	dec	FrogTick
+   1228 0618 DE0D       	br	nz,MoveFrogAdj
+   1229 061A 5802E0     	mov	FrogTick,#FrogSpeed
+   1230 061D 5204DC     	sub	FrogX,#FrogMoves
+   1231 0620 09E2       	dec	FrogCnt
+   1232 0622 DE03       	br	nz,MoveFrogAdj
+   1233                 	
+   1234                 	; Stop but adjust
+   1235                 	
+   1236 0624            MoveFrogSAdj:
+   1237                 
+   1238 0624 5800E1     	mov	FrogDir,#0
+   1239                 	
+   1240                 	; Moving east west-- adjust position if moving
+   1241                 	
+   1242 0627            MoveFrogAdj:
+   1243 0627 B1E3       	mov	r1,FrogFlags
+   1244 0629 2F0180     	btst	r1,#FrogFlagM
+   1245 062C D61E       	br	z,MoveFrogCont
+   1246                 	
+   1247 062E 4ADC06     	movw	rr6,FrogX
+   1248 0631 3A930000   	movw	rr2,LevelSpeedU(rr10)
+   1249                 	
+   1250 0635 388B0002   	mov	r1,LevelVFlags(rr10)
+   1251 0639 2F0180     	btst	r1,#LevelVFlagD
+   1252 063C D608       	br	z,MoveFrogL
+   1253                 	
+   1254 063E 610206     	addw	rr6,rr2	;moving right
+   1255 0641 4A06DC     	movw	FrogX,rr6
+   1256 0644 D806       	br	MoveFrogCont
+   1257                 	
+   1258 0646            MoveFrogL:
+   1259                 
+   1260 0646 620206     	subw	rr6,rr2
+   1261 0649 4A06DC     	movw	FrogX,rr6
+   1262                 
+   1263                 	; continue
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   39
+
+
+   1264                 	
+   1265 064C            MoveFrogCont:
+   1266 064C C000       	mov	r0,#0
+   1267 064E 500000     	cmp	r0,#0
+   1268 0651 F8         	ret
+   1269                 	
+   1270                 	; continue, but stop
+   1271                 	
+   1272 0652            MoveFrogStop:
+   1273 0652 5800E1     	mov	FrogDir,#0
+   1274 0655 D8F5       	br	MoveFrogCont
+   1275                 	
+   1276                 	; exit after death
+   1277                 	
+   1278 0657            MoveFrogDie:
+   1279 0657 C0FF       	mov	r0,#255
+   1280 0659 500000     	cmp	r0,#0
+   1281 065C F8         	ret
+   1282                 	
+   1283                 ;============================================================================
+   1284                 ;
+   1285                 ; Start Frog:
+   1286                 ;
+   1287                 ;	If no current motion, base moves on R0
+   1288                 ;
+   1289                 ;----------------------------------------------------------------------------
+   1290                 
+   1291 065D            StartFrog:
+   1292                 
+   1293                 	; test motion
+   1294                 	
+   1295 065D B1E1       	mov	r1,FrogDir
+   1296 065F 500001     	cmp	r1,#0
+   1297 0662 9E0771'    	jmp	ne,StartFrogExit
+   1298                 		
+   1299                 	; not moving
+   1300                             
+   1301 0665            StartFrogM:
+   1302                 
+   1303                 	; mark frog not moving
+   1304                 
+   1305 0665 B1E3       	mov	r1,FrogFlags
+   1306 0667 557F01     	and	r1,#255-FrogFlagM
+   1307 066A B9E3       	mov	FrogFlags,r1
+   1308                 	
+   1309                 	; time level
+   1310                 
+   1311 066C 4ACE04     	movw	rr4,Timer
+   1312 066F 7A0007     	movw	rr2,#TimerDec
+   1313 0672 620204     	subw	rr4,rr2
+   1314 0675 DD03       	br	pl,StartFrogMM
+   1315                 
+   1316 0677 98074E'    	jmp	StartFrogXDie
+   1317                 
+   1318 067A            StartFrogMM:
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   40
+
+
+   1319 067A 4A04CE     	movw	Timer,rr4
+   1320                 
+   1321                 	; frog ain't moving-- is motion starting?
+   1322                 	
+   1323 067D 500000     	cmp	r0,#0
+   1324 0680 960771'    	jmp	eq,StartFrogExit
+   1325                 	
+   1326                 	; User pressed something-- see what
+   1327                 	
+   1328 0683 508200     	cmp	r0,#UserScreen
+   1329 0686 9B0759'    	jmp	ugt,StartFrogMJ
+   1330                 	
+   1331                 	; get position of left pad on screen row of frog
+   1332                 	
+   1333 0689 B7DE       	mov	r7,FrogY
+   1334 068B 0707       	srl	r7
+   1335 068D 0707       	srl	r7
+   1336 068F 0707       	srl	r7
+   1337 0691 0707       	srl	r7
+   1338 0693 7A000D     	movw	rr2,#13
+   1339 0696 4C0702     	mult	rr2,r7
+   1340                 	
+   1341 0699 1003       	cmp	r0,r3
+   1342 069B 9306FA'    	jmp	ule,StartFrogMU	;go up
+   1343 069E 510D03     	add	r3,#13
+   1344 06A1 1003       	cmp	r0,r3
+   1345 06A3 9B071F'    	jmp	ugt,StartFrogMD	;go down
+   1346 06A6 520D03     	sub	r3,#13
+   1347 06A9 B2DC       	mov	r2,FrogX
+   1348 06AB 0702       	srl	r2
+   1349 06AD 0702       	srl	r2
+   1350 06AF 0702       	srl	r2
+   1351 06B1 0702       	srl	r2
+   1352 06B3 111A       	add	r3,r2
+   1353 06B5 0803       	inc	r3
+   1354 06B7 1003       	cmp	r0,r3
+   1355 06B9 D721       	br	ult,StartFrogML	;go left
+   1356 06BB 96076F'    	jmp	eq,StartFrogStill	;stay put
+   1357                 	
+   1358                 	;Frog to go right
+   1359                 	
+   1360 06BE            StartFrogMR:
+   1361                 
+   1362                 	; get contents to right of frog
+   1363                 	
+   1364 06BE B7DE       	mov	r7,FrogY
+   1365 06C0 B3DC       	mov	r3,FrogX
+   1366 06C2 511803     	add	r3,#24
+   1367 06C5 B503       	mov	r5,r3
+   1368 06C7 490863'    	call	GetFrogByte
+   1369                 	
+   1370                 	; if wall, don't go
+   1371                 	
+   1372 06CA 500303     	cmp	r3,#StripWall
+   1373 06CD 960771'    	jmp	eq,StartFrogExit
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   41
+
+
+   1374                 	
+   1375                 	; not wall, so go!
+   1376                 	
+   1377 06D0 5802E0     	mov	FrogTick,#FrogSpeed
+   1378 06D3 5804E2     	mov	FrogCnt,#FrogFrames
+   1379 06D6 5803E1     	mov	FrogDir,#FrogDirE
+   1380 06D9 980771'    	jmp	StartFrogExit
+   1381                 
+   1382                 	;Frog to go left
+   1383                 	
+   1384 06DC            StartFrogML:
+   1385                 	
+   1386                 	; get contents to left of frog
+   1387                 	
+   1388 06DC B7DE       	mov	r7,FrogY
+   1389 06DE B3DC       	mov	r3,FrogX
+   1390 06E0 520803     	sub	r3,#8
+   1391 06E3 B503       	mov	r5,r3
+   1392 06E5 490863'    	call	GetFrogByte
+   1393                 	
+   1394                 	; if wall, don't go
+   1395                 	
+   1396 06E8 500303     	cmp	r3,#StripWall
+   1397 06EB 960771'    	jmp	eq,StartFrogExit
+   1398                 	
+   1399                 	; not wall, so go!
+   1400                 	
+   1401 06EE 5802E0     	mov	FrogTick,#FrogSpeed
+   1402 06F1 5804E2     	mov	FrogCnt,#FrogFrames
+   1403 06F4 5804E1     	mov	FrogDir,#FrogDirW
+   1404 06F7 980771'    	jmp	StartFrogExit
+   1405                 
+   1406                 	;Frog to go up
+   1407                 	
+   1408 06FA            StartFrogMU:
+   1409                 
+   1410                 	; get contents above frog
+   1411                 	
+   1412 06FA B7DE       	mov	r7,FrogY
+   1413 06FC 500007     	cmp	r7,#0
+   1414 06FF 960771'    	jmp	eq,StartFrogExit
+   1415 0702 521007     	sub	r7,#16
+   1416 0705 B3DC       	mov	r3,FrogX
+   1417 0707 510803     	add	r3,#8
+   1418 070A B503       	mov	r5,r3
+   1419 070C 490863'    	call	GetFrogByte
+   1420                 	
+   1421                 	; if wall, don't go
+   1422                 	
+   1423 070F 500303     	cmp	r3,#StripWall
+   1424 0712 D65D       	br	eq,StartFrogExit
+   1425                 	
+   1426                 	; not wall, so go!
+   1427                 	
+   1428 0714 5802E0     	mov	FrogTick,#FrogSpeed
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   42
+
+
+   1429 0717 5804E2     	mov	FrogCnt,#FrogFrames
+   1430 071A 5802E1     	mov	FrogDir,#FrogDirN
+   1431 071D D852       	br	StartFrogExit
+   1432                 
+   1433                 	;frog to go down
+   1434                 	
+   1435 071F            StartFrogMD:
+   1436                 
+   1437                 	; get contents below frog
+   1438                 	
+   1439 071F B7DE       	mov	r7,FrogY
+   1440 0721 508007     	cmp	r7,#160-32
+   1441 0724 D64B       	br	eq,StartFrogExit
+   1442 0726 511007     	add	r7,#16
+   1443 0729 B3DC       	mov	r3,FrogX
+   1444 072B 510803     	add	r3,#8
+   1445 072E B503       	mov	r5,r3
+   1446 0730 490863'    	call	GetFrogByte
+   1447                 	
+   1448                 	; if wall, don't go
+   1449                 	
+   1450 0733 500303     	cmp	r3,#StripWall
+   1451 0736 D639       	br	eq,StartFrogExit
+   1452                 	
+   1453                 	; not wall, so go!
+   1454                 	
+   1455 0738 5802E0     	mov	FrogTick,#FrogSpeed
+   1456 073B 5804E2     	mov	FrogCnt,#FrogFrames
+   1457 073E 5801E1     	mov	FrogDir,#FrogDirS
+   1458 0741 D82E       	br	StartFrogExit
+   1459                 	
+   1460                 	;Frog to die in water
+   1461                 	
+   1462 0743            StartFrogWDie:
+   1463                 
+   1464 0743 5802E0     	mov	FrogTick,#FrogSpeed
+   1465 0746 5804E2     	mov	FrogCnt,#FrogFrames
+   1466 0749 5805E1     	mov	FrogDir,#FrogDirXW
+   1467 074C D823       	br	StartFrogExit
+   1468                 	
+   1469                 	;Frog to die on land
+   1470                 	
+   1471 074E            StartFrogXDie:
+   1472                 
+   1473 074E 5802E0     	mov	FrogTick,#FrogSpeed
+   1474 0751 5804E2     	mov	FrogCnt,#FrogFrames
+   1475 0754 5806E1     	mov	FrogDir,#FrogDirXL
+   1476 0757 D818       	br	StartFrogExit
+   1477                 	
+   1478                 	; check for joypad motion
+   1479                 	
+   1480 0759            StartFrogMJ:
+   1481                 
+   1482 0759 508300     	cmp	r0,#UserUp
+   1483 075C D69C       	br	eq,StartFrogMU	;go up
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   43
+
+
+   1484                 	
+   1485 075E 508400     	cmp	r0,#UserDown
+   1486 0761 D6BC       	br	eq,StartFrogMD	;go down
+   1487                 	
+   1488 0763 508500     	cmp	r0,#UserLeft
+   1489 0766 9606DC'    	jmp	eq,StartFrogML	;go left
+   1490                 	
+   1491 0769 508600     	cmp	r0,#UserRight
+   1492 076C 9606BE'    	jmp	eq,StartFrogMR	;go right
+   1493                 	
+   1494                 	; no motion
+   1495                 	
+   1496 076F            StartFrogStill:
+   1497                 
+   1498 076F C000       	mov	r0,#0
+   1499                 	
+   1500 0771            StartFrogExit:
+   1501                 
+   1502 0771 F8         	ret
+   1503                 	
+   1504                 ;============================================================================
+   1505                 ;
+   1506                 ; SitFrog:
+   1507                 ;
+   1508                 ;	Handle frog not moving or to be moved
+   1509                 ;
+   1510                 ;----------------------------------------------------------------------------
+   1511                 
+   1512 0772            SitFrog:
+   1513                 	; bail if moving, or motion may start
+   1514                 	
+   1515 0772 500000     	cmp	r0,#0
+   1516 0775 9E0813'    	jmp	nz,SitFrogCont
+   1517                 	
+   1518 0778 B1E1       	mov	r1,FrogDir
+   1519 077A 500001     	cmp	r1,#0
+   1520 077D 9E0813'    	jmp	nz,SitFrogCont
+   1521                 	
+   1522                 	; frog ain't moving and not starting--
+   1523                 	
+   1524                 	; see if new band
+   1525                 
+   1526 0780 B7DE       	mov	r7,FrogY
+   1527 0782 B6DF       	mov	r6,FrogMinY
+   1528 0784 103E       	cmp	r7,r6
+   1529 0786 9F079C'    	jmp	uge,SitFrogJ0
+   1530                 
+   1531                 	; new band, say so and add to score
+   1532                 
+   1533 0789 BFDF       	mov	FrogMinY,r7
+   1534 078B 4AD808     	movw	rr8,PlayerVAddr
+   1535 078E 3A910000   	movw	rr2,PlayerScore(rr8)
+   1536 0792 7C000A     	movw	rr4,#SCORE_forward
+   1537 0795 610402     	addw	rr2,rr4
+   1538 0798 3B910000   	movw	PlayerScore(rr8),rr2
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   44
+
+
+   1539                 
+   1540 079C            SitFrogJ0:
+   1541                 	
+   1542                 	; get Left setting
+   1543                 
+   1544 079C B7DE       	mov	r7,FrogY
+   1545 079E B3DC       	mov	r3,FrogX
+   1546 07A0 510803     	add	r3,#8
+   1547 07A3 490863'    	call	GetFrogByte     
+   1548                 	
+   1549                 	; handle done safe
+   1550                 	
+   1551 07A6 500203     	cmp	r3,#StripHome
+   1552 07A9 DE03       	br	ne,SitFrogS1
+   1553 07AB 980819'    	jmp	SitFrogHome
+   1554 07AE            SitFrogS1:
+   1555                 
+   1556                 	; handle landing on bad surface
+   1557                 	
+   1558 07AE 500403     	cmp	r3,#StripWDead
+   1559 07B1 D64C       	br	eq,SitFrogWDie
+   1560 07B3 500503     	cmp	r3,#StripXDead
+   1561 07B6 D652       	br	eq,SitFrogXDie
+   1562 07B8 500A03     	cmp	r3,#StripBDead
+   1563 07BB D64D       	br	eq,SitFrogXDie
+   1564                 	
+   1565                 	; moving surface takes precident over still
+   1566                 	
+   1567 07BD 500103     	cmp	r3,#StripMove
+   1568 07C0 DE07       	br	ne,SitFrogS2
+   1569 07C2 B1E3       	mov	r1,FrogFlags
+   1570 07C4 568001     	or	r1,#FrogFlagM
+   1571 07C7 B9E3       	mov	FrogFlags,r1
+   1572 07C9            SitFrogS2:	
+   1573                  
+   1574                 	; handle done safe
+   1575                 	
+   1576 07C9 500203     	cmp	r3,#StripHome
+   1577 07CC D64B       	br	eq,SitFrogHome
+   1578                 	
+   1579                 	; Nothing much is happening-- adjust position if moving
+   1580                 	
+   1581 07CE B1E3       	mov	r1,FrogFlags
+   1582 07D0 2F0180     	btst	r1,#FrogFlagM
+   1583 07D3 D63E       	br	z,SitFrogCont
+   1584                 	
+   1585 07D5 4ADC06     	movw	rr6,FrogX
+   1586 07D8 3A930000   	movw	rr2,LevelSpeedU(rr10)
+   1587                 	
+   1588 07DC 388B0002   	mov	r1,LevelVFlags(rr10)
+   1589 07E0 2F0180     	btst	r1,#LevelVFlagD
+   1590 07E3 D60D       	br	z,SitFrogL
+   1591                 	
+   1592 07E5 610206     	addw	rr6,rr2	;moving right
+   1593 07E8 50B706     	cmp	r6,#199-16
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   45
+
+
+   1594 07EB DB1D       	br	ugt,SitFrogXDie
+   1595 07ED 4A06DC     	movw	FrogX,rr6
+   1596 07F0 D821       	br	SitFrogCont
+   1597                 	
+   1598 07F2            SitFrogL:
+   1599                 
+   1600 07F2 620206     	subw	rr6,rr2
+   1601 07F5 50B706     	cmp	r6,#199-16
+   1602 07F8 DB10       	br	ugt,SitFrogXDie
+   1603 07FA 4A06DC     	movw	FrogX,rr6
+   1604 07FD D814       	br	SitFrogCont
+   1605                 
+   1606                 	;Frog to die in water
+   1607                 	
+   1608 07FF            SitFrogWDie:
+   1609                 
+   1610 07FF 5802E0     	mov	FrogTick,#FrogSpeed
+   1611 0802 5804E2     	mov	FrogCnt,#FrogFrames
+   1612 0805 5805E1     	mov	FrogDir,#FrogDirXW
+   1613 0808 D809       	br	SitFrogCont
+   1614                 	
+   1615                 	;Frog to die on land
+   1616                 	
+   1617 080A            SitFrogXDie:
+   1618                 
+   1619 080A 5802E0     	mov	FrogTick,#FrogSpeed
+   1620 080D 5804E2     	mov	FrogCnt,#FrogFrames
+   1621 0810 5806E1     	mov	FrogDir,#FrogDirXL
+   1622                 	
+   1623                 	; exit and continue level
+   1624                 	
+   1625 0813            SitFrogCont:
+   1626 0813 C1FF       	mov	r1,#255
+   1627 0815 500001     	cmp	r1,#0 	 
+   1628 0818 F8         	ret
+   1629                 	
+   1630                 	; exit after found home
+   1631                 	
+   1632 0819            SitFrogHome:
+   1633                 
+   1634                 	; see if home occupied-- place if not
+   1635                 
+   1636 0819 4AD808     	movw	rr8,PlayerVAddr
+   1637 081C B1DC       	mov	r1,FrogX
+   1638 081E C224       	mov	r2,#HomeBase1+24
+   1639 0820 C701       	mov	r7,#1
+   1640                 
+   1641 0822            SitFrogL1:
+   1642 0822 502007     	cmp	r7,#32
+   1643 0825 D6E3       	br	eq,SitFrogXDie
+   1644                 
+   1645 0827 100A       	cmp	r1,r2
+   1646 0829 DB17       	br	ugt,SitFrogJ2
+   1647 082B 38990004   	mov	r3,PlayerHomeF(rr8)
+   1648 082F 151F       	and	r3,r7
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   46
+
+
+   1649 0831 DED7       	br	nz,SitFrogXDie
+   1650                 
+   1651 0833 36B90004   	or	r7,PlayerHomeF(rr8)
+   1652 0837 39B90004   	mov	PlayerHomeF(rr8),r7
+   1653                 
+   1654 083B 521802     	sub	r2,#24
+   1655 083E BADC       	mov	FrogX,r2
+   1656 0840 D807       	br	SitFrogJ1
+   1657                 
+   1658 0842            SitFrogJ2:
+   1659 0842 512802     	add	r2,#40
+   1660 0845 0B07       	sll	r7
+   1661 0847 D8D9       	br	SitFrogL1
+   1662                 
+   1663 0849            SitFrogJ1:
+   1664                 
+   1665 0849 3A910000   	movw	rr2,PlayerScore(rr8)
+   1666 084D 7C0032     	movw	rr4,#SCORE_home
+   1667 0850 610402     	addw	rr2,rr4
+   1668 0853 7C000A     	movw	rr4,#SCORE_time
+   1669 0856 610402     	addw	rr2,rr4
+   1670 0859 3B910000   	movw	PlayerScore(rr8),rr2
+   1671                 
+   1672                 	; bail out saying we are done with "level"
+   1673                 	
+   1674 085D C101       	mov	r1,#1
+   1675 085F 500001     	cmp	r1,#0
+   1676 0862 F8         	ret
+   1677                 
+   1678                 ;============================================================================
+   1679                 ;
+   1680                 ; Get screen or animation byte under frog
+   1681                 ;
+   1682                 ;----------------------------------------------------------------------------
+   1683                 
+   1684 0863            GetFrogByte:
+   1685                 
+   1686                 	; remember target location
+   1687                 	
+   1688 0863 BBE8       	mov	TargetX,r3
+   1689 0865 BFE9       	mov	TargetY,r7
+   1690                 	
+   1691                 	; get screen byte
+   1692                  
+   1693 0867 4909FD'    	call	GetScrnByte
+   1694                 
+   1695                 	; handle animations
+   1696                 	
+   1697 086A 2F0380     	btst	r3,#80h
+   1698 086D D603       	br	z,GetFrogByteJ0
+   1699                 
+   1700 086F 980873'    	jmp	FrogAnimation
+   1701                 
+   1702 0872            GetFrogByteJ0:
+   1703                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   47
+
+
+   1704 0872 F8         	ret
+   1705                 
+   1706                 ;============================================================================
+   1707                 ;
+   1708                 ; Frog has landed on an animation
+   1709                 ;
+   1710                 ;----------------------------------------------------------------------------
+   1711                 
+   1712 0873            FrogAnimation:
+   1713                 
+   1714                 	; assume the return value if missed animation
+   1715                 
+   1716                 	;call	abaker2
+   1717 0873 C301       	mov	r3,#StripMove
+   1718                 
+   1719                 	; protect registers
+   1720                 
+   1721 0875 1E0E       	pushw	rr14
+   1722 0877 1E0C       	pushw	rr12
+   1723 0879 1E06       	pushw	rr6
+   1724                 
+   1725                 	; loop through animations
+   1726                 
+   1727 087B 7F02C8     	movw	rr14,#AnimData
+   1728 087E C708       	mov	r7,#NumAnims
+   1729                 
+   1730 0880            FrogAnimL0:
+   1731                 
+   1732                 	; find an animation
+   1733                 
+   1734 0880 38B70000   	mov	r6,AnimBand(rr14)
+   1735 0884 500006     	cmp	r6,#0
+   1736 0887 D66A       	br	z,FrogAnimE0
+   1737                 
+   1738                 	; Verify animamtion is on same band
+   1739                 
+   1740 0889 B6E9       	mov	r6,TargetY ;ZZZ
+   1741 088B 38B7000D   	mov	r6,AnimYOff(rr14)
+   1742 088F 40E906     	cmp	r6,TargetY
+   1743 0892 DE5F       	br	nz,FrogAnimE0
+   1744                 
+   1745                 	; See if Animation starts before position
+   1746                 	; (any value over 208 is considered negative)
+   1747                 	
+   1748 0894 B6E8       	mov	r6,TargetX ;ZZZ
+   1749 0896 38B70004   	mov	r6,AnimXOff(rr14)
+   1750 089A 50D006     	cmp	r6,#208
+   1751 089D DB05       	br	ugt,FrogAnimJ0
+   1752 089F 40E806     	cmp	r6,TargetX
+   1753 08A2 DB4F       	br	ugt,FrogAnimE0
+   1754 08A4            FrogAnimJ0:	
+   1755                 
+   1756                 	; This is animation if it ends after position
+   1757                 	
+   1758 08A4 31B70009   	add	r6,AnimRange(rr14)
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   48
+
+
+   1759 08A8 40E806     	cmp	r6,TargetX
+   1760 08AB D346       	br	ule,FrogAnimE0
+   1761                 
+   1762                 	; found animation: protect more registers
+   1763                 
+   1764 08AD 1E00       	pushw	rr0
+   1765 08AF 1E04       	pushw	rr4
+   1766                 
+   1767 08B1 B1E8       	mov	r1,TargetX
+   1768 08B3 328F0004   	sub	r1,AnimXOff(rr14)
+   1769 08B7 0000       	clr	r0
+   1770 08B9 38AF000B   	mov	r5,AnimXRel(rr14)
+   1771 08BD 0004       	clr	r4
+   1772 08BF 620400     	subw	rr0,rr4
+   1773 08C2 D529       	br	mi,FrogAnimE2
+   1774                 
+   1775 08C4 3AAF0002   	movw	rr12,AnimAnim(rr14)
+   1776 08C8 0701       	srl	r1
+   1777 08CA 0701       	srl	r1
+   1778 08CC 0701       	srl	r1
+   1779 08CE 308D0001   	cmp	r1,AnimWidth(rr12)
+   1780 08D2 D919       	br	ge,FrogAnimE2
+   1781                 
+   1782                 	; we are on the animation: get distance to correct frame bytes
+   1783                 
+   1784 08D4 38BD0001   	mov	r7,AnimWidth(rr12)
+   1785 08D8 38A70007   	mov	r4,AnimFNum(rr14)
+   1786 08DC 4C0406     	mult	rr6,r4
+   1787                 
+   1788                 	; skip over ticks
+   1789                 
+   1790 08DF 31BD0002   	add	r7,AnimNum(rr12)
+   1791                 
+   1792                 	; add this to structure base
+   1793                 
+   1794 08E3 61060C     	addw	rr12,rr6
+   1795                 
+   1796                 	; get offset to correct byte
+   1797                 
+   1798 08E6 61000C     	addw	rr12,rr0
+   1799                 
+   1800                 	; get underlying byte
+   1801                 
+   1802 08E9 389D0006   	mov	r3,AnimTicks(rr12)
+   1803                 
+   1804                 	; done with animation: get out
+   1805                 
+   1806 08ED            FrogAnimE2:
+   1807                 
+   1808 08ED 1F04       	popw	rr4
+   1809 08EF 1F00       	popw	rr0
+   1810 08F1 D80B       	br	FrogAnimE1
+   1811                 
+   1812                 	; go to next animation
+   1813                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   49
+
+
+   1814 08F3            FrogAnimE0:
+   1815 08F3 690E000F   	addw	rr14,#AnimVSize
+   1816 08F7 0907       	dec	r7
+   1817 08F9 DE85       	br	nz,FrogAnimL0
+   1818                 
+   1819 08FB 490000"    	call	abaker4
+   1820                 
+   1821                 	; restore registers and exit
+   1822                 
+   1823 08FE            FrogAnimE1:
+   1824                 
+   1825 08FE 1F06       	popw	rr6
+   1826 0900 1F0C       	popw	rr12
+   1827 0902 1F0E       	popw	rr14
+   1828 0904 F8         	ret
+   1829                 	
+   1830                 ;============================================================================
+   1831                 ;
+   1832                 ; Update animations
+   1833                 ;
+   1834                 ;----------------------------------------------------------------------------
+   1835                 
+   1836 0905            UpdateAnims:
+   1837                 
+   1838                 	; loop through animations
+   1839                 
+   1840 0905 7F02C8     	movw	rr14,#AnimData
+   1841 0908 C708       	mov	r7,#NumAnims
+   1842                 
+   1843 090A            UpdateAnimsL0:
+   1844                 
+   1845                 	; see if this animation in use
+   1846                 
+   1847 090A 38870000   	mov	r0,AnimBand(rr14)
+   1848 090E 500000     	cmp	r0,#0
+   1849 0911 96099A'    	jmp	eq,UpdateAnimsE0
+   1850                 
+   1851                 	; update the position of the strip
+   1852                 
+   1853 0914 3AAF0000   	movw	rr12,AnimBand(rr14)
+   1854                 
+   1855 0918 3A970004   	movw	rr2,AnimXOff(rr14)
+   1856 091C 38B70006   	mov	r6,AnimXOffH(rr14)
+   1857 0920 3AA50000   	movw	rr4,LevelSpeedU(rr12)
+   1858                 
+   1859 0924 38850002   	mov	r0,LevelVFlags(rr12)
+   1860 0928 2F0080     	btst	r0,#LevelVFlagD
+   1861 092B DE08       	br	nz,UpdateAnimsJ1
+   1862                 
+   1863                 	; level moving left
+   1864                 
+   1865 092D 620402     	subw	rr2,rr4
+   1866 0930 540006     	sbc	r6,#0
+   1867 0933 D806       	br	UpdateAnimsJ2
+   1868                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   50
+
+
+   1869                 	; level moving right
+   1870                 
+   1871 0935            UpdateAnimsJ1:
+   1872                 
+   1873 0935 610402     	addw	rr2,rr4
+   1874 0938 530006     	adc	r6,#0
+   1875                 
+   1876 093B            UpdateAnimsJ2:
+   1877                 
+   1878 093B 3B970004   	movw	AnimXOff(rr14),rr2
+   1879 093F 39B70006   	mov	AnimXOffH(rr14),r6
+   1880                 
+   1881                 	; see if animation area is off screen
+   1882                 
+   1883 0943 500106     	cmp	r6,#1
+   1884 0946 D619       	br	eq,UpdateAnimsJ5
+   1885                 
+   1886 0948 38A70009   	mov	r4,AnimRange(rr14)
+   1887 094C 0005       	clr	r5
+   1888 094E 610402     	addw	rr2,rr4
+   1889 0951 530006     	adc	r6,#0
+   1890 0954 500106     	cmp	r6,#1
+   1891 0957 D611       	br	eq,UpdateAnimsJ6
+   1892                 
+   1893                 	; clear animation
+   1894                 
+   1895 0959            UpdateAnimsJ7:
+   1896                 
+   1897 0959 0006       	clr	r6
+   1898 095B 39B70000   	mov	AnimBand(rr14),r6
+   1899 095F D839       	br	UpdateAnimsE0
+   1900                 
+   1901                 	; see if off right
+   1902                 
+   1903 0961            UpdateAnimsJ5:
+   1904                 
+   1905 0961 C4C8       	mov	r4,#200
+   1906 0963 0005       	clr	r5
+   1907 0965 620402     	subw	rr2,rr4
+   1908 0968 DFEF       	br	nc,UpdateAnimsJ7
+   1909                 	;br	pl,UpdateAnimsJ7
+   1910                 
+   1911 096A            UpdateAnimsJ6:
+   1912                 
+   1913                 	; count down on the animation
+   1914                 
+   1915 096A 388F0008   	mov	r1,AnimFTick(rr14)
+   1916 096E 0901       	dec	r1
+   1917 0970 DE24       	br	nz,UpdateAnimsJ3
+   1918                 
+   1919                 	; Times up, get animation for next frame
+   1920                 
+   1921 0972 3AAF0002   	movw	rr12,AnimAnim(rr14)
+   1922                 
+   1923                 	; go to next frame
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   51
+
+
+   1924                 
+   1925 0976 38B70007   	mov	r6,AnimFNum(rr14)
+   1926 097A 0806       	inc	r6
+   1927 097C 30B50002   	cmp	r6,AnimNum(rr12)
+   1928 0980 DE02       	br	ne,UpdateAnimsJ4
+   1929                 
+   1930 0982 0006       	clr	r6
+   1931                 
+   1932 0984            UpdateAnimsJ4:
+   1933                 
+   1934 0984 39B70007   	mov	AnimFNum(rr14),r6
+   1935                 
+   1936 0988 4909A4'    	call	UpdateAMove
+   1937                 
+   1938                 	; finish animation by copying ticks
+   1939                 
+   1940 098B 0002       	clr	r2
+   1941 098D B306       	mov	r3,r6
+   1942 098F 61020C     	addw	rr12,rr2
+   1943                 
+   1944 0992 388D0006   	mov	r1,AnimTicks(rr12)
+   1945                 
+   1946 0996            UpdateAnimsJ3:
+   1947                 
+   1948 0996 398F0008   	mov	AnimFTick(rr14),r1
+   1949                 
+   1950                 	; go to next animation
+   1951                 
+   1952 099A            UpdateAnimsE0:
+   1953                 
+   1954 099A 690E000F   	addw	r14,#AnimVSize
+   1955 099E 0907       	dec	r7
+   1956 09A0 9E090A'    	jmp	nz,UpdateAnimsL0
+   1957                 
+   1958 09A3 F8         	ret
+   1959                 
+   1960 09A4            UpdateAMove:
+   1961                 
+   1962                 	; get motion values
+   1963                 
+   1964 09A4 000A       	clr	r10
+   1965 09A6 38950005   	mov	r2,AnimMove(rr12)
+   1966 09AA BA0B       	mov	r11,r2
+   1967 09AC 0002       	clr	r2
+   1968 09AE 389F000B   	mov	r3,AnimXRel(rr14)
+   1969                 
+   1970                 	; determine current motion direction
+   1971                 
+   1972 09B2 388F000A   	mov	r1,AnimVFlags(rr14)
+   1973 09B6 2F0180     	btst	r1,#AnimVFlagD
+   1974 09B9 DE13       	br	nz,UpdateAMoveR
+   1975                 
+   1976                 	; moving left
+   1977                 
+   1978 09BB 620A02     	subw	rr2,rr10
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   52
+
+
+   1979 09BE DD09       	br	pl,UpdateAMoveJ0
+   1980                 
+   1981 09C0 0003       	clr	r3
+   1982 09C2 578001     	xor	r1,#AnimVFlagD
+   1983 09C5 398F000A   	mov	AnimVFlags(rr14),r1
+   1984                 
+   1985 09C9            UpdateAMoveJ0:
+   1986                 
+   1987 09C9 399F000B   	mov	AnimXRel(rr14),r3
+   1988 09CD F8         	ret
+   1989                 
+   1990 09CE            UpdateAMoveR:
+   1991                 
+   1992 09CE 610A02     	addw	rr2,rr10
+   1993                 
+   1994 09D1 38850001   	mov	r0,AnimWidth(rr12)
+   1995 09D5 0B00       	sll	r0
+   1996 09D7 0B00       	sll	r0
+   1997 09D9 0B00       	sll	r0
+   1998 09DB B80B       	mov	r11,r0
+   1999 09DD 61020A     	addw	rr10,rr2
+   2000                 
+   2001 09E0 0004       	clr	r4
+   2002 09E2 38AF0009   	mov	r5,AnimRange(rr14)
+   2003                 
+   2004 09E6 620A04     	subw	rr4,rr10
+   2005 09E9 DD0D       	br	pl,UpdateAMoveRJ0
+   2006                 
+   2007 09EB 578001     	xor	r1,#AnimVFlagD
+   2008 09EE 398F000A   	mov	AnimVFlags(rr14),r1
+   2009                 
+   2010 09F2 389F0009   	mov	r3,AnimRange(rr14)
+   2011 09F6 1218       	sub	r3,r0
+   2012                 
+   2013 09F8            UpdateAMoveRJ0:
+   2014                 
+   2015 09F8 399F000B   	mov	AnimXRel(rr14),r3
+   2016 09FC F8         	ret
+   2017                 
+   2018                 ;============================================================================
+   2019                 ;
+   2020                 ; Get byte under address on screen
+   2021                 ;
+   2022                 ; GetScrnByte:
+   2023                 ;
+   2024                 ;	r7=y pixel on screen
+   2025                 ;   or
+   2026                 ;
+   2027                 ; GetStripByte:
+   2028                 ;
+   2029                 ;	r10 = address of band ram table
+   2030                 ;	r12 = address of band rom table
+   2031                 ;
+   2032                 ;     inputes:
+   2033                 ;
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   53
+
+
+   2034                 ;	r7 or (rr10 and rr12) as defined above
+   2035                 ;	r3 = x pixel on screen
+   2036                 ;
+   2037                 ;     Output:
+   2038                 ;
+   2039                 ;	rr10 = address of band's ram table
+   2040                 ;	rr12 = address of band's rom table
+   2041                 ;	rr14 = address of byte
+   2042                 ;	r3   = contents of byte
+   2043                 ;	r4   = pixel distance to byte from left edge of screen
+   2044                 ;
+   2045                 ;----------------------------------------------------------------------------
+   2046                 
+   2047 09FD            GetScrnByte:
+   2048                 
+   2049 09FD 0E07       	push	r7
+   2050                 
+   2051 09FF 0707       	srl	r7
+   2052 0A01 0707       	srl	r7
+   2053 0A03 0707       	srl	r7
+   2054 0A05 0707       	srl	r7
+   2055                 	
+   2056 0A07 7B0010     	movw	rr10,#LevelVSize
+   2057 0A0A 4C070A     	mult	rr10,r7
+   2058 0A0D 690A0238   	addw	rr10,#LevelData
+   2059                 	
+   2060 0A11 7D000C     	movw	rr12,#LevelSize
+   2061 0A14 4C070C     	mult	rr12,r7
+   2062 0A17 61DA0C     	addw	rr12,LevelAddr
+   2063                 	
+   2064 0A1A 490A20'    	call	GetStripByte
+   2065                 	
+   2066 0A1D 0F07       	pop	r7
+   2067 0A1F F8         	ret
+   2068                 
+   2069 0A20            GetStripByte:
+   2070 0A20 1E00       	pushw	rr0 
+   2071 0A22 0E02       	push	r2
+   2072                 
+   2073                 	; get offset position
+   2074                 	
+   2075 0A24 38A3000E   	mov	r4,LevelXoff1(rr10)
+   2076                 	
+   2077                 	; if reversed motion, we may reverse positions
+   2078                 
+   2079 0A28 388B0002   	mov	r1,LevelVFlags(rr10)
+   2080 0A2C 558001     	and	r1,#LevelVFlagD
+   2081 0A2F D60E       	br	z,GetStripByteL1
+   2082                 		
+   2083                 	; may be to right-- see if reversed art
+   2084                 	
+   2085 0A31 388D0000   	mov	r1,LevelFlags(rr12)
+   2086 0A35 2F0103     	btst	r1,#LevelFlagS+LevelFlagH
+   2087 0A38 DE05       	br	nz,GetStripByteL1
+   2088                 	
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   54
+
+
+   2089 0A3A 52C703     	sub	r3,#199
+   2090 0A3D 0103       	neg	r3
+   2091                 	
+   2092 0A3F            GetStripByteL1: 
+   2093                 
+   2094                 	; get distance from left edge of screen
+   2095                 	
+   2096 0A3F B004       	mov	r0,r4	
+   2097 0A41 550700     	and	r0,#7
+   2098 0A44 0100       	neg	r0
+   2099 0A46 1103       	add	r0,r3
+   2100                 	
+   2101                 	; pick the strip
+   2102                 
+   2103 0A48 3ABB0006   	movw	rr14,LevelAddr1(rr10)
+   2104 0A4C 101C       	cmp	r3,r4
+   2105 0A4E D704       	br	ult,GetStripByteR
+   2106 0A50 3ABB0008   	movw	rr14,LevelAddr2(rr10)
+   2107                 	
+   2108 0A54            GetStripByteR:
+   2109                 
+   2110                 	; get the offset from beginning of strip in pixels
+   2111                 
+   2112 0A54 121C       	sub	r3,r4
+   2113 0A56 0703       	srl	r3
+   2114 0A58 0703       	srl	r3
+   2115 0A5A 0703       	srl	r3
+   2116 0A5C 0002       	clr	r2
+   2117 0A5E 61020E     	addw	rr14,rr2
+   2118                 	
+   2119                 	; get offset from left edge of screen to this byte
+   2120                 	
+   2121 0A61 B400       	mov	r4,r0
+   2122                 	
+   2123                 	; get out
+   2124                 
+   2125 0A63 389F0000     	mov	r3,0(rr14)
+   2126 0A67 0F02       	pop	r2
+   2127 0A69 1F00       	popw	rr0
+   2128 0A6B F8         	ret
+   2129                 
+   2130                 ;============================================================================
+   2131                 ;
+   2132                 ; Display Game
+   2133                 ;
+   2134                 ;----------------------------------------------------------------------------
+   2135                 
+   2136 0A6C            DisplayGame:
+   2137                 
+   2138 0A6C 490D1C'    	call	DisplayBands
+   2139 0A6F 490B2B'    	call	DisplayAnims
+   2140 0A72 490C48'    	call	DisplayFrog
+   2141 0A75 490A7C'    	call	DisplayOlays
+   2142                 
+   2143                  	; show page
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   55
+
+
+   2144                 
+   2145 0A78 490000"    	call	Swap_page
+   2146                 	
+   2147 0A7B F8         	ret
+   2148                 
+   2149                 ;============================================================================
+   2150                 ;
+   2151                 ; Display Overlays
+   2152                 ;
+   2153                 ;----------------------------------------------------------------------------
+   2154                 
+   2155 0A7C            DisplayOlays:
+   2156                 
+   2157                 	; set up Full background
+   2158                 
+   2159 0A7C 790090     	movw	rr8,#0090h	;Upper left
+   2160 0A7F 7BC810     	movw	rr10,#0c810h	;XxY
+   2161 0A82 000C       	clr	r12
+   2162 0A84 500194                 cmp     cur_page,#1
+   2163 0A87 D602                   br      eq,DisplayOlaysJ1
+   2164 0A89 AC0C                   bset    r12,#4
+   2165 0A8B            DisplayOlaysJ1:
+   2166 0A8B 0E0C       	push	r12
+   2167                 
+   2168 0A8D 490000"    	call	Fill_blk_colr
+   2169                 
+   2170 0A90 0F0C       	pop	r12
+   2171                 
+   2172                 	; set up timer boarder
+   2173                 
+   2174 0A92 795798     	movw	rr8,#5798h
+   2175 0A95 7B5008     	movw	rr10,#5008h
+   2176 0A98 0E0C       	push	r12
+   2177 0A9A 57030C     	xor	r12,#3
+   2178                 
+   2179 0A9D 490000"    	call	Fill_blk_colr
+   2180                 
+   2181 0AA0 0F0C       	pop	r12
+   2182                 
+   2183                 	; set up timer background
+   2184                 
+   2185 0AA2 795899     	movw	rr8,#5899h
+   2186 0AA5 B2CE       	mov	r2,Timer
+   2187 0AA7 410208     	add	r8,r2
+   2188 0AAA 7B4E06     	movw	rr10,#4e06h
+   2189 0AAD 42020A     	sub	r10,r2
+   2190                 
+   2191 0AB0 490000"    	call	Fill_blk_colr
+   2192                 
+   2193                             ; print the fixed text
+   2194                 
+   2195 0AB3 C0E4                   mov     r0,#0e4h
+   2196 0AB5 B8EB                   mov     hold_byte1,r0
+   2197                 
+   2198 0AB7 780B23'                movw    rr0,#DisplayOlays1
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   56
+
+
+   2199 0ABA 3B800368               movw    page_ptr1,rr0
+   2200 0ABE 490000"                call    print_string
+   2201                 
+   2202 0AC1 780B27'                movw    rr0,#DisplayOlays2
+   2203 0AC4 3B800368               movw    page_ptr1,rr0
+   2204 0AC8 490000"                call    print_string
+   2205                 
+   2206                             ; print the player number
+   2207                 
+   2208 0ACB B0D7                   mov     r0,NextPlayer
+   2209 0ACD 563000                 or      r0,#'0'
+   2210 0AD0 0001                   clr     r1
+   2211 0AD2 4A00D0                 movw    temp0w,rr0
+   2212 0AD5 780B16'                movw    rr0,#DisplayOlays0p
+   2213 0AD8 3B800368               movw    page_ptr1,rr0
+   2214 0ADC 490000"                call    print_string
+   2215                 
+   2216                 	; show remaining lives
+   2217                 
+   2218 0ADF 0000       	clr	r0
+   2219 0AE1 C190       	mov	r1,#144
+   2220 0AE3 7C0200     	movw	rr4,#0200h	;frog
+   2221 0AE6 4A04D0     	movw	temp0w,rr4
+   2222 0AE9 4AD808     	movw	rr8,PlayerVAddr
+   2223 0AEC 38A10003   	mov	r4,PlayerLives(rr8)
+   2224 0AF0            DisplayOlaysL1:
+   2225 0AF0 0904       	dec	r4
+   2226 0AF2 D513       	br	mi,DisplayOlaysJ2
+   2227 0AF4 1E00       	pushw	rr0
+   2228 0AF6 0E04       	push	r4
+   2229 0AF8 7A00D0     	movw	rr2,#temp0w
+   2230 0AFB 490000"              	call	print_stringv
+   2231 0AFE 0F04       	pop	r4
+   2232 0B00 1F00       	popw	rr0
+   2233 0B02 510800     	add	r0,#8
+   2234 0B05 D8E9       	br	DisplayOlaysL1
+   2235 0B07            DisplayOlaysJ2:
+   2236                 
+   2237                 ;	; show remaining whatever
+   2238                 ;
+   2239                 ;	mov	r0,#192
+   2240                 ;	mov	r1,#144
+   2241                 ;	movw	rr4,#0100h	;Whatever
+   2242                 ;	movw	temp0w,rr4
+   2243                 ;	mov	r4,#6
+   2244                 ;DisplayOlaysL2:
+   2245                 ;	dec	r4
+   2246                 ;	br	mi,DisplayOlaysJ3
+   2247                 ;	pushw	rr0
+   2248                 ;	movw	rr2,#temp0w
+   2249                 ;	push	r4
+   2250                 ;	call	print_stringv
+   2251                 ;	pop	r4
+   2252                 ;	popw	rr0
+   2253                 ;	sub	r0,#8
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   57
+
+
+   2254                 ;	br	DisplayOlaysL2
+   2255                 ;DisplayOlaysJ3:
+   2256                 
+   2257                 	; show score
+   2258                 
+   2259 0B07 C028       	mov	r0,#40
+   2260 0B09 C198       	mov	r1,#152
+   2261 0B0B 4AD808     	movw	rr8,PlayerVAddr
+   2262 0B0E 3A910000   	movw	rr2,PlayerScore(rr8)
+   2263 0B12 490000"    	call	print_score
+   2264                 
+   2265 0B15 F8         	ret
+   2266                 
+   2267 0B16            DisplayOlays0p:
+   2268 0B16 0098                   defb    0,152
+   2269 0B18 00D0                   defw    temp0w
+   2270                 
+   2271 0B1A            DisplayOlaysT1:
+   2272 0B1A 2D5550                 defm    '-UP'
+   2273 0B1D 00                     defb    0
+   2274                 
+   2275 0B1E            DisplayOlaysT2:
+   2276 0B1E 54494D45               defm    'TIME'
+   2277 0B22 00                     defb    0
+   2278                 
+   2279 0B23            DisplayOlays1:
+   2280 0B23 0898                   defb    8,152
+   2281 0B25 0B1A'                  defw    DisplayOlaysT1
+   2282                 
+   2283 0B27            DisplayOlays2:
+   2284 0B27 A898                   defb    168,152
+   2285 0B29 0B1E'                  defw    DisplayOlaysT2
+   2286                 
+   2287                 ;============================================================================
+   2288                 ;
+   2289                 ; Display Animations
+   2290                 ;
+   2291                 ;----------------------------------------------------------------------------
+   2292                 
+   2293 0B2B            DisplayAnims:
+   2294                 
+   2295                 	; video type
+   2296                 
+   2297 0B2B 58010F     	mov	r15,#composite
+   2298 0B2E 500194                 cmp     cur_page,#1
+   2299 0B31 D602                   br      eq,DisplayAnimsP1
+   2300 0B33 A90F                   bset    r15,#1
+   2301 0B35            DisplayAnimsP1:
+   2302                 
+   2303                 	; loop through anims
+   2304                 
+   2305 0B35 7C02C8     	movw	rr4,#AnimData
+   2306 0B38 C708       	mov	r7,#NumAnims
+   2307                 
+   2308 0B3A            DisplayAnimsL0:
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   58
+
+
+   2309                 
+   2310                 	; see if animation in use
+   2311                 
+   2312 0B3A 38840000   	mov	r0,AnimBand(rr4)
+   2313 0B3E 500000     	cmp	r0,#0
+   2314 0B41 960BCB'    	jmp	z,DisplayAnimsJ0
+   2315                 
+   2316                 	; In use, point to animation hard data
+   2317                 
+   2318 0B44 3A940002   	movw	rr2,AnimAnim(rr4)
+   2319                 
+   2320                 	; set palette
+   2321                 
+   2322 0B48 0E3B                   push    dmpl
+   2323 0B4A 38820003   	mov     r0,AnimPal(rr2)
+   2324 0B4E B83B       	mov     dmpl,r0
+   2325                 
+   2326                 	; Get Raw X,Y of image
+   2327                 
+   2328 0B50 38840007   	mov	r0,AnimFNum(rr4)
+   2329 0B54 B80B       	mov	r11,r0
+   2330 0B56 38820001   	mov	r0,AnimWidth(rr2)
+   2331 0B5A 4C000A     	mult	rr10,r0
+   2332 0B5D 38820004   	mov	r0,AnimStripX(rr2)
+   2333 0B61 41000B     	add	r11,r0
+   2334 0B64 0B0B       	sll	r11
+   2335 0B66 0B0B       	sll	r11
+   2336 0B68 0B0B       	sll	r11
+   2337 0B6A 480B0A     	mov	r10,r11
+   2338                 
+   2339 0B6D 38820000   	mov	r0,AnimStrip(rr2)
+   2340 0B71 B80B       	mov	r11,r0
+   2341 0B73 0B0B       	sll	r11
+   2342 0B75 0B0B       	sll	r11
+   2343 0B77 0B0B       	sll	r11
+   2344 0B79 0B0B       	sll	r11
+   2345                 
+   2346                 	; Get Raw width and height of animation
+   2347                 
+   2348 0B7B 38820001   	mov	r0,AnimWidth(rr2)
+   2349 0B7F B80C       	mov	r12,r0
+   2350 0B81 0B0C       	sll	r12
+   2351 0B83 0B0C       	sll	r12
+   2352 0B85 0B0C       	sll	r12
+   2353 0B87 58100D     	mov	r13,#16
+   2354                 
+   2355                 	; get raw bank and flags
+   2356                 
+   2357 0B8A 0E0F       	push	r15
+   2358 0B8C 58230E     	mov	r14,#bankno_sprite
+   2359                 
+   2360                 	; Get Raw X,Y offset of destination
+   2361                 
+   2362 0B8F 38840004          	mov	r0,AnimXOff(rr4)
+   2363 0B93 B809              	mov	r9,r0
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   59
+
+
+   2364 0B95 38840006   	mov	r0,AnimXOffH(rr4)
+   2365 0B99 B808       	mov	r8,r0
+   2366 0B9B 0000       	clr	r0
+   2367 0B9D 388C000B   	mov	r1,AnimXRel(rr4)
+   2368 0BA1 610008     	addw	rr8,rr0
+   2369 0BA4 B008       	mov	r0,r8
+   2370 0BA6 B008       	mov	r0,r8
+   2371 0BA8 480908     	mov	r8,r9
+   2372 0BAB 388C000D   	mov	r1,AnimYOff(rr4)
+   2373 0BAF B909       	mov	r9,r1
+   2374                 
+   2375                 	; determine orientation of animation:
+   2376                 
+   2377 0BB1 388C000A   	mov	r1,AnimVFlags(rr4)
+   2378 0BB5 2F0180     	btst	r1,#AnimVFlagD
+   2379 0BB8 D605       	br	z,DisplayAnimsJ2
+   2380                 
+   2381                 	; going left: reverse animation
+   2382                 
+   2383 0BBA 490BD5'    	call	DisplayALeft
+   2384 0BBD D803       	br	DisplayAnimsJ1
+   2385                 
+   2386                 	; going right: normal animation
+   2387                 
+   2388 0BBF            DisplayAnimsJ2:
+   2389                 
+   2390 0BBF 490C10'    	call	DisplayARight
+   2391                 
+   2392                 	; draw the animation
+   2393                 
+   2394 0BC2            DisplayAnimsJ1:
+   2395                 
+   2396                 	; skip animation if off screen
+   2397                 
+   2398 0BC2 D603       	br	z,DisplayAnimsJ3
+   2399 0BC4 490000"    	call	Fi_graph
+   2400 0BC7            DisplayAnimsJ3:
+   2401                 
+   2402 0BC7 0F0F       	pop	r15
+   2403 0BC9 0F3B                   pop	dmpl
+   2404                 
+   2405                 	; go to next animation
+   2406                 
+   2407 0BCB            DisplayAnimsJ0:
+   2408                 
+   2409 0BCB 6904000F   	addw	rr4,#AnimVSize
+   2410 0BCF 0907       	dec	r7
+   2411 0BD1 9E0B3A'    	jmp	nz,DisplayAnimsL0
+   2412                 
+   2413 0BD4 F8         	ret
+   2414                 
+   2415 0BD5            DisplayALeft:
+   2416                 
+   2417 0BD5 56400F     	or	r15,#left_right
+   2418                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   60
+
+
+   2419                 	; determine if off left edge
+   2420                 
+   2421 0BD8 500000     	cmp	r0,#0
+   2422 0BDB DE0F       	br	ne,DisplayALeftJ0
+   2423                 
+   2424                 	; off left edge: chop left side of anim and shorten display
+   2425                 
+   2426 0BDD 0108       	neg	r8
+   2427 0BDF 42080C     	sub	r12,r8
+   2428 0BE2 D629       	br	z,DisplayALeftJ2
+   2429 0BE4 D527       	br	mi,DisplayALeftJ2
+   2430 0BE6 0008       	clr	r8
+   2431 0BE8 560101     	or	r1,#1
+   2432 0BEB F8         	ret
+   2433                 
+   2434 0BEC            DisplayALeftJ0:
+   2435                 
+   2436 0BEC C000       	mov	r0,#0
+   2437 0BEE B108       	mov	r1,r8
+   2438 0BF0 C200       	mov	r2,#0
+   2439 0BF2 B30C       	mov	r3,r12
+   2440 0BF4 610200     	addw	rr0,rr2
+   2441 0BF7 6A0000C8   	subw	rr0,#200
+   2442 0BFB D60C       	br	z,DisplayALeftJ1
+   2443 0BFD D50A       	br	mi,DisplayALeftJ1
+   2444                 
+   2445                 	; off right edge: shorten width
+   2446                 
+   2447 0BFF 42010C     	sub	r12,r1
+   2448 0C02 D609       	br	z,DisplayALeftJ2
+   2449 0C04 D507       	br	mi,DisplayALeftJ2
+   2450 0C06 41010A     	add	r10,r1
+   2451                 
+   2452 0C09            DisplayALeftJ1:
+   2453                 
+   2454 0C09 560101     	or	r1,#1
+   2455 0C0C F8         	ret
+   2456                 
+   2457                 	; go here if not showing animation
+   2458                 
+   2459 0C0D            DisplayALeftJ2:
+   2460 0C0D 1709       	xor	r1,r1
+   2461 0C0F F8         	ret
+   2462                 
+   2463 0C10            DisplayARight:
+   2464                 
+   2465                 	; determine if off left edge
+   2466                 
+   2467 0C10 500000     	cmp	r0,#0
+   2468 0C13 DE12       	br	ne,DisplayARightJ0
+   2469                 
+   2470                 	; off left edge: chop left side of anim and shorten display
+   2471                 
+   2472 0C15 0108       	neg	r8
+   2473 0C17 42080C     	sub	r12,r8
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   61
+
+
+   2474 0C1A D629       	br	z,DisplayARightJ2
+   2475 0C1C D527       	br	mi,DisplayARightJ2
+   2476 0C1E 41080A     	add	r10,r8
+   2477 0C21 0008       	clr	r8
+   2478 0C23 560101     	or	r1,#1
+   2479 0C26 F8         	ret
+   2480                 
+   2481 0C27            DisplayARightJ0:
+   2482                 
+   2483 0C27 C000       	mov	r0,#0
+   2484 0C29 B108       	mov	r1,r8
+   2485 0C2B C200       	mov	r2,#0
+   2486 0C2D B30C       	mov	r3,r12
+   2487 0C2F 610200     	addw	rr0,rr2
+   2488 0C32 6A0000C8   	subw	rr0,#200
+   2489 0C36 D609       	br	z,DisplayARightJ1
+   2490 0C38 D507       	br	mi,DisplayARightJ1
+   2491                 
+   2492                 	; off right edge: shorten width
+   2493                 
+   2494 0C3A 42010C     	sub	r12,r1
+   2495 0C3D D606       	br	z,DisplayARightJ2
+   2496 0C3F D504       	br	mi,DisplayARightJ2
+   2497                 
+   2498 0C41            DisplayARightJ1:
+   2499                 
+   2500 0C41 560101     	or	r1,#1
+   2501 0C44 F8         	ret
+   2502                 
+   2503                 	; go here if not showing animation
+   2504                 
+   2505 0C45            DisplayARightJ2:
+   2506 0C45 1709       	xor	r1,r1
+   2507 0C47 F8         	ret
+   2508                 
+   2509                 ;============================================================================
+   2510                 ;
+   2511                 ; Display the silly frog
+   2512                 ;
+   2513                 ;----------------------------------------------------------------------------
+   2514                 
+   2515 0C48            DisplayFrog:
+   2516                 
+   2517                 	; establish destination
+   2518                 	
+   2519 0C48 48DC08     	mov	r8,FrogX
+   2520 0C4B 48DE09     	mov	r9,FrogY
+   2521                 	
+   2522                 	; establish constant source
+   2523                 	
+   2524 0C4E 58000B     	mov	r11,#0
+   2525                 	
+   2526                 	; establish size
+   2527                 	
+   2528 0C51 58100C     	mov	r12,#16
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   62
+
+
+   2529 0C54 58100D     	mov	r13,#16
+   2530                 	
+   2531                 	; establish bank and base format
+   2532                 	
+   2533 0C57 58230E     	mov	r14,#bankno_sprite
+   2534 0C5A 58010F     	mov	r15,#composite
+   2535 0C5D 500194                 cmp     cur_page,#1
+   2536 0C60 D602                   br      eq,DisplayFrogP1
+   2537 0C62 A90F                   bset    r15,#1
+   2538 0C64            DisplayFrogP1:
+   2539                 
+   2540                 	; what is animation
+   2541                 		
+   2542 0C64 B1E1       	mov	r1,FrogDir
+   2543 0C66 500101     	cmp	r1,#FrogDirS
+   2544 0C69 D62A       	br	eq,DisplayFrogS	;South
+   2545 0C6B 500201     	cmp	r1,#FrogDirN
+   2546 0C6E D630       	br	eq,DisplayFrogN	;North
+   2547 0C70 500301     	cmp	r1,#FrogDirE
+   2548 0C73 D633       	br	eq,DisplayFrogE	;East
+   2549 0C75 500401     	cmp	r1,#FrogDirW
+   2550 0C78 D639       	br	eq,DisplayFrogW	;West
+   2551 0C7A 500501     	cmp	r1,#FrogDirXW
+   2552 0C7D D63C       	br	eq,DisplayFrogXW	;Death by water
+   2553 0C7F 500601     	cmp	r1,#FrogDirXL
+   2554 0C82 D64B       	br	eq,DisplayFrogXL	;Death by non-water (land)
+   2555                 	
+   2556                 	; Frog just sitting
+   2557                 	
+   2558 0C84 48E70A     	mov	r10,FrogRest
+   2559 0C87 55C00A     	and	r10,#0c0h
+   2560 0C8A 460A0F     	or	r15,r10
+   2561 0C8D 48E70A     	mov	r10,FrogRest
+   2562 0C90 553F0A     	and	r10,#03fh
+   2563 0C93 D84C       	br	DisplayFrogCont
+   2564                 	
+   2565                 	; Jumping South
+   2566                 
+   2567 0C95            DisplayFrogS:	
+   2568 0C95 5880E7     	mov	FrogRest,#0+up_down
+   2569 0C98 56800F     	or	r15,#up_down
+   2570 0C9B 58200A     	mov	r10,#32
+   2571 0C9E D841       	br	DisplayFrogCont
+   2572                 	
+   2573                 	; Jumping North
+   2574                 
+   2575 0CA0            DisplayFrogN:	
+   2576 0CA0 5880E7     	mov	FrogRest,#0+up_down
+   2577 0CA3 58200A     	mov	r10,#32
+   2578 0CA6 D839       	br	DisplayFrogCont
+   2579                 	
+   2580                 	; Jumping East
+   2581                 
+   2582 0CA8            DisplayFrogE:
+   2583 0CA8 5870E7     	mov	FrogRest,#48+left_right
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   63
+
+
+   2584 0CAB 56400F     	or	r15,#left_right
+   2585 0CAE 58500A     	mov	r10,#80
+   2586 0CB1 D82E       	br	DisplayFrogCont
+   2587                 	
+   2588                 	; Jumping West
+   2589                 
+   2590 0CB3            DisplayFrogW:	
+   2591 0CB3 5830E7     	mov	FrogRest,#48
+   2592 0CB6 58500A     	mov	r10,#80
+   2593 0CB9 D826       	br	DisplayFrogCont
+   2594                 	
+   2595                 	; Death by Water
+   2596                 
+   2597 0CBB            DisplayFrogXW:	
+   2598 0CBB C104       	mov	r1,#4
+   2599 0CBD 42E201     	sub	r1,FrogCnt
+   2600 0CC0 0B01       	sll	r1
+   2601 0CC2 0B01       	sll	r1
+   2602 0CC4 0B01       	sll	r1
+   2603 0CC6 0B01       	sll	r1
+   2604 0CC8 516001     	add	r1,#96
+   2605 0CCB B90A       	mov	r10,r1
+   2606 0CCD D812       	br	DisplayFrogCont
+   2607                 	
+   2608                 	; Death by land
+   2609                 
+   2610 0CCF            DisplayFrogXL:	
+   2611 0CCF C104       	mov	r1,#4
+   2612 0CD1 42E201     	sub	r1,FrogCnt
+   2613 0CD4 0B01       	sll	r1
+   2614 0CD6 0B01       	sll	r1
+   2615 0CD8 0B01       	sll	r1
+   2616 0CDA 0B01       	sll	r1
+   2617 0CDC 51A001     	add	r1,#160
+   2618 0CDF B90A       	mov	r10,r1
+   2619                 	
+   2620 0CE1            DisplayFrogCont:
+   2621 0CE1 1E0E       	pushw	rr14
+   2622 0CE3 490000"                call    Fi_graph
+   2623 0CE6 1F0E       	popw	rr14
+   2624                 
+   2625                 	; display homed frogs
+   2626                 
+   2627 0CE8 4AD804     	movw	rr4,PlayerVAddr
+   2628 0CEB 38AC0004   	mov	r5,PlayerHomeF(rr4)
+   2629 0CEF C405       	mov	r4,#5
+   2630 0CF1 553F0F     	and	r15,#255-lr_up
+   2631 0CF4 580C08     	mov	r8,#HomeBase1
+   2632 0CF7            DisplayFrogL1:
+   2633                 
+   2634 0CF7 0505       	rrc	r5
+   2635 0CF9 DF19       	br	nc,DisplayFrogJ0
+   2636                 
+   2637 0CFB 480009     	mov	r9,0
+   2638 0CFE 4B0AE000   	movw	r10,#0e000h
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   64
+
+
+   2639 0D02 7D1010     	movw	rr12,#1010h
+   2640                 
+   2641 0D05 1E04       	pushw	rr4
+   2642 0D07 1E0E       	pushw	rr14
+   2643 0D09 0E08       	push	r8
+   2644 0D0B 490000"    	call	Fi_graph
+   2645 0D0E 0F08       	pop	r8
+   2646 0D10 1F0E       	popw	rr14
+   2647 0D12 1F04       	popw	rr4
+   2648                 
+   2649 0D14            DisplayFrogJ0:
+   2650 0D14 512808     	add	r8,#40
+   2651 0D17 0904       	dec	r4
+   2652 0D19 DEDC       	br	nz,DisplayFrogL1
+   2653                 
+   2654 0D1B F8         	ret
+   2655                 
+   2656                 ;============================================================================
+   2657                 ;
+   2658                 ; Display Bands
+   2659                 ;
+   2660                 ;----------------------------------------------------------------------------
+   2661                 
+   2662 0D1C            DisplayBands:
+   2663                 
+   2664                 	; start at top of screen and work down
+   2665                 
+   2666 0D1C 7E0238     	movw	rr6,#LevelData
+   2667 0D1F 4ADA04     	movw	rr4,LevelAddr
+   2668 0D22 C009       	mov	r0,#NumBands
+   2669                 
+   2670                 	; loop for each band
+   2671                 
+   2672 0D24            DisplayBandsL0:
+   2673 0D24 0E00       	push	r0
+   2674 0D26 1E04       	pushw	rr4
+   2675 0D28 1E06       	pushw	rr6
+   2676                 	
+   2677                 	; branch if art is moving
+   2678                 
+   2679 0D2A 388C0000   	mov	r1,LevelFlags(rr4)
+   2680 0D2E 550101     	and	r1,#LevelFlagS
+   2681 0D31 D634       	br	z,DisplayBandsMov
+   2682                 
+   2683                 	; still art: point to destination
+   2684                 
+   2685 0D33 0008       	clr	r8
+   2686 0D35 580909     	mov	r9,#9
+   2687 0D38 420009     	sub	r9,r0
+   2688 0D3B 0B09       	sll	r9
+   2689 0D3D 0B09       	sll	r9
+   2690 0D3F 0B09       	sll	r9
+   2691 0D41 0B09       	sll	r9
+   2692                 
+   2693                 	; point to source
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   65
+
+
+   2694                 
+   2695 0D43 388E0005   	mov	r1,LevelYoffA(rr6)
+   2696 0D47 000A       	clr	r10
+   2697 0D49 B90B       	mov	r11,r1
+   2698                 
+   2699                 	; set width and height
+   2700                 
+   2701 0D4B 58C80C     	mov	r12,#200
+   2702 0D4E 58100D     	mov	r13,#16
+   2703                 
+   2704                 	; point to page
+   2705                 
+   2706 0D51 388E0004   	mov	r1,LevelPageA(rr6)
+   2707 0D55 B90E       	mov	r14,r1
+   2708                 
+   2709                 	; set drawing style and location
+   2710                 
+   2711 0D57 58000F     	mov	r15,#override
+   2712 0D5A 500194                 cmp     cur_page,#1
+   2713 0D5D D602                   br      eq,DisplayBandsP1
+   2714 0D5F A90F                   bset    r15,#1
+   2715 0D61            DisplayBandsP1:
+   2716                 
+   2717                 	; draw the band and exit
+   2718                 
+   2719 0D61 490000"                call    Fi_graph
+   2720 0D64 980E14'    	jmp	DisplayBandsEnd
+   2721                 
+   2722                 	; draw one or two moving strips in band
+   2723                 
+   2724 0D67            DisplayBandsMov:
+   2725                 
+   2726                 	; point to destination
+   2727                 
+   2728 0D67 0008       	clr	r8
+   2729 0D69 580909     	mov	r9,#9
+   2730 0D6C 420009     	sub	r9,r0
+   2731 0D6F 0B09       	sll	r9
+   2732 0D71 0B09       	sll	r9
+   2733 0D73 0B09       	sll	r9
+   2734 0D75 0B09       	sll	r9
+   2735                 
+   2736                 	; point to source
+   2737                 
+   2738 0D77 3886000E   	mov	r0,LevelXoff1(rr6)
+   2739 0D7B 0100       	neg	r0
+   2740 0D7D B80A       	mov	r10,r0
+   2741 0D7F 388E000C   	mov	r1,LevelYoff1(rr6)
+   2742 0D83 B90B       	mov	r11,r1
+   2743                 
+   2744                 	; set width and height
+   2745                 
+   2746 0D85 0100       	neg	r0
+   2747 0D87 58C80C     	mov	r12,#200
+   2748 0D8A 58100D     	mov	r13,#16
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   66
+
+
+   2749                 
+   2750                 	; point to page
+   2751                 
+   2752 0D8D 388E000A   	mov	r1,LevelPage1(rr6)
+   2753 0D91 B90E       	mov	r14,r1
+   2754                 
+   2755                 	; set drawing style and location
+   2756                 
+   2757 0D93 58000F     	mov	r15,#override
+   2758 0D96 500194                 cmp     cur_page,#1
+   2759 0D99 D602                   br      eq,DisplayBandsP3
+   2760 0D9B A90F                   bset    r15,#1
+   2761 0D9D            DisplayBandsP3:
+   2762                 
+   2763                 	; see if adjustments are needed: band too short
+   2764                 
+   2765                 	;mov	r1,LevelVFlags(rr6)
+   2766                 	;btst	r1,#LevelVFlagD
+   2767                 	;br	z,DisplayBandsP8
+   2768                 	;cmp	r0,#0
+   2769                 	;br	eq,DisplayBandsP4
+   2770                 ;DisplayBandsP8:	
+   2771 0D9D 50C700     	cmp	r0,#199
+   2772 0DA0 DB58       	br	ugt,DisplayBandsP4
+   2773                 
+   2774                 	; shorten first strip draw
+   2775                 
+   2776 0DA2 500000     	cmp	r0,#0
+   2777 0DA5 D630       	br	eq,DisplayBandsP9
+   2778 0DA7 B80C       	mov	r12,r0
+   2779                 
+   2780                 	; determine direction of motion
+   2781                 
+   2782 0DA9 388C0000   	mov	r1,LevelFlags(rr4)
+   2783 0DAD 2F0103     	btst	r1,#LevelFlagH+LevelFlagS
+   2784 0DB0 DE12       	br	nz,DisplayBandsP6
+   2785 0DB2 388E0002   	mov	r1,LevelVFlags(rr6)
+   2786 0DB6 558001     	and	r1,#LevelVFlagD
+   2787 0DB9 D609       	br	z,DisplayBandsP6
+   2788 0DBB 56400F     	or	r15,#left_right
+   2789 0DBE 58C808     	mov	r8,#200
+   2790 0DC1 420008     	sub	r8,r0
+   2791 0DC4            DisplayBandsP6:
+   2792                 
+   2793                 	; draw first strip, saving important information
+   2794 0DC4 0E00       	push	r0
+   2795 0DC6 0E09       	push	r9
+   2796 0DC8 490000"    	call	Fi_graph
+   2797 0DCB 0F09       	pop	r9
+   2798 0DCD 0F00       	pop	r0
+   2799 0DCF 1F06       	popw	rr6
+   2800 0DD1 1F04       	popw	rr4
+   2801 0DD3 1E04       	pushw	rr4
+   2802 0DD5 1E06       	pushw	rr6
+   2803                 	
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   67
+
+
+   2804 0DD7            DisplayBandsP9:
+   2805                 
+   2806                 	; adjust destination
+   2807                 
+   2808 0DD7 B808       	mov	r8,r0
+   2809                 
+   2810                 	; point to source
+   2811                 
+   2812 0DD9 000A       	clr	r10
+   2813 0DDB 388E000D   	mov	r1,LevelYoff2(rr6)
+   2814 0DDF B90B       	mov	r11,r1
+   2815                 
+   2816                 	; set width and height
+   2817                 
+   2818 0DE1 58C80C     	mov	r12,#200
+   2819 0DE4 42000C     	sub	r12,r0
+   2820 0DE7 58100D     	mov	r13,#16
+   2821                 
+   2822                 	; point to page
+   2823                 
+   2824 0DEA 388E000B   	mov	r1,LevelPage2(rr6)
+   2825 0DEE B90E       	mov	r14,r1
+   2826                 
+   2827                 	; set drawing style and location
+   2828                 
+   2829 0DF0 58000F     	mov	r15,#override
+   2830 0DF3 500194                 cmp     cur_page,#1
+   2831 0DF6 D602                   br      eq,DisplayBandsP5
+   2832 0DF8 A90F                   bset    r15,#1
+   2833 0DFA            DisplayBandsP5:
+   2834                 
+   2835                 
+   2836                 	; draw the band and exit
+   2837                 
+   2838 0DFA            DisplayBandsP4:
+   2839                 
+   2840                 	; determine direction of motion
+   2841                 
+   2842 0DFA 388C0000   	mov	r1,LevelFlags(rr4)
+   2843 0DFE 2F0103     	btst	r1,#LevelFlagH+LevelFlagS
+   2844 0E01 DE0E       	br	nz,DisplayBandsP7
+   2845 0E03 388E0002   	mov	r1,LevelVFlags(rr6)
+   2846 0E07 558001     	and	r1,#LevelVFlagD
+   2847 0E0A D605       	br	z,DisplayBandsP7
+   2848 0E0C 56400F     	or	r15,#left_right
+   2849 0E0F 0008       	clr	r8 
+   2850 0E11            DisplayBandsP7:
+   2851                 
+   2852 0E11 490000"                call    Fi_graph
+   2853                 
+   2854                 	; we are done, so quit band
+   2855                 
+   2856 0E14            DisplayBandsEnd:
+   2857 0E14 1F06       	popw	rr6
+   2858 0E16 1F04       	popw	rr4
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   68
+
+
+   2859 0E18 0F00       	pop	r0
+   2860                 
+   2861                 	; point to next band to draw
+   2862                 
+   2863 0E1A 69060010   	addw	rr6,#LevelVSize
+   2864 0E1E 6904000C   	addw	rr4,#LevelSize
+   2865 0E22 0900       	dec	r0
+   2866 0E24 9E0D24'    	jmp	nz,DisplayBandsL0
+   2867                 	
+   2868 0E27 F8         	ret
+   2869                 
+   2870                 ;============================================================================
+   2871                 ;
+   2872                 ; Give r8=Rom Level, r10=Ram Level
+   2873                 ; rotate strips to right
+   2874                 ;
+   2875                 ;----------------------------------------------------------------------------
+   2876                 
+   2877 0E28            NextStrip:
+   2878                 	; Get next left strip
+   2879                 
+   2880 0E28 0907       	dec	r7
+   2881                 	
+   2882 0E2A 0B07       	sll	r7
+   2883 0E2C 0B07       	sll	r7
+   2884 0E2E 0006       	clr	r6
+   2885                 
+   2886 0E30 510207     	add	r7,#2
+   2887 0E33 3ABE0340   	movw	rr14,SAnimData(rr6)
+   2888 0E37 520207     	sub	r7,#2
+   2889 0E3A 3BBE0340   	movw	SAnimData(rr6),rr14
+   2890 0E3E 510207     	add	r7,#2
+   2891                 
+   2892 0E41 389B000B   	mov	r3,LevelPage2(rr10)
+   2893 0E45 399B000A   	mov	LevelPage1(rr10),r3
+   2894 0E49 389B000D   	mov	r3,LevelYoff2(rr10)
+   2895 0E4D 399B000C   	mov	LevelYoff1(rr10),r3
+   2896 0E51 3A930008   	movw	rr2,LevelAddr2(rr10)
+   2897 0E55 3B930006   	movw	LevelAddr1(rr10),rr2
+   2898                 
+   2899                 	; get right strip
+   2900                 
+   2901                 	; go to next strip
+   2902                 
+   2903 0E59 389B0003   	mov	r3,LevelOffset(rr10)
+   2904 0E5D 0803       	inc	r3
+   2905                 
+   2906                 	; if too high, go back to first strip
+   2907                 
+   2908 0E5F 500C03     	cmp	r3,#LevelStrips+NumStrips
+   2909 0E62 DE02       	br	ne,NextStripL2
+   2910 0E64 C308       	mov	r3,#LevelStrips
+   2911 0E66            NextStripL2:
+   2912                 
+   2913                 	; if unused, go back to first strip
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   69
+
+
+   2914                 
+   2915 0E66 0002       	clr	r2
+   2916 0E68 3C3D       	movw	rr14,rr12
+   2917 0E6A 61020E     	addw	rr14,rr2
+   2918 0E6D 38A70000   	mov	r4,0(rr14)
+   2919 0E71 50FF04     	cmp	r4,#255
+   2920 0E74 DE02       	br	ne,NextStripL3
+   2921 0E76 C308       	mov	r3,#LevelStrips
+   2922 0E78            NextStripL3:
+   2923                 
+   2924 0E78 399B0003   	mov	LevelOffset(rr10),r3
+   2925                 
+   2926                 	; get current strip number
+   2927                 
+   2928 0E7C 3C3D       	movw	rr14,rr12
+   2929 0E7E 61020E     	addw	rr14,rr2
+   2930 0E81 389F0000   	mov	r3,0(rr14)
+   2931                 
+   2932                 	; see if animation strip
+   2933                 
+   2934 0E85 2F0380     	btst	r3,#80h
+   2935 0E88 D616       	br	z,NextStripL4
+   2936                 
+   2937                 	; get strip animation table address
+   2938                 
+   2939 0E8A 0B03       	sll	r3
+   2940 0E8C 3ABA0000"  	movw	rr14,StripAnims(rr2)
+   2941                 
+   2942                 	; get contents of RAM strip animation table
+   2943                 	
+   2944 0E90 38970001   	mov	r2,SAnimTick(rr14)
+   2945 0E94 C300       	mov	r3,#0
+   2946 0E96 3B960340   	movw	SAnimData(rr6),rr2
+   2947                 
+   2948                 	; get value of first strip animation
+   2949                 
+   2950 0E9A 389F0002   	mov	r3,SAnimStrips(rr14)
+   2951 0E9E 0002       	clr	r2
+   2952                 
+   2953                 	; save current offset
+   2954                 
+   2955 0EA0            NextStripL4:
+   2956                 
+   2957                 	; convert into art page number
+   2958                 
+   2959 0EA0 B203       	mov	r2,r3
+   2960 0EA2 0702       	srl	r2
+   2961 0EA4 0702       	srl	r2
+   2962 0EA6 0702       	srl	r2
+   2963 0EA8 0702       	srl	r2
+   2964 0EAA 512402     	add	r2,#bankno_strip
+   2965 0EAD 3993000B   	mov	LevelPage2(rr10),r2
+   2966                 
+   2967                 	; convert into Y offset
+   2968                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   70
+
+
+   2969 0EB1 B203       	mov	r2,r3
+   2970 0EB3 550F02     	and	r2,#15
+   2971 0EB6 0B02       	sll	r2
+   2972 0EB8 0B02       	sll	r2
+   2973 0EBA 0B02       	sll	r2
+   2974 0EBC 0B02       	sll	r2
+   2975 0EBE 3993000D   	mov	LevelYoff2(rr10),r2
+   2976                 
+   2977                 	; convert into strip table address
+   2978                 
+   2979 0EC2 0002       	clr	r2
+   2980 0EC4 610202     	addw	rr2,rr2
+   2981 0EC7 610202     	addw	rr2,rr2
+   2982 0ECA 610202     	addw	rr2,rr2
+   2983 0ECD 610202     	addw	rr2,rr2
+   2984 0ED0 610202     	addw	rr2,rr2
+   2985 0ED3 69020000"  	addw	rr2,#StripTable
+   2986 0ED7 3B930008   	movw	LevelAddr2(rr10),rr2
+   2987                 
+   2988 0EDB 0707       	srl	r7
+   2989 0EDD 0707       	srl	r7
+   2990 0EDF 0807       	inc	r7
+   2991                 
+   2992 0EE1 F8         	ret
+   2993                 
+   2994                 ;============================================================================
+   2995                 ;
+   2996                 ; Give r8=Rom Level, r10=Ram Level
+   2997                 ; rotate strips to left
+   2998                 ;
+   2999                 ;----------------------------------------------------------------------------
+   3000                 
+   3001 0EE2            PriorStrip:
+   3002                 	; Get next right strip
+   3003                 
+   3004 0EE2 0907       	dec	r7
+   3005 0EE4 0B07       	sll	r7
+   3006 0EE6 0B07       	sll	r7
+   3007                 
+   3008 0EE8 3ABE0340   	movw	rr14,SAnimData(rr6)
+   3009 0EEC 510207     	add	r7,#2
+   3010 0EEF 3BBE0340   	movw	SAnimData(rr6),rr14
+   3011 0EF3 520207     	sub	r7,#2
+   3012                 
+   3013 0EF6 389B000A   	mov	r3,LevelPage1(rr10)
+   3014 0EFA 399B000B   	mov	LevelPage2(rr10),r3
+   3015 0EFE 389B000C   	mov	r3,LevelYoff1(rr10)
+   3016 0F02 399B000D   	mov	LevelYoff2(rr10),r3
+   3017 0F06 3A930006   	movw	rr2,LevelAddr1(rr10)
+   3018 0F0A 3B930008   	movw	LevelAddr2(rr10),rr2
+   3019                 
+   3020                 	; get left strip
+   3021                 
+   3022                 	; go to next strip
+   3023                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   71
+
+
+   3024 0F0E 389B0003   	mov	r3,LevelOffset(rr10)
+   3025 0F12 0903       	dec	r3
+   3026                 
+   3027                 	; if too low, go forward to last strip
+   3028                 
+   3029 0F14 500703     	cmp	r3,#LevelStrips-1
+   3030 0F17 DE02       	br	ne,PriorStripL2
+   3031 0F19 C30B       	mov	r3,#LevelStrips+NumStrips-1
+   3032 0F1B            PriorStripL2:
+   3033                 
+   3034                 	; if unused, go to prior strip
+   3035                 
+   3036 0F1B 0002       	clr	r2
+   3037 0F1D 3C3D       	movw	rr14,rr12
+   3038 0F1F 61020E     	addw	rr14,rr2
+   3039 0F22            PriorStripL1:
+   3040 0F22 38A70000   	mov	r4,0(rr14)
+   3041 0F26 50FF04     	cmp	r4,#255
+   3042 0F29 DE06       	br	ne,PriorStripL3
+   3043 0F2B 0903       	dec	r3
+   3044 0F2D 190E       	decw	rr14
+   3045 0F2F D8F1       	br	PriorStripL1
+   3046 0F31            PriorStripL3:
+   3047                 
+   3048                 	; save current offset
+   3049                 
+   3050 0F31 399B0003   	mov	LevelOffset(rr10),r3
+   3051                 
+   3052                 	; get current strip number
+   3053                 
+   3054 0F35 3C3D       	movw	rr14,rr12
+   3055 0F37 61020E     	addw	rr14,rr2
+   3056 0F3A 389F0000   	mov	r3,0(rr14)
+   3057                 
+   3058                 	; see if animation strip
+   3059                 
+   3060 0F3E 2F0380     	btst	r3,#80h
+   3061 0F41 D616       	br	z,PriorStripL4
+   3062                 
+   3063                 	; get strip animation table address
+   3064                 
+   3065 0F43 0B03       	sll	r3
+   3066 0F45 3ABA0000"  	movw	rr14,StripAnims(rr2)
+   3067                 
+   3068                 	; get contents of RAM strip animation table
+   3069                 	
+   3070 0F49 38970001   	mov	r2,SAnimTick(rr14)
+   3071 0F4D C300       	mov	r3,#0
+   3072 0F4F 3B960340   	movw	SAnimData(rr6),rr2
+   3073                 
+   3074                 	; get value of first strip animation
+   3075                 
+   3076 0F53 389F0002   	mov	r3,SAnimStrips(rr14)
+   3077 0F57 0002       	clr	r2
+   3078                 
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   72
+
+
+   3079                 	; save current offset
+   3080                 
+   3081 0F59            PriorStripL4:
+   3082                 
+   3083                 	; convert into art page number
+   3084                 
+   3085 0F59 B203       	mov	r2,r3
+   3086 0F5B 0702       	srl	r2
+   3087 0F5D 0702       	srl	r2
+   3088 0F5F 0702       	srl	r2
+   3089 0F61 0702       	srl	r2
+   3090 0F63 512402     	add	r2,#bankno_strip
+   3091 0F66 3993000A   	mov	LevelPage1(rr10),r2
+   3092                 
+   3093                 	; convert into Y offset
+   3094                 
+   3095 0F6A B203       	mov	r2,r3
+   3096 0F6C 550F02     	and	r2,#15
+   3097 0F6F 0B02       	sll	r2
+   3098 0F71 0B02       	sll	r2
+   3099 0F73 0B02       	sll	r2
+   3100 0F75 0B02       	sll	r2
+   3101 0F77 3993000C   	mov	LevelYoff1(rr10),r2
+   3102                 
+   3103                 	; convert into strip table address
+   3104                 
+   3105 0F7B 0002       	clr	r2
+   3106 0F7D 610202     	addw	rr2,rr2
+   3107 0F80 610202     	addw	rr2,rr2
+   3108 0F83 610202     	addw	rr2,rr2
+   3109 0F86 610202     	addw	rr2,rr2
+   3110 0F89 610202     	addw	rr2,rr2
+   3111 0F8C 69020000"  	addw	rr2,#StripTable
+   3112 0F90 3B930006   	movw	LevelAddr1(rr10),rr2
+   3113                 
+   3114 0F94 0707       	srl	r7
+   3115 0F96 0707       	srl	r7
+   3116 0F98 0807       	inc	r7
+   3117                 
+   3118 0F9A F8         	ret
+   3119                 
+   3120                 ;============================================================================
+   3121                 ;
+   3122                 ; Init Strip Anims
+   3123                 ;
+   3124                 ;	rr10 -> This strips data structure
+   3125                 ;	r2 = width | 80h
+   3126                 ;	r4 = screen X
+   3127                 ;	r5 = screen Y/8
+   3128                 ;
+   3129                 ;----------------------------------------------------------------------------
+   3130                 
+   3131 0F9B            InitRoutines:
+   3132 0F9B 0000"      	defw	abaker4
+   3133 0F9D 0FA1'      	defw	InitAnim1
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   73
+
+
+   3134 0F9F 103D'      	defw	InitAnim2
+   3135                 
+   3136                 ;============================================================================
+   3137                 ;
+   3138                 ; Initialize animation 1
+   3139                 ;
+   3140                 ;----------------------------------------------------------------------------
+   3141                 
+   3142 0FA1            InitAnim1:
+   3143 0FA1 0E0E       	push	r14
+   3144                 
+   3145                 	; Pick out Animation
+   3146                 
+   3147 0FA3 7E0000"    	movw	rr6,#snake
+   3148                 
+   3149                 	; keep direction importance flag
+   3150                 
+   3151 0FA6 B305       	mov	r3,r5
+   3152                 
+   3153                 	; correct Y pixel value
+   3154                 
+   3155 0FA8 0B05       	sll	r5
+   3156 0FAA 0B05       	sll	r5
+   3157 0FAC 0B05       	sll	r5
+   3158 0FAE 0B05       	sll	r5
+   3159                 
+   3160                 	; make sure range isn't zero
+   3161                 
+   3162 0FB0 500005     	cmp	r5,#0
+   3163 0FB3 DE02       	br	ne,InitAnim1L1
+   3164 0FB5 C5FF       	mov	r5,#255
+   3165 0FB7            InitAnim1L1:
+   3166                 
+   3167                 	; find an available animation block
+   3168                 
+   3169 0FB7 58080E     	mov	r14,#NumAnims
+   3170 0FBA 7D02C8     	movw	rr12,#AnimData
+   3171 0FBD            InitAnim1L0:
+   3172 0FBD 38850000   	mov	r0,AnimBand(rr12)
+   3173 0FC1 500000     	cmp	r0,#0
+   3174 0FC4 DE69       	br	ne,InitAnim1J0
+   3175                 
+   3176                 	; Found one-- initialize it: first, which animation routine am I
+   3177                 
+   3178 0FC6 C001       	mov	r0,#1
+   3179 0FC8 3985000E   	mov	AnimCall(rr12),r0	; I am routine 1
+   3180                 
+   3181                 	; remember band and animation addresses
+   3182                 
+   3183 0FCC 3B9D0000   	movw	AnimBand(rr12),rr10
+   3184 0FD0 3BB50002   	movw	AnimAnim(rr12),rr6
+   3185                 
+   3186                 	; initialize other initially constant values
+   3187                 
+   3188 0FD4 0000       	clr	r0
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   74
+
+
+   3189 0FD6 39850007   	mov	AnimFNum(rr12),r0
+   3190 0FDA 3985000A   	mov	AnimVFlags(rr12),r0
+   3191 0FDE 0001       	clr	r1
+   3192 0FE0 3B85000B   	movw	AnimXRel(rr12),rr0
+   3193 0FE4 0800       	inc	r0
+   3194 0FE6 39850008   	mov	AnimFTick(rr12),r0
+   3195                 
+   3196                 	; get and store width of animation area
+   3197                 
+   3198 0FEA 557F02     	and	r2,#7fh
+   3199 0FED 0B02       	sll	r2
+   3200 0FEF 0B02       	sll	r2
+   3201 0FF1 0B02       	sll	r2
+   3202 0FF3 39950009   	mov	AnimRange(rr12),r2
+   3203                 
+   3204                 	; locate upper left edge of animation
+   3205                 
+   3206 0FF7 39AD000D   	mov	AnimYOff(rr12),r5
+   3207 0FFB 0005       	clr	r5
+   3208 0FFD 3BA50004   	movw	AnimXOff(rr12),rr4
+   3209 1001 0805       	inc	r5
+   3210 1003 39AD0006   	mov	AnimXOffH(rr12),r5
+   3211 1007 0905       	dec	r5
+   3212                 
+   3213                 	; if ignoring direction, we are done
+   3214                 
+   3215 1009 2F0380     	btst	r3,#80h
+   3216 100C D62C       	br	z,InitAnim1E0
+   3217                 
+   3218                 	; otherwise, adjust upper-left if moving left to right
+   3219                 
+   3220 100E 389B0002   	mov	r3,LevelVFlags(rr10)
+   3221 1012 2F0380     	btst	r3,#LevelVFlagD
+   3222 1015 D623       	br	z,InitAnim1E0
+   3223                 
+   3224 1017 0902       	dec	r2
+   3225 1019 0003       	clr	r3
+   3226 101B 620204     	subw	rr4,rr2
+   3227 101E 3BA50004   	movw	AnimXOff(rr12),rr4
+   3228 1022 38A50006   	mov	r4,AnimXOffH(rr12)
+   3229 1026 540004     	sbc	r4,#0
+   3230 1029 39A50006   	mov	AnimXOffH(rr12),r4
+   3231                 
+   3232 102D D80B       	br	InitAnim1E0
+   3233                 
+   3234 102F            InitAnim1J0:
+   3235 102F 690C000F   	addw	rr12,#AnimVSize
+   3236 1033 090E       	dec	r14
+   3237 1035 DE86       	br	nz,InitAnim1L0
+   3238                 
+   3239 1037 490000"    	call	abaker4
+   3240                 
+   3241 103A            InitAnim1E0:
+   3242 103A 0F0E       	pop	r14
+   3243 103C F8         	ret
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:45:13 1998  Page   75
+
+
+   3244                 
+   3245                 ;============================================================================
+   3246                 ;
+   3247                 ; Initialize animation 2
+   3248                 ;
+   3249                 ;----------------------------------------------------------------------------
+   3250                 
+   3251 103D            InitAnim2:
+   3252                 	;ZZZ
+   3253 103D F8         	ret
+   3254                 
+   3255 103E             	end

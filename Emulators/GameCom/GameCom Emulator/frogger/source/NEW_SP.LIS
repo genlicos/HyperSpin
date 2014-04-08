@@ -1,0 +1,1866 @@
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page    1
+
+
+      1                 	title	new speech
+      2                 	type	8521
+      3                 	program
+      4                 	
+      5                 
+      6                 	include frogger.tmp
+      6+                             data
+      6+                
+      6+                ;============================================================================
+      6+                ;
+      6+                ; Game Equates
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+     0008       MaxPlayers	equ	8
+      6+     000C       MaxLevels	equ	12
+      6+     0009       NumBands	equ	9
+      6+     0004       NumStrips	equ	4
+      6+     0008       NumAnims	equ	8
+      6+     0012       NumSAnims	equ	NumBands*2
+      6+     0013       NumSounds	equ	19
+      6+                
+      6+     4E00       TimerFull	equ	04e00h	;78*256 is full time per level
+      6+     0007       TimerDec	equ	7	;timer decrease per loop
+      6+                
+      6+                ;============================================================================
+      6+                ;
+      6+                ; Game Equates: Game.Com Control
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+     0000       ini_game        EQU     0   ; INITIAL
+      6+     0001       exe_game        EQU     1   ; EXECUTE
+      6+     0002       close_game      EQU     2   ; CLOSE GAME
+      6+     0003       reset_game      EQU     3   ; RESET
+      6+     0426       frogger_id      equ     0426h
+      6+                
+      6+     0000       override        equ     00h
+      6+     0001       composite       equ     01h
+      6+     0040       left_right      equ     40h
+      6+     0080       up_down         equ     80h
+      6+     00C0       lr_up           equ     0c0h
+      6+                
+      6+                ;============================================================================
+      6+                ;
+      6+                ; Game Equates: Scoring
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+     000A       SCORE_forward equ	10
+      6+     0032       SCORE_home	equ	50
+      6+     03E8       SCORE_five	equ	1000
+      6+     00C8       SCORE_lady	equ	200
+      6+     00C8       SCORE_fly	equ	200
+      6+     000A       SCORE_time	equ	10
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page    2
+
+
+      6+                
+      6+                ;============================================================================
+      6+                ;
+      6+                ; Game Equates: Home Bases
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+     000C       HomeBase1	equ	12
+      6+     0034       HomeBase2	equ	52
+      6+     005C       HomeBase3	equ	92
+      6+     0084       HomeBase4	equ	132
+      6+     00AC       HomeBase5	equ	172
+      6+                
+      6+                ;============================================================================
+      6+                ;
+      6+                ; Game Structures
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+                ; ROM
+      6+                
+      6+                	; Game Data
+      6+                                         ;                 struct      
+      6+     0000       GameLevel        equ 0   ;GameLevel        word    1   
+      6+     0002       GameMult         equ 2   ;GameMult         byte    1   
+      6+     0003       GameDiv          equ 3   ;GameDiv          byte    1   
+      6+     0004       GameFrogX        equ 4   ;GameFrogX        byte    1   
+      6+     0005       GameFrogY        equ 5   ;GameFrogY        byte    1   
+      6+     0006       GameSize         equ 6   ;GameSize         size        
+      6+                
+      6+                	; Level Data
+      6+                                         ;                 struct      
+      6+     0000       LevelFlags       equ 0   ;LevelFlags       byte    1   
+      6+                ;                equ 1   ;;                byte    1   
+      6+     0002       LevelBaseU       equ 2   ;LevelBaseU       byte    1   
+      6+     0003       LevelBaseF       equ 3   ;LevelBaseF       byte    1   
+      6+     0004       LevelIncM        equ 4   ;LevelIncM        byte    1   
+      6+     0005       LevelIncD        equ 5   ;LevelIncD        byte    1   
+      6+     0006       LevelDecM        equ 6   ;LevelDecM        byte    1   
+      6+     0007       LevelDecD        equ 7   ;LevelDecD        byte    1   
+      6+     0008       LevelStrips      equ 8   ;LevelStrips      byte    4   ;NumStrips
+      6+     000C       LevelSize        equ 12  ;LevelSize        size        
+      6+                
+      6+                	;Level Data: strip byte values
+      6+                
+      6+     0000       StripStill	equ	0	;Frog doesn't move and is safe
+      6+     0001       StripMove	equ	1	;Frog is moving and is safe
+      6+     0002       StripHome	equ	2	;Frog has reached home
+      6+     0003       StripWall	equ	3	;Frog can't go here: wall
+      6+     0004       StripWDead	equ	4	;Frog dies in water
+      6+     0005       StripXDead	equ	5	;Frog Dies not in water
+      6+     000A       StripBDead	equ	10	;Frog can't move here, trying dies
+      6+                
+      6+                	; Anim Data
+      6+                                         ;                 struct      
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page    3
+
+
+      6+     0000       AnimStrip        equ 0   ;AnimStrip        byte    1   ;the art strip holding the anim
+      6+     0001       AnimWidth        equ 1   ;AnimWidth        byte    1   ;width of anim in 8 pixel pieces
+      6+     0002       AnimNum          equ 2   ;AnimNum          byte    1   ;Number of frames in animation
+      6+     0003       AnimPal          equ 3   ;AnimPal          byte    1   ;Palette
+      6+     0004       AnimStripX       equ 4   ;AnimStripX       byte    1   ;Number of 8 bit pixels into strip
+      6+     0005       AnimMove         equ 5   ;AnimMove         byte    1   ;Number of pixels movement each frame
+      6+     0006       AnimSize         equ 6   ;AnimSize         size        ;size of header
+      6+     0006       AnimTicks        equ 6   ;AnimTicks        byte    1   ;start of frame tickers
+      6+                
+      6+                	; Strip Animation
+      6+                                         ;                 struct      
+      6+     0000       SAnimNum         equ 0   ;SAnimNum         byte    1   ;number of frames in the animation
+      6+     0001       SAnimTick        equ 1   ;SAnimTick        byte    1   ;Number of ticks between frames
+      6+     0002       SAnimStrips      equ 2   ;SAnimStrips      byte    1   ;The first strip in the list of animating strips
+      6+                
+      6+                ; RAM
+      6+                	; Player Data
+      6+                                         ;                 struct      
+      6+     0000       PlayerScore      equ 0   ;PlayerScore      word    1   
+      6+     0002       PlayerLevel      equ 2   ;PlayerLevel      byte    1   
+      6+     0003       PlayerLives      equ 3   ;PlayerLives      byte    1   
+      6+     0004       PlayerHomeF      equ 4   ;PlayerHomeF      byte    1   
+      6+     0005       PlayerUnused     equ 5   ;PlayerUnused     byte    1   
+      6+     0006       PlayerVSize      equ 6   ;PlayerVSize      size        
+      6+                
+      6+                	; Level Data
+      6+                                         ;                 struct      
+      6+     0000       LevelSpeedU      equ 0   ;LevelSpeedU      byte    1   ;composite (current) speed
+      6+     0001       LevelSpeedF      equ 1   ;LevelSpeedF      byte    1   ;
+      6+     0002       LevelVFlags      equ 2   ;LevelVFlags      byte    1   
+      6+     0003       LevelOffset      equ 3   ;LevelOffset      byte    1   ;offset (LevelStrips - +3) to left strip number
+      6+     0004       LevelPageA       equ 4   ;LevelPageA       byte    1   ;Art page
+      6+     0005       LevelYoffA       equ 5   ;LevelYoffA       byte    1   ;Art yoffset
+      6+     0006       LevelAddr1       equ 6   ;LevelAddr1       word    1   ;Left Strip table address
+      6+     0008       LevelAddr2       equ 8   ;LevelAddr2       word    1   ;Right strip table address
+      6+     000A       LevelPage1       equ 10  ;LevelPage1       byte    1   ;Left or unmoving art page
+      6+     000B       LevelPage2       equ 11  ;LevelPage2       byte    1   ;Right or unused art page
+      6+     000C       LevelYoff1       equ 12  ;LevelYoff1       byte    1   ;Left or unmoving art offset
+      6+     000D       LevelYoff2       equ 13  ;LevelYoff2       byte    1   ;Right or unused art offset
+      6+     000E       LevelXoff1       equ 14  ;LevelXoff1       byte    1   ;Left X offset for art (pixels)
+      6+     000F       LevelXofff       equ 15  ;LevelXofff       byte    1   ;Left X offset fraction (pixels)
+      6+     0010       LevelVSize       equ 16  ;LevelVSize       size        
+      6+                
+      6+                	; Animation Data
+      6+                                         ;                 struct      
+      6+     0000       AnimBand         equ 0   ;AnimBand         word    1   ;Band animation is on
+      6+     0002       AnimAnim         equ 2   ;AnimAnim         word    1   ;which animation am I controlling
+      6+     0004       AnimXOff         equ 4   ;AnimXOff         word    1   ;offset from left edge of screen (+100h)
+      6+     0006       AnimXOffH        equ 6   ;AnimXOffH        byte    1   ;X offset high value
+      6+     0007       AnimFNum         equ 7   ;AnimFNum         byte    1   ;the frame number currently diplayed
+      6+     0008       AnimFTick        equ 8   ;AnimFTick        byte    1   ;how many ticks left till anim changes
+      6+     0009       AnimRange        equ 9   ;AnimRange        byte    1   ;width of animation area in pixels
+      6+     000A       AnimVFlags       equ 10  ;AnimVFlags       byte    1   ;flags
+      6+     000B       AnimXRel         equ 11  ;AnimXRel         word    1   ;relative position in area U.F
+      6+     000D       AnimYOff         equ 13  ;AnimYOff         byte    1   ;offset from top of screen
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page    4
+
+
+      6+     000E       AnimCall         equ 14  ;AnimCall         byte    1   ;routine to call (1 to ...)
+      6+     000F       AnimVSize        equ 15  ;AnimVSize        size        
+      6+                
+      6+                	;Strip Animation
+      6+                                         ;                 struct      
+      6+     0000       SAnimTime        equ 0   ;SAnimTime        byte    1   ;Time left before change
+      6+     0001       SAnimCur         equ 1   ;SAnimCur         byte    1   ;current strip in animation
+      6+     0002       SAnimVSize       equ 2   ;SAnimVSize       size        
+      6+                
+      6+                ; these two flags are also copied to LevelVFlag
+      6+     0001       LevelFlagS	equ	01h  	;Art does not move
+      6+     0002       LevelFlagH	equ	02h	;Art doesn't h-flip on direction change
+      6+                
+      6+     0080       LevelVFlagD	equ	80h	;80h= left to right
+      6+     0040       LevelVFlagH	equ	40h	;last byte processed was anim header
+      6+     0020       LevelVFlagT	equ	20h	;last byte processed was anim non-header
+      6+                
+      6+     0080       AnimVFlagD	equ	80h	;anim moving left to right
+      6+                
+      6+                ;============================================================================
+      6+                ;
+      6+                ; Game States
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+     0000       Game_Open	equ	0
+      6+     0001       Game_Menus	equ	1
+      6+     0002       Game_Init	equ	2
+      6+     0003       Game_Next	equ	3	;go to next (or first, or only)
+      6+     0004       Game_Play	equ	4
+      6+                
+      6+                ;============================================================================
+      6+                ;
+      6+                ; Zero Page Ram (0beh-0ffh)
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+00BE                         org     0beh
+      6+00BE            HoldSP      defs    2                   ;hold the game SP
+      6+00C0            CursorX     defs    1                   ;Cursor X,Y
+      6+00C1            CursorY     defs    1                   ;
+      6+00C2            GameState   defs    1                   ;game state
+      6+00C3            NumPlayers  defs    1                   ;1-MaxPlayers
+      6+00C4            GameMode    defs    1                   ;0=Arcade, 1=Tiger
+      6+00C5            Difficulty  defs    1                   ;0=Easy, 1=Arcade
+      6+00C6            Lives       defs    1                   ;3-5
+      6+00C7            Continue    defs    1                   ;0=Off, 1=On
+      6+00C8            StartLevel  defs    1                   ;1-5
+      6+00C9            Paused      defs    1                   ;1=game paused
+      6+00CA            SfxOn       defs    1                   ;1=Sound Effects on
+      6+00CB            MusicOn     defs    1                   ;1=Music On
+      6+00CC            DemoMode    defs    1                   ;1=Demo, 0=regular
+      6+00CD            sound_flag	defs	1
+      6+00CE            Timer	defs	2	;Time on level remaining (4E00h=full time)
+      6+                
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page    5
+
+
+      6+00D0            temp0w      defs    2                   ;work areas word
+      6+00D2            temp1w      defs    2                   ;work areas word
+      6+00D4            temp0       defs    1                   ;work areas
+      6+00D5            temp1       defs    1                   ;work areas
+      6+00D6            temp2       defs    1                   ;work areas
+      6+                
+      6+                	; Game Data
+      6+                
+      6+00D7            NextPlayer	defs	1
+      6+00D8            PlayerVAddr	defs	2
+      6+00DA            LevelAddr	defs	2
+      6+                
+      6+                	; Frog animation controls
+      6+                
+      6+00DC            FrogX	defs	2	;Current screen X
+      6+00DE            FrogY	defs	1	;Current screen Y
+      6+00DF            FrogMinY	defs	1	;Current minimum Y for scoring
+      6+00E0            FrogTick	defs	1	;Ticks till next move
+      6+00E1            FrogDir	defs	1	;1=S, 2=N, 3=E, 4=W, 0=sitting
+      6+00E2            FrogCnt	defs	1	;Count of remaining animations
+      6+00E3            FrogFlags	defs	1	;Frog Flags
+      6+00E4            FrogPage	defs	1	;page of frog art
+      6+00E5            FrogArtX	defs	1	;x of frog art
+      6+00E6            FrogArtY	defs	1	;y of frog art
+      6+00E7            FrogRest	defs	1	;resting animation
+      6+                
+      6+00E8            TargetX	defs	1	;Where Frog will be for texting
+      6+00E9            TargetY	defs	1	;
+      6+                
+      6+00EA            LastKey	defs	1	;Last Key entered
+      6+                
+      6+00EB            hold_byte1	defs	1
+      6+                
+      6+     0080       FrogFlagM	equ	80h	;on if moving with strip
+      6+                
+      6+     0001       FrogDirS	equ	1	;moving south
+      6+     0002       FrogDirN	equ	2	;moving north
+      6+     0003       FrogDirE	equ	3	;moving east
+      6+     0004       FrogDirW	equ	4	;moving west
+      6+     0005       FrogDirXW	equ	5	;dying waterdeath
+      6+     0006       FrogDirXL	equ	6	;dying landdeath
+      6+                
+      6+     0002       FrogSpeed	equ	2	;Number of ticks per move
+      6+     0004       FrogMoves	equ	4	;Number of movement pixels
+      6+     0004       FrogFrames	equ	4	;Number of frames
+      6+                
+      6+00EC            ZZZ	defs	10
+      6+                
+      6+00F6            testff:
+      6+                            if      testff .gt. 0ffh
+      6+                            error 	Too much data in zero page ram
+      6+                            endif
+      6+                
+      6+                ;============================================================================
+      6+                ;
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page    6
+
+
+      6+                ; Non-Zero page Ram (208h-37fh)
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+0208             	org	208h
+      6+0208            PlayerData	defs	MaxPlayers*PlayerVSize
+      6+0238            LevelData	defs	NumBands*LevelVSize
+      6+02C8            AnimData	defs	NumAnims*AnimVSize
+      6+0340            SAnimData	defs	NumSAnims*SAnimVSize
+      6+                
+      6+0364            new_melody_ptr defs 1
+      6+0365            DemoPtr	defs	2
+      6+0367            DemoCnt	defs	1
+      6+                
+      6+0368            page_ptr1	defs	2
+      6+036A            index0	defs	1
+      6+036B            index1	defs	1
+      6+036C            index2	defs	1
+      6+036D            index3	defs	1
+      6+                
+      6+036E            test37f:
+      6+                	if	test37f .gt. 37fh
+      6+                	error	Too much data in non-zero page ram
+      6+                	endif
+      6+                
+      6+                ;============================================================================
+      6+                ;
+      6+                ; User input equates
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+                ;	001-013	 ;row 0 of screen, column 0 to 12
+      6+                ;	...	 ;...
+      6+                ;	118-082h ;row 9 of screen, column 0 to 12
+      6+                ;
+      6+                ;	spot on screen = row*13+column+1
+      6+                
+      6+     0082       UserScreen	equ	082h	;highest screen press
+      6+                
+      6+     0083       UserUp	equ	083h	;joypad up
+      6+     0084       UserDown	equ	084h	;joypad down
+      6+     0085       UserLeft	equ	085h	;joypad left
+      6+     0086       UserRight	equ	086h	;joypad right
+      6+                
+      6+     0087       UserMenu	equ	087h	;Menu button
+      6+     0089       UserSound	equ	089h	;Sound button
+      6+     008A       UserPause	equ	08ah	;Pause button
+      6+                
+      6+     008B       UserA	equ	08bh	;A button
+      6+     008C       UserB	equ	08ch	;B button
+      6+     008D       UserC	equ	08dh	;C button
+      6+     008E       UserD	equ	08eh	;D button
+      6+                
+      6+                ;============================================================================
+      6+                ;
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page    7
+
+
+      6+                ; Bank definitions
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+     0020       program_bank1   equ     020h
+      6+     0021       program_bank2   equ     021h
+      6+     0023       program_bank3   equ     023h
+      6+     0024       program_bank4   equ     024h
+      6+     0025       program_bank5   equ     025h
+      6+     0026       program_bank6   equ     026h
+      6+                
+      6+     0020       bankno_front0 equ   20h
+      6+     0021       bankno_front1 equ   21h
+      6+     0022       bankno_front2 equ   22h
+      6+     0023       bankno_sprite equ   23h
+      6+     0024       bankno_strip  equ   24h
+      6+     0072       bankno_winpic10 equ 72h ;    bankno_winpic9+2
+      6+                
+      6+                ;============================================================================
+      6+                ;
+      6+                ; Macros
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+                ;	; long conditional branches
+      6+                ;
+      6+                ;breq:	macro	?dest
+      6+                ;	br	ne,cont???
+      6+                ;	jmp	eq,?dest
+      6+                ;cont???:
+      6+                ;	endm
+      6+                ;
+      6+                ;brne:	macro	?dest
+      6+                ;	br	eq,cont???
+      6+                ;	jmp	ne,?dest
+      6+                ;cont???:
+      6+                ;	endm
+      6+                ;
+      6+                ;brnz:	macro	?dest
+      6+                ;	br	z,cont???
+      6+                ;	jmp	nz,?dest
+      6+                ;cont???:
+      6+                ;	endm
+      6+                ;
+      6+                ;bruge:	macro	?dest
+      6+                ;	br	ult,cont???
+      6+                ;	jmp	uge,?dest
+      6+                ;cont???:
+      6+                ;	endm
+      6+                ;
+      6+                ;brugt:	macro	?dest
+      6+                ;	br	ule,cont???
+      6+                ;	jmp	ugt,?dest
+      6+                ;cont???:
+      6+                ;	endm
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page    8
+
+
+      6+                ;
+      6+                ;brule:	macro	?dest
+      6+                ;	br	ugt,cont???
+      6+                ;	jmp	ule,?dest
+      6+                ;cont???:
+      6+                ;	endm
+      6+                ;
+      6+                ;brz:	macro	?dest
+      6+                ;	br	nz,cont???
+      6+                ;	jmp	z,?dest
+      6+                ;cont???:
+      6+                ;	endm
+      6+                
+      6+                ;============================================================================
+      6+                ;
+      6+                ; The old stuff here
+      6+                ;
+      6+                ;----------------------------------------------------------------------------
+      6+                
+      6+                ;ASB	include oldstuff.inc
+      6+                
+      6+                            program
+      7                 	
+      8                 	global	start_speech1
+      9                         global  start_chan0
+     10                         global  start_chan1
+     11                         global  stop_melody
+     12                 	global	init_isr
+     13                 	global	restore_isr
+     14                 
+     15                 
+     16                 
+     17      00A6       TMR1_new_ibank  equ     0a6h
+     18      00A8       sp_control      equ     0a8h
+     19      00AC       SP_CTR1 equ     0ach
+     20      00AD       SP_CTR2 EQU     0ADH
+     21      00B0       PVOICE  EQU     0B0H
+     22      00B4       UT_clk	equ	0b4h
+     23      00B5       ScanTMR equ     0b5h
+     24      00BC       SYSFLAG	EQU	0BCH
+     25      00BD       KBDFLAG	EQU	0BDH
+     26      0102       TMR1_new_isr	equ	102h
+     27      0112       DMG_timer	equ	112h
+     28      0150       UTimer1C	equ	150h		;-------------------------
+     29      0169       Melody_Register	equ	169h		;-------------------------
+     30      017F       KBDTMR		EQU	17FH
+     31      01AC       melodyupdate	equ	1ach
+     32                 
+     33                 
+     34                 
+     35      0008       MAX_UT		equ	8
+     36      0038       SP_TIMER1ISR_RP	equ	38h
+     37      0048       N_TIMER1ISR_RP	equ	48h
+     38      0004       SCANFREQ	equ	20/5		;10ms
+     39      000A       REPEATTM        equ     10              ;500ms
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page    9
+
+
+     40      0010       DEBOU_TM	equ	16
+     41      00A4       ALARM_ALERT_KEY	equ	0a4h
+     42      00A5       COMM_ERROR	equ	0a5h
+     43      00A8       WARN_BEEP	equ	0a8h
+     44      000A       UT_CLK_		equ	50/5	;49.152 ms per count
+     45      0000       UT_STOP         equ     00h
+     46      0001       UT_RUN		equ	01h
+     47      0003       SP_CTR1_VAL	equ	3	;41.6us*3 == 124.8us (8013Hz)
+     48      0028       SP_CTR2_VAL	equ	40	;118	;4.91ms
+     49                 ;
+     50      00D0       SP_TMR1_VAL	equ	208
+     51                 ;
+     52                 ;
+     53      22FA       STUFFKEY	EQU	22FAH
+     54      36D4       SlopeTable	equ	36d4h
+     55                 ;stop_speech	equ	2398h
+     56      2142       end_TMR1_isr    equ     2142h
+     57      2B84       disp_tmrovr0	equ	2b84h
+     58                 
+     59                 
+     60      01A8       mel_counter	equ	01a8h
+     61      01A9       mel_counter1	equ	mel_counter+1
+     62      01AA       mel_flag	equ	mel_counter1+1
+     63      01AB       mel_flag1	equ	mel_flag+1
+     64      0171       Tone0content	equ	171h		;amplitdue control for channel 0
+     65      0172       Tone1content	equ	172h		;amplitude control for channel 1
+     66      0173       ToneLength0	equ	173h		;length of the tone in channel 0
+     67      0174       ToneLength1	equ	174h		;length of the tone in channel 1
+     68      0175       no_of_voice	equ	175h
+     69      0176       Melody_timer	equ	176h		;count = 10 --> 49ms per unit
+     70      0177       Tone0Holdtimer	equ	177h
+     71      0178       Tone1Holdtimer	equ	178h
+     72                 ;Melody_Register equ     169h            ;-------------------------
+     73      016A       Mel_address0	equ	16ah
+     74      016C       Mel_address1	equ	16ch
+     75      016E       Mel_bank0	equ	16eh
+     76      016F       Mel_bank1	equ	16fh
+     77      0081       LOOP_CODE	equ	81h
+     78      0000       STOP_CODE	equ	00h
+     79      0080       PAUSE_CODE	equ	80h
+     80                 
+     81                         program
+     82                 
+     83                 ;---------------------------------------;
+     84                 ;	Speech processing
+     85                 ;
+     86                 ; for new approach :
+     87                 ;
+     88                 ;	RP = B - 58h to 67h
+     89                 ;	rr0 - general
+     90                 ;	rr2 - sp_address
+     91                 ;	r4 - sp_bank
+     92                 ;	r5 - STPID
+     93                 ;	rr6 - end_address
+     94                 ;	r8 - end bank
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   10
+
+
+     95                 ;	
+     96                 ;---------------------------------------;
+     97 0000            sp_timer:
+     98                 ;	bclr	0b1h,#5
+     99 0000 09AC       	dec	SP_CTR1
+    100 0002 D603       	br	eq,sp_timer1		;it is time to update the D/A register
+    101 0004            sp_timerx:
+    102 0004 982142             jmp     end_TMR1_isr
+    103 0007            sp_timer1:
+    104 0007 5803AC     	mov	SP_CTR1,#SP_CTR1_VAL	;reload the counter value
+    105                 	;---- update the speech data ---;
+    106 000A 48270F     	mov	r15,mmu3
+    107 000D BC27       	mov	mmu3,r4
+    108 000F 48B04E             mov     sgda,PVOICE    ;joe 9/12/97
+    109                 ;        mov     4eh,PVOICE
+    110 0012            voice_mute1:
+    111 0012 82A810     	bbc	sp_control,#2,process_low_nibble
+    112                 ;--- process high nibble ---;
+    113 0015 A2A8       	bclr	sp_control,#2
+    114 0017 3842       	mov	r0,(rr2)+
+    115 0019 870204     	bbc	r2,#7,adpcm4
+    116 001C 0804       	inc	r4
+    117 001E C260       	mov	r2,#60h
+    118 0020            adpcm4:
+    119 0020 0D00       	swap	r0
+    120 0022 980029'    	jmp	adpcm3
+    121 0025            process_low_nibble:
+    122                 ;-------------------------------;
+    123                 ;	R0 - voice data
+    124                 ;	R1 - temp
+    125                 ;	RR2 - table 
+    126                 ;--------------------------------;
+    127 0025 AAA8       	bset	sp_control,#2
+    128 0027 3802       	mov	r0,@rr2
+    129 0029 0700       adpcm3: srl     r0                      ;carry holds the sign bit
+    130 002B 5E000701   	movm	r0,#7,r1
+    131 002F B80D       	mov	r13,r0
+    132 0031 D735       	br	c,vslope_down
+    133 0033 0B0D       	sll	r13
+    134 0035 000C       	clr	r12
+    135 0037 3A8536D4   	movw	rr0,SlopeTable(rr12)
+    136 003B 4100B0     	add	PVOICE,r0
+    137 003E 9F0044'    	jmp	nc,adpcm1
+    138 0041 58FFB0     	mov	PVOICE,#0ffh
+    139 0044            adpcm1:
+    140 0044 480F27     	mov	mmu3,r15
+    141 0047            sp_timer4:
+    142 0047 400804     	cmp	r4,r8
+    143 004A D60B       	br	eq,sp_timerxx
+    144 004C            sp_timer3:
+    145 004C 09AD       	dec	SP_CTR2
+    146 004E 9E2142             jmp     ne,end_TMR1_isr
+    147 0051 5828AD     	mov	SP_CTR2,#SP_CTR2_VAL
+    148 0054 98007B'    	jmp	sp_timer2				;timer routine
+    149 0057            sp_timerxx:
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   11
+
+
+    150 0057 600602     	cmpw	rr2,rr6
+    151 005A 97004C'    	jmp	c,sp_timer3
+    152 005D 490190'    	call	stop_speech
+    153 0060 C0A0       	mov	r0,#0a0h		;stuff 'stop speech' key into the buffer
+    154 0062 4922FA     	call	STUFFKEY
+    155 0065 98004C'    	jmp	sp_timer3
+    156                 
+    157 0068            vslope_down:
+    158 0068 0B0D       	sll	r13
+    159 006A 000C       	clr	r12
+    160 006C 3A8536D4   	movw	rr0,SlopeTable(rr12)
+    161 0070 4200B0     	sub	PVOICE,r0
+    162 0073 9F0044'    	jmp	nc,adpcm1
+    163 0076 00B0       	clr	PVOICE
+    164 0078 980044'    	jmp	adpcm1	
+    165 007B            sp_timer2:
+    166                 	
+    167 007B            normal_timerx:
+    168 007B 0EA4       	push	0a4h
+    169 007D 0E0E       	push	r14
+    170 007F 2E48       	mov	ps0,#N_TIMER1ISR_RP
+    171                 ;       ei
+    172                 ;        di
+    173                 	;--- check scanning timer ---;
+    174 0081 09B5       	dec	ScanTMR	
+    175 0083 DE2F       	br	nz,tmr19
+    176 0085 5804B5     	mov	ScanTMR,#SCANFREQ	;reload the scanning timer value
+    177 0088 ABBD       	bset	KBDFLAG,#3		;set scan cycle flag
+    178 008A            tmr11:
+    179 008A 85BD0E     	bbc	KBDFLAG,#5,tmr20
+    180 008D 3880017F   	mov	r0,KBDTMR
+    181 0091 0900       	dec	r0
+    182 0093 3980017F   	mov	KBDTMR,r0
+    183 0097 DE02       	br	nz,tmr20
+    184 0099 A5BD       	bclr	KBDFLAG,#5	
+    185 009B            tmr20:
+    186 009B 86BD16     	bbc	KBDFLAG,#6,tmr19
+    187 009E 3880017F   	mov	r0,KBDTMR
+    188 00A2 0900       	dec	r0
+    189 00A4 3980017F   	mov	KBDTMR,r0
+    190 00A8 DE0A       	br	nz,tmr19
+    191 00AA A6BD       	bclr	KBDFLAG,#6
+    192 00AC ADBD       	bset	KBDFLAG,#5
+    193 00AE C028       	mov	r0,#40
+    194 00B0 3980017F   	mov	KBDTMR,r0
+    195                 ;---- User timer checking ----;
+    196 00B4            tmr19:	
+    197 00B4 2FA890     	btst	sp_control,#90h
+    198 00B7 DE67       	br	nz,tmr14x
+    199                 
+    200 00B9 38800112   	mov	r0,DMG_timer
+    201 00BD 0800       	inc	r0
+    202 00BF 39800112   	mov	DMG_timer,r0
+    203                 					; timer used
+    204 00C3 09B4       	dec	UT_clk			;see User timer prescalar
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   12
+
+
+    205 00C5 DE5C       	br	nz,tmr14
+    206 00C7 580AB4     	mov	UT_clk,#UT_CLK_		;reload the value
+    207 00CA 7A0150     	movw	rr2,#UTimer1C		;points to first user timer
+    208 00CD C408       	mov	r4,#MAX_UT		;r4 == max # of user timer
+    209 00CF            tmr13:
+    210 00CF 3802       	mov	r0,@rr2			;LOAD the control byte of user timer
+    211 00D1 500100     	cmp	r0,#UT_RUN		;Running??
+    212 00D4 D608       	br	eq,tmr12
+    213 00D6            tmr15:
+    214 00D6 69020003   	addw	rr2,#3			;no running, so next timer
+    215 00DA 74F3       	dbnz	r4,tmr13		;last one???
+    216 00DC D845       	br	tmr14			;no more, return
+    217 00DE 3A820001   tmr12:	movw	rr0,1(rr2)		;load user timer content
+    218 00E2 1900       	decw	rr0			;user timer content --1
+    219 00E4 3B820001   	movw	1(rr2),rr0
+    220 00E8 DEEC       	br	nz,tmr15		;time's up???
+    221                 	;--- the timer reaches zero, so stuff timer value into key buffer
+    222 00EA 0E04       	push	r4
+    223 00EC 0104       	neg	r4
+    224 00EE 550704     	and	r4,#7
+    225 00F1 569004     	or	r4,#90h			;Stuff timer value from 90 - 97
+    226 00F4 B004       	mov	r0,r4
+    227                 	;--- check timer #7 is overflow?? ---
+    228 00F6 509700     	cmp	r0,#97h			;check display timer overflow
+    229 00F9 DE0B       	br	ne,tmr_17
+    230 00FB C000       	mov	r0,#UT_STOP
+    231 00FD 3902       	mov	@rr2,r0
+    232 00FF 490000"            call    disp_tmrovr
+    233 0102 0F04       	pop	r4
+    234 0104 D8D0       	br	tmr15
+    235 0106            tmr_17:
+    236 0106 0001       	clr	r1
+    237 0108 4922FA     	call	STUFFKEY		;stuff the timer value into the keyboard
+    238                 					; buffer
+    239 010B DF0B       	br	nc,tmr16		;no problem in stuff key
+    240                 	;--- fail to stuff ---;
+    241 010D 780001     	movw	rr0,#1			;next time stuff
+    242 0110 3B820001   	movw	1(rr2),rr0
+    243 0114 0F04       	pop	r4
+    244 0116 D8BE       	br	tmr15
+    245 0118            tmr16:
+    246 0118 0F04       	pop	r4
+    247 011A C000       	mov	r0,#UT_STOP		;stop the timer
+    248 011C 3902       	mov	@rr2,r0
+    249 011E D8B6       	br	tmr15	
+    250                 ;-------------------------------;
+    251                 ;	Check Melody
+    252                 ;-------------------------------;
+    253 0120            tmr14x:
+    254 0120 84BC0F     	bbc	SYSFLAG,#4,tmr18
+    255 0123            tmr14:
+    256 0123 38800169   	mov	r0,Melody_Register
+    257 0127 2F0011     	btst	r0,#11h
+    258 012A D606       	br	z,tmr18
+    259                 ;	call	@melodyupdate
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   13
+
+
+    260 012C 88A803     	bbs	0a8h,#0,tmr18
+    261 012F 49020A'            call    updatemelody
+    262                 ;-------------------------------;
+    263                 ;
+    264 0132            tmr18:
+    265 0132 FE         	di
+    266 0133 2E38       	mov	ps0,#SP_TIMER1ISR_RP
+    267 0135 0F0E       	pop	r14
+    268 0137 0FA4       	pop	0a4h
+    269 0139 982142             jmp     end_TMR1_isr
+    270                 ;
+    271                 ;
+    272                 ;
+    273 013C            start_speech1:
+    274 013C 0E1F       	push	ps1
+    275 013E FE         	di
+    276 013F 0E1E       	push	ps0
+    277 0141 5F1E0738   	movm	ps0,#7,#SP_TIMER1ISR_RP
+    278                 ;	bbs	sp_control,#0,start_speech4
+    279 0145 3A980102   	movw	rr10,TMR1_new_isr
+    280 0149 48A609     	mov	r9,TMR1_new_ibank
+    281 014C 780000'    	movw	rr0,#sp_timer
+    282 014F 3B800102   	movw	TMR1_new_isr,rr0
+    283 0153 B026       	mov	r0,mmu2
+    284 0155 B8A6       	mov	TMR1_new_ibank,r0
+    285 0157            start_speech4:
+    286 0157 58D053             mov     tm1d,#SP_TMR1_VAL       ;set up the new timer for speech
+    287                 ;joe 9/12/97        mov     53h,#SP_TMR1_VAL       ;set up the new timer for speech
+    288 015A 588052             mov     tm1c,#80h               ;41.6us interrupt frequency
+    289                 ;joe 9/12/97        mov     52h,#80h               ;41.6us interrupt frequency
+    290 015D AEBC       	bset	SYSFLAG,#6		;set up the speech intr flag
+    291 015F 5803AC     	mov	SP_CTR1,#SP_CTR1_VAL	;counter 1 for update speech
+    292 0162 5828AD     	mov	SP_CTR2,#SP_CTR2_VAL	;counter 2 for update software timer
+    293 0165 5880B0     	mov	PVOICE,#80h
+    294 0168 0F1E       	pop	ps0
+    295 016A 8DBC1E     	bbs	SYSFLAG,#5,mute_speech
+    296                 					;flag
+    297 016D            talk:
+    298 016D 2F4088             btst    sgc,#88h
+    299                 ;joe 9/12/97        btst    40h,#88h
+    300 0170 DE16       	br	nz,talk1
+    301 0172 88F813             bbs     0f8h,#0,talk1
+    302                 
+    303 0175 0E00               push    r0
+    304 0177 0000       	clr	r0
+    305 0179            talk2:
+    306 0179 B84E               mov     sgda,r0
+    307                 ;joe 9/12/97        mov     4eh,r0
+    308 017B 588840             mov     sgc,#88h
+    309 017E 588840             mov     40h,#88h
+    310 0181 0800       	inc	r0
+    311 0183 8700F3     	bbc	r0,#7,talk2
+    312 0186 0F00       	pop	r0
+    313 0188            talk1:
+    314 0188 588840             mov     sgc,#88h                ;enable d/a output
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   14
+
+
+    315                 ;joe 9/12/97        mov     40h,#88h                ;enable d/a output
+    316 018B            mute_speech:
+    317 018B A8A8       	bset	sp_control,#0
+    318                 ;	mov	ie1,#40h
+    319                 ;	mov	ir1,#40h
+    320 018D 0F1F       	pop	ps1
+    321 018F            no_sp:
+    322 018F F8         	ret
+    323                 ;
+    324                 
+    325                 ;(2/4_) end_TMR1_isrx:
+    326                 ;(2/4_)        cmp     r14,mmu2
+    327                 ;(2/4_)        br      eq,good
+    328                 ;(2/4_)        nop
+    329                 ;(2/4_) good:
+    330                 ;(2/4_)        jmp     end_TMR1_isr
+    331                 
+    332 0190            stop_speech:
+    333 0190 0E1F       	push	ps1
+    334 0192 0E1E       	push	ps0
+    335 0194 FE         	di
+    336 0195 55F8A8     	and	sp_control,#0f8h		;clear speech control
+    337                 ;	call	init_timer1		;restore the timer setting
+    338 0198 581853             mov     tm1d,#24        ;24*0.2048ms => 4.9152ms
+    339                 ;joe 9/12/97                mov     53h,#24        ;24*0.2048ms => 4.9152ms
+    340 019B 588152             mov     tm1c,#81h       ;start timer, fck/1024
+    341                 ;joe 9/12/97                mov     52h,#81h       ;start timer, fck/1024
+    342                 
+    343 019E 5F1E0738   	movm	ps0,#7,#SP_TIMER1ISR_RP
+    344                 	;--- restore the original timer interrupt ---;
+    345 01A2 4809A6     	mov	TMR1_new_ibank,r9
+    346 01A5 3B980102   	movw	TMR1_new_isr,rr10
+    347                 	
+    348 01A9 55BFBC     	and	SYSFLAG,#0bfh		;stop all controls
+    349                 
+    350 01AC 38800169   	mov	r0,Melody_Register
+    351 01B0 2F0011     	btst	r0,#11h
+    352 01B3 D627       	br	z,stop_sp1
+    353 01B5 B140       	mov	r1,sgc
+    354 01B7 5F018008   	movm	r1,#80h,#8h
+    355 01BB 830002     	bbc	r0,#3,stop_sp4
+    356 01BE A800       	bset	r0,#0
+    357 01C0            stop_sp4:
+    358 01C0 870002     	bbc	r0,#7,stop_sp5
+    359 01C3 A900       	bset	r0,#1
+    360 01C5            stop_sp5:
+    361 01C5 B940       	mov	sgc,r1
+    362 01C7 58804E     	mov	sgda,#80h
+    363 01CA 580042     	mov	sg0l,#0
+    364 01CD 580044     	mov	sg1l,#0
+    365 01D0 C000       	mov	r0,#0
+    366 01D2 39800171   	mov	Tone0content,r0
+    367 01D6 39800172   	mov	Tone1content,r0
+    368 01DA D805       	br	stop_sp11
+    369                 ;        btst    sgc,#07h
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   15
+
+
+    370                 ;joe 12/9/97        btst    40h,#07h
+    371                 ;       br      nz,stop_sp1
+    372 01DC            stop_sp1:
+    373 01DC 4901E8'            call    ramp_down
+    374 01DF 0040               clr     sgc                     ;disable all sound outptu
+    375                 ;joe 12/9/97        clr     40h                     ;disable all sound outptu
+    376                 ;        br      stop_sp11
+    377                 ;stop_sp1:
+    378                 ;	mov	sgda,#80h
+    379 01E1            stop_sp11:
+    380 01E1 0F1E       	pop	ps0
+    381 01E3 0F1F               pop     ps1
+    382 01E5 A0F8               bclr    0f8h,#0
+    383 01E7 F8         	ret
+    384                 
+    385 01E8            ramp_down:
+    386                 ;        RET
+    387 01E8 0E00               push    r0
+    388 01EA B04E               mov     r0,sgda
+    389                 ;joe 12/9/97        mov     r0,4eh
+    390                 
+    391 01EC            stop_sp3:
+    392 01EC 500000     	cmp	r0,#0
+    393 01EF D616       	br	z,stop_sp2
+    394 01F1 0900       	dec	r0
+    395 01F3 0E00       	push	r0
+    396 01F5 0F00       	pop	r0
+    397 01F7 0E00       	push	r0
+    398 01F9 0F00       	pop	r0
+    399 01FB 0E00       	push	r0
+    400 01FD 0F00       	pop	r0
+    401 01FF 0E00       	push	r0
+    402 0201 0F00       	pop	r0
+    403 0203 B84E               mov     sgda,r0
+    404                 ;joe 12/9/97        mov     4eh,r0
+    405 0205 D8E5       	br	stop_sp3
+    406 0207            stop_sp2:
+    407 0207 0F00       	pop	r0
+    408 0209 F8         	ret
+    409                 
+    410                 ;====================================================
+    411                 ;====================================================
+    412                 ;
+    413                 ;ADSR_register	equ	170h		;-------------------------
+    414                 ;mel_counter     equ     01a8h
+    415                 ;mel_counter1    equ     mel_counter+1
+    416                 ;mel_flag        equ     mel_counter1+1
+    417                 ;mel_flag1       equ     mel_flag+1
+    418                 ;Tone0content	equ	171h		;amplitdue control for channel 0
+    419                 ;Tone1content	equ	172h		;amplitude control for channel 1
+    420                 ;ToneLength0	equ	173h		;length of the tone in channel 0
+    421                 ;ToneLength1	equ	174h		;length of the tone in channel 1
+    422                 ;no_of_voice	equ	175h
+    423                 ;Melody_timer	equ	176h		;count = 10 --> 49ms per unit
+    424                 ;Tone0Holdtimer	equ	177h
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   16
+
+
+    425                 ;Tone1Holdtimer	equ	178h
+    426                 ;Melody_Register	equ	169h		;-------------------------
+    427                 ;Mel_address0	equ	16ah
+    428                 ;Mel_address1	equ	16ch
+    429                 ;Mel_bank0	equ	16eh
+    430                 ;Mel_bank1	equ	16fh
+    431                 ;LOOP_CODE	equ	81h
+    432                 ;STOP_CODE	equ	00h
+    433                 ;PAUSE_CODE	equ	80h
+    434                 
+    435                 ;;--------------------------------------;
+    436                 ;;	UpdateMelody : update the melody channels
+    437                 ;
+    438                 ;--------------------------------------;
+    439 020A            updatemelody:
+    440 020A FE         	di
+    441 020B 38800176   	mov	r0,Melody_timer
+    442 020F 500000     	cmp	r0,#0
+    443 0212 9E0263'            jmp      nz,upmel1
+    444                 ;----------------------------;
+    445                 ;	update tone length counter
+    446                 ;	it is one unit of the tone length
+    447                 ;----------------------------;
+    448 0215            upmel2:
+    449 0215 C005               mov     r0,#5                  ;daniell mov r0,#20
+    450 0217 39800176           mov     Melody_timer,r0
+    451                 
+    452                 ;---- update next counter ---;
+    453 021B 38880169   	mov	r1,Melody_Register
+    454 021F 80011B     	bbc	r1,#0,upmel3		;check channel 0 active??
+    455                 ;--- channel 0 active ---;
+    456 0222 38800173           mov     r0,ToneLength0
+    457 0226 0900       	dec	r0
+    458 0228 39800173           mov     ToneLength0,r0
+    459 022C DE0F               br      nz,upmel3
+    460                 
+    461 022E 3A90016A           movw    rr2,Mel_address0	;advance melody pointer of 
+    462 0232 69020003   	addw	rr2,#3			;channel 0
+    463 0236 3B90016A   	movw	Mel_address0,rr2
+    464                 	
+    465                 	
+    466                 ;	mov	r0,@rr2			;load frequency code
+    467                 ;	cmp	r0,#LOOP_CODE
+    468                 ;	br	eq,looping0
+    469                 ;
+    470                 ;	CMP	R0,#STOP_CODE
+    471                 ;	br	nz,looping0_e
+    472                 ;
+    473                 ;	mov	r0,Melody_Register
+    474                 ;	bclr	r0,#0
+    475                 ;	mov	Melody_Register,r0
+    476                 ;looping0_e:
+    477                 ;	clr	r0
+    478                 ;	mov	r1,#1
+    479                 ;       call    Control_Melody          ;start next melody note
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   17
+
+
+    480 023A 49045D'    	call	start_melody0
+    481 023D            upmel3:
+    482 023D 38880169   	mov	r1,Melody_Register
+    483 0241 2F0110     	btst	r1,#10h			;check channel 1 active??
+    484 0244 D617       	br	z,upmel6
+    485                 
+    486 0246 38800174           mov     r0,ToneLength1
+    487 024A 0900               dec     r0
+    488 024C DE10               br      nz,upmel4
+    489                 
+    490 024E 3A90016C           movw    rr2,Mel_address1
+    491 0252 69020003   	addw	rr2,#3
+    492 0256 3B90016C   	movw	Mel_address1,rr2
+    493                 	
+    494                 ;	mov	r0,@rr2
+    495                 ;	cmp	r0,#LOOP_CODE
+    496                 ;	br	eq,looping1
+    497                 ;	cmp	r0,#0
+    498                 ;	br	z,stop_mel1
+    499                 ;looping1_e:
+    500                 ;	mov	r0,#1
+    501                 ;	mov	r1,#1
+    502                 ;	call	Control_Melody
+    503 025A 4904F3'    	call	start_melody1
+    504 025D            upmel6:
+    505 025D F8         	ret
+    506                 
+    507                 ;looping0:
+    508                 ;	movw	rr2,1(rr2)
+    509                 ;	movw	Mel_address0,rr2
+    510                 ;	br	looping0_e
+    511                 ;stop_mel0:
+    512                 ;	mov	r1,Melody_Register
+    513                 ;	bclr	r1,#0			;make channel 0 inactive
+    514                 ;	mov	Melody_Register,r1
+    515                 ;	and	sgc,#0feh
+    516                 ;	br	looping0_e
+    517                 ;stop_mel1:
+    518                 ;	mov	r1,Melody_Register
+    519                 ;	bclr	r1,#4
+    520                 ;	mov	Melody_Register,r1
+    521                 ;	and	sgc,#0fdh
+    522                 ;	br	looping1_e		
+    523                 ;looping1:
+    524                 ;	movw	rr2,1(rr2)
+    525                 ;	movw	Mel_address1,rr2
+    526                 ;	br	looping1_e
+    527 025E            upmel4:
+    528 025E 39800174   	mov	ToneLength1,r0
+    529 0262 F8         	ret
+    530                 ;
+    531                 ;
+    532                 ;
+    533 0263            upmel1:
+    534 0263 0900       	dec	r0			;dec melody_timer
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   18
+
+
+    535 0265 960215'    	jmp	z,upmel2
+    536 0268 39800176   	mov	Melody_timer,r0
+    537                 
+    538                 ;----------------------------------------;
+    539                 ;	check ADSR status and update the hardware
+    540                 ;----------------------------------------;
+    541 026C 38800169   	mov	r0,Melody_Register
+    542 0270 880003     	bbs	r0,#0,upadsr00_1
+    543 0273 9802DF'            jmp     upadsr10
+    544                 
+    545 0276            upadsr00_1:
+    546                 	;--- active, check ADSR
+    547                 
+    548 0276            test_loop:
+    549 0276 388001AA           mov     r0,mel_flag
+    550 027A 500100             cmp     r0,#1
+    551 027D D636               br      eq,test_end1		;if [mel_flag] set, then complete
+    552                 					; the envelope
+    553                 
+    554 027F 0002               clr     r2
+    555 0281 389801A8           mov     r3,mel_counter		;load envelope step
+    556                 
+    557 0285 1E04               pushw   rr4
+    558 0287 1E02       	pushw	rr2
+    559 0289 0002       	clr	r2
+    560 028B 38980169   	mov	r3,Melody_Register
+    561 028F 550603     	and	r3,#6
+    562 0292 3AA2038C'  	movw	rr4,Instru_pointer(rr2)
+    563 0296 1F02       	popw	rr2
+    564 0298 610204     	addw	rr4,rr2
+    565 029B 3804       	mov	r0,@rr4
+    566 029D 1F04               popw    rr4
+    567                 
+    568 029F 500000             cmp     r0,#0
+    569 02A2 D60B               br      eq,test_end
+    570 02A4 510303             add     r3,#3
+    571 02A7 D704               br      c,test_pre
+    572 02A9 399801A8           mov     mel_counter,r3
+    573 02AD            test_pre:
+    574 02AD D80A               br      under_ff_0              ;testing
+    575                 
+    576 02AF            test_end:
+    577 02AF C001               mov     r0,#1                   ;set the melody flag
+    578 02B1 398001AA           mov     mel_flag,r0
+    579                 
+    580                 ;        mov     r0,ADSR_register        ;reset the ADSR_register
+    581                 ;       bclr    r0,#0
+    582                 ;        mov     ADSR_register,r0
+    583                 
+    584 02B5            test_end1:
+    585 02B5 C000               mov     r0,#0
+    586 02B7 D810               br      under_ff_0x
+    587                 
+    588 02B9            under_ff_0:
+    589 02B9            upadsr01_1:
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   19
+
+
+    590 02B9            upadsr03_1:
+    591 02B9 528000             sub     r0,#80h
+    592 02BC 0B00               sll     r0
+    593 02BE 500000             cmp     r0,#0
+    594 02C1 DE06               br      ne,under_ff_0x
+    595 02C3 C101               mov     r1,#1
+    596 02C5 398801AA           mov     mel_flag,r1
+    597                 
+    598 02C9            under_ff_0x:
+    599 02C9 39800171           mov     Tone0content,r0
+    600 02CD 3A90016A   	movw	rr2,Mel_address0
+    601 02D1 0E27       	push	mmu3
+    602 02D3 582527     	mov	mmu3,#program_bank5
+    603 02D6 388A0001   	mov	r1,1(rr2)
+    604 02DA 0F27       	pop	mmu3
+    605 02DC 490352'    	call	mixer0
+    606                 
+    607                 ;....... TESTING END!!
+    608                 
+    609                 ;       check channel 1 active??
+    610                 ;
+    611 02DF            upadsr10:
+    612 02DF 38800169   	mov	r0,Melody_Register
+    613 02E3 84006B     	bbc	r0,#4,upadsr_ret	;check channel 1 active
+    614                 
+    615 02E6 388001AB           mov     r0,mel_flag1
+    616 02EA 500100             cmp     r0,#1
+    617 02ED D638               br      eq,test_end1w
+    618                 
+    619 02EF 0002               clr     r2
+    620 02F1 389801A9           mov     r3,mel_counter1
+    621                 
+    622 02F5 1E04               pushw   rr4
+    623 02F7 1E02       	pushw	rr2
+    624 02F9 0002       	clr	r2
+    625 02FB 38980169   	mov	r3,Melody_Register
+    626 02FF 0D03       	swap	r3
+    627 0301 550603     	and	r3,#6
+    628 0304 3AA2038C'  	movw	rr4,Instru_pointer(rr2)
+    629 0308 1F02       	popw	rr2
+    630 030A 610204     	addw	rr4,rr2
+    631 030D 3804       	mov	r0,@rr4
+    632 030F 1F04               popw    rr4
+    633                 
+    634 0311 500000             cmp     r0,#0
+    635 0314 D60B               br      eq,test_endw
+    636 0316 510303             add     r3,#3
+    637 0319 D704               br      c,test_prew
+    638 031B 399801A9           mov     mel_counter1,r3
+    639                 
+    640 031F            test_prew:
+    641 031F D80A               br      under_ff_1              ;testing
+    642                 
+    643 0321            test_endw:
+    644 0321 C001               mov     r0,#1                   ;set the melody flag
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   20
+
+
+    645 0323 398001AB           mov     mel_flag1,r0
+    646                 
+    647                 ;        mov     r0,ADSR_register        ;reset the ADSR_register
+    648                 ;        bclr    r0,#0
+    649                 ;        mov     ADSR_register,r0
+    650                 
+    651 0327            test_end1w:
+    652 0327 C000               mov     r0,#0
+    653 0329 D810               br      under_ff_0xw
+    654                 
+    655 032B            under_ff_1:
+    656 032B            upadsr11_1:
+    657 032B            upadsr13_1:
+    658 032B 528000             sub     r0,#80h
+    659 032E 0B00               sll     r0
+    660 0330 500000             cmp     r0,#0
+    661 0333 DE06               br      ne,under_ff_0xw
+    662 0335 C101               mov     r1,#1
+    663 0337 398801AB           mov     mel_flag1,r1
+    664                 
+    665 033B            under_ff_0xw:
+    666 033B 39800172   	mov	Tone1content,r0
+    667                 ;	call	getmelamp1
+    668 033F 3A90016C   	movw	rr2,Mel_address1
+    669 0343 0E27       	push	mmu3
+    670 0345 582527     	mov	mmu3,#program_bank5
+    671 0348 388A0001   	mov	r1,1(rr2)
+    672 034C 0F27       	pop	mmu3
+    673 034E 49036F'    	call	mixer1			;re-adjust the output level
+    674                 
+    675 0351            upadsr_ret:
+    676 0351 F8                 ret
+    677                 ;--------------------------------------------;
+    678                 ;	mixer of channel 0
+    679                 ;	input : r1 - melody amplitude
+    680                 ;		[Tone0content] holds the level of channel 0
+    681                 ;	output : setup the final mixer's equalizer.
+    682                 ;
+    683                 ;---------------------------------------------;
+    684 0352            mixer0:
+    685                 ;
+    686                 ;	sg0l = ( [r1] * [Tone0content] / 255 ) / 2
+    687                 ;
+    688 0352 0000       	clr	r0
+    689 0354 38980171   	mov	r3,Tone0content
+    690 0358 0002       	clr	r2
+    691 035A 4C0300     	mult	rr0,r3
+    692 035D 7A00FF     	movw	rr2,#0ffh
+    693 0360 5C0200     	div	rr0,rr2	
+    694 0363 501F01     	cmp	r1,#1fh
+    695 0366 D702       	br	c,mixer0_1
+    696 0368 C11F       	mov	r1,#1fh
+    697 036A            mixer0_1:
+    698 036A 0701       	srl	r1
+    699 036C B942       	mov	sg0l,r1
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   21
+
+
+    700 036E F8                 ret
+    701                 
+    702                 ;--------------------------------------------;
+    703                 ;	mixer of channel 1
+    704                 ;	input : r1 - melody amplitude
+    705                 ;		[Tone1content] holds the level of channel 1
+    706                 ;	output : setup the final mixer's equalizer.
+    707                 ;
+    708                 ;---------------------------------------------;
+    709 036F            mixer1:
+    710                 ;
+    711                 ;	sg1l = ( [r1] * [Tone1content] / 255 ) / 2
+    712                 ;
+    713 036F 0000       	clr	r0
+    714 0371 38980172   	mov	r3,Tone1content
+    715 0375 0002       	clr	r2
+    716 0377 4C0300     	mult	rr0,r3
+    717 037A 7A00FF     	movw	rr2,#0ffh
+    718 037D 5C0200     	div	rr0,rr2	
+    719 0380 501F01     	cmp	r1,#1fh
+    720 0383 D702       	br	c,mixer1_1
+    721 0385 C11F       	mov	r1,#1fh
+    722 0387            mixer1_1:
+    723 0387 0701       	srl	r1
+    724 0389 B944       	mov	sg1l,r1
+    725 038B F8                 ret
+    726                 
+    727 038C            Instru_pointer:
+    728 038C 0000               dw      0
+    729 038E 0395'              dw      PianoSound
+    730 0390 0394'      	dw	OrganSound
+    731 0392 03F6'              dw      PureTone
+    732                 
+    733 0394            OrganSound:
+    734 0394 00                 db      000h
+    735                 
+    736                 
+    737 0395            PianoSound:
+    738 0395 B0                 db      0b0h        ; ,0f0h,0fdh
+    739 0396 FD                 db      0fdh        ; ,0fdh,0fdh
+    740 0397 FD                 db      0fdh        ; ,0feh,0feh
+    741 0398 FE                 db      0feh        ; ,0feh,0feh
+    742 0399 FE                 db      0feh        ; ,0ffh,0ffh
+    743 039A FF                 db      0ffh        ; ,0feh,0feh
+    744 039B FD                 db      0fdh        ; ,0fch,0fbh
+    745 039C FA                 db      0fah        ; ,0f9h,0f8h
+    746 039D F7                 db      0f7h        ; ,0f6h,0f5h
+    747 039E F4                 db      0f4h        ; ,0f3h,0f2h
+    748 039F F1                 db      0f1h        ; ,0f0h,0efh
+    749 03A0 EE                 db      0eeh        ; ,0edh,0ech
+    750 03A1 EB                 db      0ebh        ; ,0eah,0e9h
+    751 03A2 E8                 db      0e8h        ; ,0e7h,0e6h
+    752 03A3 E5                 db      0e5h        ; ,0e4h,0e3h
+    753 03A4 E2                 db      0e2h        ; ,0e1h,0e0h
+    754 03A5 DF                 db      0dfh        ; ,0deh,0ddh
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   22
+
+
+    755 03A6 DC                 db      0dch        ; ,0dbh,0dah
+    756 03A7 D9                 db      0d9h        ; ,0d8h,0d7h
+    757 03A8 D6                 db      0d6h        ; ,0d5h,0d4h
+    758 03A9 D3                 db      0d3h        ; ,0d2h,0d1h
+    759 03AA D0                 db      0d0h        ; ,0cfh,0ceh
+    760 03AB CD                 db      0cdh        ; ,0cch,0cbh
+    761 03AC CA                 db      0cah        ; ,0c9h,0c8h
+    762 03AD C7                 db      0c7h        ; ,0c6h,0c5h
+    763 03AE C4                 db      0c4h        ; ,0c3h,0c2h
+    764 03AF C1                 db      0c1h        ; ,0c0h,0bfh
+    765 03B0 BF                 db      0bfh        ; ,0beh,0beh
+    766 03B1 BD                 db      0bdh        ; ,0bdh,0bch
+    767 03B2 BC                 db      0bch        ; ,0bbh,0bbh
+    768 03B3 BA                 db      0bah        ; ,0bah,0b9h
+    769 03B4 B9                 db      0b9h        ; ,0b8h,0b8h
+    770 03B5 B7                 db      0b7h        ; ,0b7h,0b6h
+    771 03B6 B6                 db      0b6h        ; ,0b5h,0b5h
+    772 03B7 B4                 db      0b4h        ; ,0b4h,0b3h
+    773 03B8 B3                 db      0b3h        ; ,0b2h,0b2h
+    774 03B9 B1                 db      0b1h        ; ,0b1h,0b0h
+    775 03BA B0                 db      0b0h        ; ,0afh,0afh
+    776 03BB AE                 db      0aeh        ; ,0aeh,0adh
+    777 03BC AD                 db      0adh        ; ,0ach,0ach
+    778 03BD AB                 db      0abh        ; ,0abh,0aah
+    779 03BE AA                 db      0aah        ; ,0a9h,0a9h
+    780 03BF A8                 db      0a8h        ; ,0a8h,0a7h
+    781 03C0 A7                 db      0a7h        ; ,0a7h,0a6h
+    782 03C1 A6                 db      0a6h        ; ,0a6h,0a5h
+    783 03C2 A5                 db      0a5h        ; ,0a5h,0a4h
+    784 03C3 A4                 db      0a4h        ; ,0a4h,0a3h
+    785 03C4 A3                 db      0a3h        ; ,0a3h,0a2h
+    786 03C5 A2                 db      0a2h        ; ,0a2h,0a1h
+    787 03C6 A1                 db      0a1h        ; ,0a1h,0a0h
+    788 03C7 A0                 db      0a0h        ; ,0a0h,09fh
+    789 03C8 9F                 db      09fh        ; ,09fh,09eh
+    790 03C9 9E                 db      09eh        ; ,09eh,09dh
+    791 03CA 9D                 db      09dh        ; ,09dh,09ch
+    792 03CB 9C                 db      09ch        ; ,09ch,09bh
+    793 03CC 9B                 db      09bh        ; ,09bh,09ah
+    794 03CD 9A                 db      09ah        ; ,09ah,099h
+    795 03CE 99                 db      099h        ; ,099h,098h
+    796 03CF 98                 db      098h        ; ,098h,097h
+    797 03D0 97                 db      097h        ; ,097h,096h
+    798 03D1 96                 db      096h        ; ,096h,095h
+    799 03D2 95                 db      095h        ; ,095h,094h
+    800 03D3 94                 db      094h        ; ,094h,093h
+    801 03D4 93                 db      093h        ; ,093h,092h
+    802 03D5 92                 db      092h        ; ,091h,091h
+    803 03D6 90                 db      090h        ; ,090h,08fh
+    804 03D7 8F                 db      08fh        ; ,08eh,08eh
+    805 03D8 8E                 db      08eh        ; ,08dh,08dh
+    806 03D9 8D                 db      08dh        ; ,08ch,08ch
+    807 03DA 8C                 db      08ch        ; ,08bh,08bh
+    808 03DB 8B                 db      08bh        ; ,08bh,08ah
+    809 03DC 8A                 db      08ah        ; ,08ah,08ah
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   23
+
+
+    810 03DD 89                 db      089h        ; ,089h,089h
+    811 03DE 89                 db      089h        ; ,088h,088h
+    812 03DF 88                 db      088h        ; ,088h,087h
+    813 03E0 87                 db      087h        ; ,087h,087h
+    814 03E1 86                 db      086h        ; ,086h,086h
+    815 03E2 86                 db      086h        ; ,085h,085h
+    816 03E3 85                 db      085h        ; ,085h,084h
+    817 03E4 84                 db      084h        ; ,084h,084h
+    818 03E5 83                 db      083h        ; ,083h,083h
+    819 03E6 83                 db      083h        ; ,082h,082h
+    820 03E7 82                 db      082h        ; ,082h,081h
+    821 03E8 81                 db      081h        ; ,081h,081h
+    822 03E9 80                 db      080h        ; ,080h,080h
+    823 03EA 80                 db      080h
+    824 03EB 80                 db      080h        ;
+    825 03EC 80                 db      080h        ;
+    826 03ED 80                 db      080h        ;
+    827 03EE 80                 db      080h        ;
+    828 03EF 80                 db      080h        ;
+    829 03F0 80                 db      080h        ;
+    830 03F1 80                 db      080h        ;
+    831 03F2 80                 db      080h        ;
+    832 03F3 80                 db      080h        ;
+    833 03F4 80                 db      080h        ;
+    834 03F5 00                 db      000h
+    835                 
+    836 03F6            PureTone:
+    837 03F6 F0                 db      0f0h        ;
+    838 03F7 F0                 db      0f0h        ;
+    839 03F8 F0                 db      0f0h        ;
+    840 03F9 F0                 db      0f0h        ;
+    841 03FA F0                 db      0f0h        ;
+    842 03FB F0                 db      0f0h        ;
+    843 03FC F0                 db      0f0h        ;
+    844 03FD F0                 db      0f0h        ;
+    845 03FE F0                 db      0f0h        ;
+    846 03FF F0                 db      0f0h        ;
+    847 0400 F0                 db      0f0h        ;
+    848 0401 F0                 db      0f0h        ;
+    849 0402 F0                 db      0f0h        ;
+    850 0403 F0                 db      0f0h        ;
+    851 0404 F0                 db      0f0h        ;
+    852 0405 F0                 db      0f0h        ;
+    853 0406 F0                 db      0f0h        ;
+    854 0407 F0                 db      0f0h        ;
+    855 0408 F0                 db      0f0h        ;
+    856 0409 F0                 db      0f0h        ;
+    857 040A F0                 db      0f0h        ;
+    858 040B F0                 db      0f0h        ;
+    859 040C F0                 db      0f0h        ;
+    860 040D F0                 db      0f0h        ;
+    861 040E F0                 db      0f0h        ;
+    862 040F F0                 db      0f0h        ;
+    863 0410 F0                 db      0f0h        ;
+    864 0411 F0                 db      0f0h        ;
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   24
+
+
+    865 0412 F0                 db      0f0h        ;
+    866 0413 F0                 db      0f0h        ;
+    867 0414 F0                 db      0f0h        ;
+    868 0415 F0                 db      0f0h        ;
+    869 0416 F0                 db      0f0h        ;
+    870 0417 F0                 db      0f0h        ;
+    871 0418 F0                 db      0f0h        ;
+    872 0419 F0                 db      0f0h        ;
+    873 041A F0                 db      0f0h        ;
+    874 041B F0                 db      0f0h        ;
+    875 041C F0                 db      0f0h        ;
+    876 041D F0                 db      0f0h        ;
+    877 041E F0                 db      0f0h        ;
+    878 041F F0                 db      0f0h        ;
+    879 0420 F0                 db      0f0h        ;
+    880 0421 F0                 db      0f0h        ;
+    881 0422 F0                 db      0f0h        ;
+    882 0423 F0                 db      0f0h        ;
+    883 0424 F0                 db      0f0h        ;
+    884 0425 F0                 db      0f0h        ;
+    885 0426 F0                 db      0f0h        ;
+    886 0427 F0                 db      0f0h        ;
+    887 0428 F0                 db      0f0h        ;
+    888 0429 F0                 db      0f0h        ;
+    889 042A F0                 db      0f0h        ;
+    890 042B F0                 db      0f0h        ;
+    891 042C F0                 db      0f0h        ;
+    892 042D F0                 db      0f0h        ;
+    893 042E F0                 db      0f0h        ;
+    894 042F F0                 db      0f0h        ;
+    895 0430 F0                 db      0f0h        ;
+    896 0431 F0                 db      0f0h        ;
+    897 0432 F0                 db      0f0h        ;
+    898 0433 F0                 db      0f0h        ;
+    899 0434 F0                 db      0f0h        ;
+    900 0435 F0                 db      0f0h        ;
+    901 0436 F0                 db      0f0h        ;
+    902 0437 F0                 db      0f0h        ;
+    903 0438 F0                 db      0f0h        ;
+    904 0439 F0                 db      0f0h        ;
+    905 043A F0                 db      0f0h        ;
+    906 043B F0                 db      0f0h        ;
+    907 043C F0                 db      0f0h        ;
+    908 043D F0                 db      0f0h        ;
+    909 043E F0                 db      0f0h        ;
+    910 043F F0                 db      0f0h        ;
+    911 0440 F0                 db      0f0h        ;
+    912 0441 F0                 db      0f0h        ;
+    913 0442 F0                 db      0f0h        ;
+    914 0443 F0                 db      0f0h        ;
+    915 0444 F0                 db      0f0h        ;
+    916 0445 F0                 db      0f0h        ;
+    917 0446 F0                 db      0f0h        ;
+    918 0447 F0                 db      0f0h        ;
+    919 0448 F0                 db      0f0h        ;
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   25
+
+
+    920 0449 F0                 db      0f0h        ;
+    921 044A F0                 db      0f0h        ;
+    922 044B F0                 db      0f0h
+    923 044C 00                 db      000h
+    924                 
+    925                 ;---------------------------------------------
+    926                 ;	start melody channel #0
+    927                 ;	input rr2 = address of the melody data
+    928                 ;---------------------------------------------
+    929 044D            start_chan0:
+    930 044D 3B90016A   	movw	Mel_address0,rr2
+    931 0451 38800169   	mov	r0,Melody_Register
+    932 0455 5F00F002   	movm	r0,#0f0h,#2
+    933 0459 39800169   	mov	Melody_Register,r0
+    934 045D            start_melody0:
+    935                 ;&&& manuel 3/4
+    936 045D 0E27       	push	mmu3
+    937 045F 582527     	mov	mmu3,#program_bank5
+    938                 ;&&& manuel 3/4
+    939                 ;-------------------------------;
+    940                 ;	start every note
+    941                 ;-------------------------------;
+    942 0462 0E1F       	push	ps1
+    943 0464 FE         	di
+    944                 	;--- start channel 0
+    945 0465 C100       	mov	r1,#0
+    946 0467 398801A8   	mov	mel_counter,r1		;reset the melody counter -->
+    947                 					; start the envelope from 0
+    948 046B 398801AA   	mov	mel_flag,r1		;reset the melody flag --> enable
+    949                 					;envelope
+    950                 
+    951 046F 0001       	clr	r1
+    952 0471 39880171   	mov	Tone0content,r1 	;clear tone amplitude
+    953 0475 38820002   	mov	r0,2(rr2)
+    954 0479 39800173   	mov	ToneLength0,r0
+    955                 
+    956 047D 3802       	mov	r0,@rr2
+    957 047F 500000     	cmp	r0,#STOP_CODE
+    958 0482 D647       	br	z,stop_m0
+    959 0484 508000     	cmp	r0,#PAUSE_CODE
+    960 0487 D62F       	br	z,no_toneout0
+    961                 
+    962 0489 49056B'            call    translate_note          ;translate the note into the frequency
+    963 048C B846       	mov	sg0th,r0		;write the timer value translated table
+    964 048E B947       	mov	sg0tl,r1
+    965                 
+    966 0490 C680       	mov	r6,#80h
+    967 0492 BE4E       	mov	sgda,r6 		;set up centre bias voltage
+    968                 
+    969 0494 B640       	mov	r6,sgc
+    970 0496 560906     	or	r6,#9h
+    971 0499 8DBC02     	bbs	SYSFLAG,#5,mute_music
+    972 049C AF06       	bset	r6,#7
+    973 049E            mute_music:
+    974 049E 388A0001   	mov	r1,1(rr2)
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   26
+
+
+    975 04A2 490352'    	call	mixer0			;adjust the amplitude according to the
+    976                 					;input value and also the # channel activated
+    977 04A5 38800169   	mov	r0,Melody_Register
+    978 04A9 5F00F609   	movm	r0,#0f6h,#9	;enable channel 0 and enable output
+    979                 					;of channel 0
+    980 04AD            no_toneout00:
+    981 04AD 39800169   	mov	Melody_Register,r0
+    982 04B1 BE40       	mov	sgc,r6
+    983 04B3            start_mel0_ret:
+    984 04B3 0F1F       	pop	ps1
+    985                 ;&&& manuel 3/4
+    986 04B5 0F27       	pop	mmu3
+    987                 ;&&& manuel 3/4
+    988 04B7 F8         	ret
+    989                 
+    990 04B8            no_toneout0:
+    991 04B8 C080       	mov	r0,#80h
+    992 04BA B84E       	mov	sgda,r0 		;still set up the bias voltage
+    993 04BC B640       	mov	r6,sgc
+    994 04BE 55FE06     	and	r6,#0feh
+    995 04C1 38800169   	mov	r0,Melody_Register
+    996 04C5 5F00F601   	movm	r0,#0f6h,#1
+    997 04C9 D8E2       	br	no_toneout00
+    998                 
+    999 04CB            stop_m0:
+   1000 04CB 38800169   	mov	r0,Melody_Register
+   1001 04CF 55F600     	and	r0,#0f6h		;disable channel 0
+   1002 04D2 39800169   	mov	Melody_Register,r0
+   1003 04D6 B040       	mov	r0,sgc
+   1004                 
+   1005 04D8 55FC00     	and	r0,#0fch		;%% both channel stop
+   1006                 
+   1007                 ;%%	bbs	batman_status2,#BIT_CONT_MEL,stop_m00
+   1008                 ;%% for jp2 8/1
+   1009 04DB D802       	br	stop_m00
+   1010                 ;%%
+   1011 04DD C000       	mov	r0,#0			;single shot of melody
+   1012                 					; stop all
+   1013 04DF            stop_m00:
+   1014 04DF B840       	mov	sgc,r0
+   1015 04E1 D8D0       	br	start_mel0_ret
+   1016                 
+   1017                 ;---------------------------------------------
+   1018                 ;	start melody channel #1
+   1019                 ;	input rr2 = address of the melody data
+   1020                 ;---------------------------------------------
+   1021 04E3            start_chan1:
+   1022 04E3 3B90016C   	movw	Mel_address1,rr2
+   1023 04E7 38800169   	mov	r0,Melody_Register
+   1024 04EB 5F000F20   	movm	r0,#0fh,#20h
+   1025 04EF 39800169   	mov	Melody_Register,r0
+   1026 04F3            start_melody1:
+   1027                 ;-------------------------------;
+   1028                 ;	start every note
+   1029                 ;-------------------------------;
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   27
+
+
+   1030                 ;&& manuel 3/4
+   1031 04F3 0E27       	push	mmu3
+   1032 04F5 582527     	mov	mmu3,#program_bank5
+   1033                 ;&& manuel 3/4
+   1034 04F8 0E1F       	push	ps1
+   1035 04FA FE         	di
+   1036                 	;--- start channel 1
+   1037 04FB C100       	mov	r1,#0
+   1038 04FD 398801A9   	mov	mel_counter1,r1 	 ;reset the melody counter -->
+   1039                 					; start the envelope from 0
+   1040 0501 398801AB   	mov	mel_flag1,r1		 ;reset the melody flag --> enable
+   1041                 					;envelope
+   1042                 
+   1043 0505 0001       	clr	r1
+   1044 0507 39880172   	mov	Tone1content,r1 	;clear tone amplitude
+   1045                 
+   1046 050B 38820002   	mov	r0,2(rr2)
+   1047 050F 39800174   	mov	ToneLength1,r0
+   1048                 
+   1049 0513 3802       	mov	r0,@rr2
+   1050 0515 500000     	cmp	r0,#STOP_CODE
+   1051 0518 D63E       	br	z,stop_m1
+   1052 051A 508000     	cmp	r0,#PAUSE_CODE
+   1053 051D D62B       	br	z,no_toneout1
+   1054                 
+   1055 051F 49056B'    	call	translate_note		;translate the note into the frequency
+   1056 0522 B848       	mov	sg1th,r0		;write the timer value translated table
+   1057 0524 B949       	mov	sg1tl,r1
+   1058                 
+   1059 0526 B640       	mov	r6,sgc
+   1060 0528 A906       	bset	r6,#1			;all output control is done in channel 0
+   1061                 
+   1062 052A 388A0001   	mov	r1,1(rr2)
+   1063 052E 49036F'    	call	mixer1			;adjust the amplitude according to the
+   1064                 					;input value and also the # channel activated
+   1065 0531 8DBC03     	bbs	SYSFLAG,#5,mute_music1
+   1066 0534 568806     	or	r6,#88h
+   1067 0537            mute_music1:
+   1068                 
+   1069 0537 38800169   	mov	r0,Melody_Register
+   1070 053B 5F006F90   	movm	r0,#06fh,#90h	;enable channel 0 and enable output
+   1071                 					;of channel 0
+   1072 053F            no_toneout10:
+   1073 053F 39800169   	mov	Melody_Register,r0
+   1074 0543 BE40       	mov	sgc,r6
+   1075 0545            start_mel1_ret:
+   1076 0545 0F1F       	pop	ps1
+   1077 0547 0F27       	pop	mmu3
+   1078 0549 F8         	ret
+   1079                 
+   1080 054A            no_toneout1:
+   1081 054A B640       	mov	r6,sgc
+   1082 054C A106       	bclr	r6,#1
+   1083 054E 38800169   	mov	r0,Melody_Register
+   1084 0552 5F006F10   	movm	r0,#06fh,#10h
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   28
+
+
+   1085 0556 D8E7       	br	no_toneout10
+   1086                 
+   1087 0558            stop_m1:
+   1088 0558 38800169   	mov	r0,Melody_Register
+   1089 055C 55F600     	and	r0,#0f6h		;disable channel 0
+   1090 055F 39800169   	mov	Melody_Register,r0
+   1091 0563 B040       	mov	r0,sgc
+   1092                 
+   1093 0565 A100       	bclr	r0,#1
+   1094                 
+   1095 0567 B840       	mov	sgc,r0
+   1096 0569 D8DA       	br	start_mel1_ret
+   1097                 
+   1098 056B            translate_note:
+   1099 056B 1E02       	pushw	rr2
+   1100 056D B300       	mov	r3,r0
+   1101 056F 0002       	clr	r2
+   1102 0571 6A020010   	subw	rr2,#10h
+   1103 0575 D70F       	br	c,error_note
+   1104 0577 68020046   	cmpw	rr2,#46h
+   1105 057B DF09       	br	nc,error_note
+   1106 057D            has_note:
+   1107 057D 0B03       	sll	r3
+   1108 057F 3A82058C'  	movw	rr0,freq_table(rr2)
+   1109 0583 1F02       	popw	rr2
+   1110 0585 F8         	ret
+   1111 0586            error_note:
+   1112 0586 0002       	clr	r2
+   1113 0588 0003       	clr	r3
+   1114 058A D8F1       	br	has_note
+   1115                 
+   1116 058C            freq_table:
+   1117 058C 0FB2       	dw	0FB2h
+   1118 058E 0ED0       	dw	0ED0h
+   1119 0590 0DFB       	dw	0DFBh
+   1120 0592 0D32       	dw	0D32h
+   1121 0594 0C75       	dw	0C75h
+   1122 0596 0BC2       	dw	0BC2h
+   1123 0598 0B19       	dw	0B19h
+   1124 059A 0A79       	dw	0A79h
+   1125 059C 09E3       	dw	09E3h
+   1126 059E 0955       	dw	0955h
+   1127 05A0 08CF       	dw	08CFh
+   1128 05A2 0850       	dw	0850h
+   1129 05A4 07D9       	dw	07D9h
+   1130 05A6 0768       	dw	0768h
+   1131 05A8 06FE       	dw	06FEh
+   1132 05AA 0699       	dw	0699h
+   1133 05AC 063A       	dw	063Ah
+   1134 05AE 05E1       	dw	05E1h
+   1135 05B0 058C       	dw	058Ch
+   1136 05B2 053D       	dw	053Dh
+   1137 05B4 04F1       	dw	04F1h
+   1138 05B6 04AA       	dw	04AAh
+   1139 05B8 0467       	dw	0467h
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   29
+
+
+   1140 05BA 0428       	dw	0428h
+   1141 05BC 03EC       	dw	03ECh
+   1142 05BE 03B4       	dw	03B4h
+   1143 05C0 037F       	dw	037Fh
+   1144 05C2 034D       	dw	034Dh
+   1145 05C4 031D       	dw	031Dh
+   1146 05C6 02F0       	dw	02F0h
+   1147 05C8 02C6       	dw	02C6h
+   1148 05CA 029E       	dw	029Eh
+   1149 05CC 0277       	dw	0277h
+   1150 05CE 0255       	dw	0255h
+   1151 05D0 0234       	dw	0234h
+   1152 05D2 0214       	dw	0214h
+   1153 05D4 01F6       	dw	01F6h
+   1154 05D6 01DA       	dw	01DAh
+   1155 05D8 01BF       	dw	01BFh
+   1156 05DA 01A6       	dw	01A6h
+   1157 05DC 018F       	dw	018Fh
+   1158 05DE 0178       	dw	0178h
+   1159 05E0 0163       	dw	0163h
+   1160 05E2 014F       	dw	014Fh
+   1161 05E4 013C       	dw	013Ch
+   1162 05E6 012B       	dw	012Bh
+   1163 05E8 011A       	dw	011Ah
+   1164 05EA 010A       	dw	010Ah
+   1165 05EC 00FB       	dw	00FBh
+   1166 05EE 00ED       	dw	00EDh
+   1167 05F0 00E0       	dw	00E0h
+   1168 05F2 00D3       	dw	00D3h
+   1169 05F4 00C7       	dw	00C7h
+   1170 05F6 00BC       	dw	00BCh
+   1171 05F8 00B2       	dw	00B2h
+   1172 05FA 00A8       	dw	00A8h
+   1173 05FC 009E       	dw	009Eh
+   1174 05FE 0095       	dw	0095h
+   1175 0600 008D       	dw	008Dh
+   1176 0602 0085       	dw	0085h
+   1177 0604 007E       	dw	007Eh
+   1178 0606 0077       	dw	0077h
+   1179 0608 0070       	dw	0070h
+   1180 060A 006A       	dw	006Ah
+   1181 060C 0064       	dw	0064h
+   1182 060E 005E       	dw	005Eh
+   1183 0610 0059       	dw	0059h
+   1184 0612 0054       	dw	0054h
+   1185 0614 004F       	dw	004Fh
+   1186 0616 004B       	dw	004Bh
+   1187                 
+   1188                 
+   1189                 
+   1190 0618            stop_melody:
+   1191 0618 C000       	mov	r0,#0
+   1192 061A 39800169   	mov	Melody_Register,r0
+   1193 061E B040       	mov	r0,sgc
+   1194 0620 88A805     	bbs	0a8h,#0,stop_mel1
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   30
+
+
+   1195 0623 0000       	clr	r0
+   1196 0625 B840       	mov	sgc,r0
+   1197 0627 F8         	ret
+   1198 0628            stop_mel1:
+   1199 0628 55FC00     	and	r0,#0fch
+   1200 062B B840       	mov	sgc,r0
+   1201 062D F8         	ret
+   1202                 
+   1203                 
+   1204                 ;--------------------------------------------;
+   1205                 ;	mixer of channel 0
+   1206                 ;	input : r1 - melody amplitude
+   1207                 ;		[Tone0content] holds the level of channel 0
+   1208                 ;	output : setup the final mixer's equalizer.
+   1209                 ;
+   1210                 ;---------------------------------------------;
+   1211                 ;mixer0:
+   1212                 ;
+   1213                 ;	sg0l = ( [r1] * [Tone0content] / 255 ) / 2
+   1214                 ;
+   1215                 ;	clr	r0
+   1216                 ;	mov	r3,Tone0content
+   1217                 ;	clr	r2
+   1218                 ;	mult	rr0,r3
+   1219                 ;	movw	rr2,#0ffh
+   1220                 ;	div	rr0,rr2
+   1221                 ;	cmp	r1,#1fh
+   1222                 ;	br	c,mixer0_1
+   1223                 ;	mov	r1,#1fh
+   1224                 ;mixer0_1:
+   1225                 ;	srl	r1
+   1226                 ;	mov	sg0l,r1
+   1227                 ;	ret
+   1228                 
+   1229                 
+   1230                 
+   1231                 ;--------------------------------------------;
+   1232                 ;	mixer of channel 1
+   1233                 ;	input : r1 - melody amplitude
+   1234                 ;		[Tone1content] holds the level of channel 1
+   1235                 ;	output : setup the final mixer's equalizer.
+   1236                 ;
+   1237                 ;---------------------------------------------;
+   1238                 ;mixer1:
+   1239                 ;
+   1240                 ;	sg1l = ( [r1] * [Tone1content] / 255 ) / 2
+   1241                 ;
+   1242                 ;	clr	r0
+   1243                 ;	mov	r3,Tone1content
+   1244                 ;	clr	r2
+   1245                 ;	mult	rr0,r3
+   1246                 ;	movw	rr2,#0ffh
+   1247                 ;	div	rr0,rr2
+   1248                 ;	cmp	r1,#1fh
+   1249                 ;	br	c,mixer1_1
+
+
+
+new spee SM8521 Assembler V1.10            Wed Dec 23 17:33:59 1998  Page   31
+
+
+   1250                 ;	mov	r1,#1fh
+   1251                 ;mixer1_1:
+   1252                 ;	srl	r1
+   1253                 ;	mov	sg1l,r1
+   1254                 ;	ret
+   1255 062E            init_isr:
+   1256 062E FE         	di
+   1257 062F 0E1E       	push	ps0
+   1258 0631 5F1E0768   	movm	ps0,#7,#68h
+   1259 0635 B2A6       	mov	r2,0a6h
+   1260 0637 3A800102   	movw	rr0,102h
+   1261 063B 0F1E       	pop	ps0
+   1262 063D 4826A6     	mov	0a6h,mmu2
+   1263 0640 78007B'    	movw	rr0,#normal_timerx
+   1264 0643 3B800102   	movw	102h,rr0
+   1265 0647 FD         	ei
+   1266 0648 F8         	ret
+   1267 0649            restore_isr:
+   1268 0649 FE         	di
+   1269 064A 0E1E       	push	ps0
+   1270 064C 5F1E0768   	movm	ps0,#7,#68h
+   1271 0650 BAA6       	mov	0a6h,r2
+   1272 0652 3B800102   	movw	102h,rr0
+   1273 0656 0F1E       	pop	ps0
+   1274 0658 FD         	ei
+   1275 0659 F8         	ret	
+   1276                 ;
+   1277                 
+   1278                 
+   1279 065A             	end

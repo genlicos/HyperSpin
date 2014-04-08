@@ -1,0 +1,46 @@
+new CMemory
+new CSmartMedia
+new CDisplay
+new CKey
+new CDisassembler
+new CProcessor
+new CCheat
+new CSerial
+new CSerial
+new CEeprom
+new CFirmware
+new CTimer
+new CTimer
+new CTimer
+new CTimer
+new CTimer
+emu_reset()
+CEmulator::Reset()
+emu_data_set(0x00000020,0x004CC44C)
+emu_data_set(0x00000010,0xFFFFFFFF)
+emu_data_set(0x00000011,0xFFFFFFFF)
+emu_data_set(0x00000012,0xFFFFFFFF)
+emu_data_set(0x00000040,0x00000001)
+emu_data_set(0x00000040,0x00000001)
+emu_data_set(0x00000041,0x00000010)
+emu_data_set(0x00000041,0x00000030)
+emu_data_set(0x00000041,0x00000026)
+emu_data_set(0x00000041,0x00000013)
+emu_data_set(0x00000041,0x0000001F)
+emu_data_set(0x00000041,0x00000020)
+emu_data_set(0x00000041,0x000000CB)
+emu_data_set(0x00000041,0x000000CD)
+emu_data_set(0x00000041,0x000000C8)
+emu_data_set(0x00000041,0x000000D0)
+emu_data_set(0x00000042,0x00000001)
+emu_data_set(0x00000042,0x00000000)
+emu_data_set(0x00000043,0x00000000)
+emu_data_set(0x00000043,0x00000001)
+emu_data_set(0x00000043,0x00000002)
+emu_data_set(0x00000043,0x00000003)
+emu_data_set(0x00000043,0x00000004)
+emu_data_set(0x00000043,0x00000005)
+emu_data_set(0x00000045,0x00000000)
+emu_data_set(0x00000045,0x00000000)
+emu_destroy()
+CEmulator::exit()

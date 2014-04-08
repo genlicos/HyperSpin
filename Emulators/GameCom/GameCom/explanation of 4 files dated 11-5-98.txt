@@ -1,0 +1,5 @@
+
+     Here's the original fighter.asm (which has the start / stop melody
+code),  mel.asm (melody data file), and the melody.inc (which has the
+defines for note values)
+     Hope this keeps you busy until tomorrow morning...

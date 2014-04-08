@@ -1,0 +1,573 @@
+----------------------------------------------------------------------------------
+v1.1.1
+----------------------------------------------------------------------------------
+-sprite priority fix (Megaman 3, Gargoyle's Quest)
+
+----------------------------------------------------------------------------------
+v1.1
+----------------------------------------------------------------------------------
+-added "mix more frames in GB mode" option
+ *in Castlevania 2, in the first stage when sprites are in the water, their blinking looks closer to that on a real GB (not clearly transparent or blinking but something in between)
+ *don't know if this feature is useful for anything other than that
+-added option to load GB1 battery save to GB2
+-added save state support for GB2
+-added option to select slower autofire speeds
+-non-GBC game color palette switching works for GB2
+-GEST won't create empty battery save files anymore
+-fixed Worms Armageddon freezing
+-fixed Samurai Showdown (and maybe others) sound stuttering
+-few other minor fixes and changes
+-tried to reduce cpu usage further (hopefully there won't be sound problems)
+-removed a useless video filter
+
+----------------------------------------------------------------------------------
+v1.0
+----------------------------------------------------------------------------------
+-fixed random speedup bug 
+-fixed GBC with initial SGB border not working
+-fix for King of Fighters 97 and Real Bout Special SGB mode
+-somewhat better double gb emulation
+-added simple IR link emulation
+ *Game Boy Wars 3 seems to work
+ *Super Mario Bros DX records trading works randomly
+ *Pokemon mystery gift doesn't seem to work
+-added option to reduce CPU usage
+-added option to allow opposite direction buttons to be pressed at the same time
+-added option to disable visual rumble
+-added autofire start and select buttons
+-added GB2 soft reset
+-added option to load same rom to GB2 that's in GB1
+-new config file format
+
+----------------------------------------------------------------------------------
+v0.85
+----------------------------------------------------------------------------------
+-fixed problems in Fix & Foxi (E)(M3)[C][!] and [t1]
+-added Scale3x video filter
+-CPU emulation partially rewritten in inline asm
+-added auto frameskip option
+-better handling of wrong rom sizes
+-save SGB border option
+-some graphics optimizations
+-faster and (hopefully) better GB link emulation
+-second GB sram wasn't saved
+-fixed a crash bug if no config file existed and tried to play SGB game
+-fixed a rare crash bug
+
+----------------------------------------------------------------------------------
+v0.84
+----------------------------------------------------------------------------------
+-fixed graphics problems in:
+ *007 The World is Not Enough
+ *Ken Griffey Jrs' Slugfest (U)[C][!]
+ *Legend of Zerd (J)
+ *MTV Sports - Pure Ride (U)[C][!]
+ *Prince Naseem Boxing [C][!]
+ *Puyo Wars (J)[C][!]
+ *Sa-Ga (Final Fantasy Legend)(J)
+ *Taxi 2 (F)[C][!]
+ *Tom & Jerry in Mouse Attacks! (U)[C][!]
+ 
+-games that now work:
+ *Bugs Bunny - Crazy Castle 3 (J)[C][t2]
+ *Minesweeper for 'Windows' (Quang2000)(PD)[C]
+ *Pokemon Red-Blue 2-in-1 (Unl)
+ *SGB Pack
+ *Tiger Woods PGA Tour 2000 (U)[C][!]
+ 
+-SQRXZ Color (V0.96)(PD)[C] works again
+-SGB border redraw fix
+-when in SGB mode and loaded rom to GB2 resulted in empty screen, fixed
+-fixed color palettes used when playing non-GBC games in GBC mode 
+ they now look more like on real GBC
+
+----------------------------------------------------------------------------------
+v0.83
+----------------------------------------------------------------------------------
+-fixed graphics problems in:
+ *Caterpillar Construction Zone (U)[C][!]
+ *Mary-Kate & Ashley - Crush Course (U)[C][!]
+ *Neo-Racer (Quang2000)(PD)[C]
+ *Prehistorik Man
+ *Railway (Sachen)(Unl)[!] 
+ *Rainbow Islands [C][!]
+ *Razor Freestyle Scooter (U)[C][!]
+-Pulsar (PD)[C] now works
+-Pokemon Crystal works again
+
+----------------------------------------------------------------------------------
+v0.82
+----------------------------------------------------------------------------------
+-games that now work: 
+ *Capman (Lik-Sang)(PD)[C]
+ *Mean Mr Mustard (Lik-Sang)(PD)[C]
+ *Mortal Kombat 1&2 (U)[!]
+ *Super Chinese Land 1-2-3 (J)[S]
+-fixed graphics problems in:
+ *7447 (Lik-Sang)(PD)[C]
+ *Fire Gear (Bung)(PD)
+ *Maniac Miner (PD)
+ *Monster Truck Wars (U)[!]
+ *Muhammad Ali's Boxing (U)
+-fixed a control problem in Font Demo (PD)
+-fixed a sound problem in Lamborghini American Challenge (U)[!]
+-some other minor fixes
+----------------------------------------------------------------------------------
+ 
+v0.81b
+-graphics display was messed up if mix frames was off and trying to link
+
+v0.81a
+-zipped roms work again
+
+----------------------------------------------------------------------------------
+v0.81
+----------------------------------------------------------------------------------
+-added gameboy link emulation
+-added option to change joystick buttons config
+-added GBC "washed out" LCD colors option
+
+-fixed screen flashing in weird colors or black between screen changes in SGB games:
+ *Akazukin Cha-Cha (J)
+ *Kirby 2
+ *Zankurou Musouken (J)
+ *etc.
+
+-fixed graphics problems in:
+ *Aero Star
+ *Ball (Bung)(PD)[C]
+ *Beach 'n Ball (E)(M5)[C][!]
+ *Fli-Plasma (PD)[C]
+ *Pokemon Gold/Silver/Crystal
+ *Ranma ½ - Part 2
+ *Senkai Imonroku Junteitaisen (J)[C][!]
+
+-fixed emulator crashing when loading some games smaller than 32KB
+-Kirby's Block Ball crashed the emulator if sound was on
+-fixed screen flashed black sometimes when game resetted 
+
+-Games that now work:
+ *Dragon Ball Z Goku 2 (J)[S][T-Chinese] 
+ *Super Robot War 2G (J)[S]
+ *SQRXZ (PD)
+ *Cube Raider (PD)
+ *FreeArt Intro V2 (PD) and FreeArt Intro V3 (PD)
+ *Green Beret (PD)
+
+-graphics problems (re)appear in:
+ *Interrupts Demo(PD)
+ *Legend of Zerd (J) 
+----------------------------------------------------------------------------------
+ 
+----------------------------------------------------------------------------------
+v0.80
+----------------------------------------------------------------------------------
+-reset automatically when user changes to another GB type
+-added 'Halt on unknown opcode' option
+-added 'soft reset' feature
+-don't resize window unless changed to SGB mode 
+-removed 'Force GBC' option as it isn't needed anymore
+-added sound low pass filter
+-added reverse stereo option
+-added volume select
+-added more GB color options
+-added option to use separate video filter for SGB border
+-added some Barcode Boy emulation 
+ *Battle Space (J) can be played (GEST will try to generate a random "barcode")
+----------------------------------------------------------------------------------
+-added video filters:
+ *Software 2x
+ *Scale 2x
+ *Blur
+----------------------------------------------------------------------------------
+-fixed graphics trash in border when uploading border in many SGB games:
+ *Defender & Joust
+ *Millipede & Centipede
+ *Super Snaky
+ *etc.
+----------------------------------------------------------------------------------
+-fixed graphics trash display in some SGB games
+----------------------------------------------------------------------------------
+-fixed minor graphics problems in many games: 
+ *2nd Space (Unl)[!]
+  ~title flashed when started the game
+  
+ *Adventure Island 2 (U) / Takahashimeijin no Boukenjima 3 (J)
+  ~when pressed start in title, sprites turned into trash
+  
+ *Astro Rabby (J)
+  ~glitch when jumped on the heart tile
+  
+ *Babe and Friends (U)
+  ~"small blocks" in character images
+  
+ *Boy and His Blob
+  ~gfx trash flashed when entered game
+  
+ *Color Panel Demo (PD)
+  ~flashed black&white when started
+  
+ *Crayon Shin Chan 2 (J)
+  ~sprites flashed when started
+  
+ *Dead Heat Scramble (J)
+  ~gfx trash flashed when entered game
+  
+ *Duck Tales (U)
+  ~screen flashed black when started 
+  ~arrow sprite visible in upper left corner when started
+  
+ *Hitoride Dekirumon - Cooking Densetsu (J)
+  ~when pressed start in the intro, the jumping "thing" flashed in pieces :)
+  
+ *Home Alone (U)
+  ~glitch when entered gameplay
+  
+ *Interrupts Demo (PD)
+  ~gfx trash flashed when started
+  
+ *Jagainu Kun (J)[C][!]
+  ~text "Victor" flashed black when started
+  ~problems when entering main menu
+  
+ *Oshare Nikki (J)[C][!]
+  ~graphics flashed black&white between screen changes
+  
+ *Legend of Zelda - Link's Awakening & Link's Awakening DX
+  ~screen flashed black when started
+  ~when pressed start to go to game from name entry screen it flashed as gfx trash
+  ~when entered menu in-game, small glitch (caused in v0.79)
+  
+ *Legend of Zelda - OoA & OoS (U)
+  ~flashed black&white when started
+  
+ *Legend of Zerd (J)
+  ~player sprite flashed when screen was changed
+  
+ *Megaman Xtreme (U) / Rockman X - Cyber Mission (J)
+  ~small glitch when returned back to game
+  
+ *Metroid 2 - Return of Samus (UA)[!]
+  ~screen flashed black when started
+  ~glitch when entered game
+  
+ *Parodius (J) & Konami Collection 4 (J)
+  ~missing laser beams
+  
+ *Pokemon Pinball
+  ~glitches when ball entered other side of table 
+  
+ *Pinball - Revenge of the Gator
+  ~sprites flashed in old position when changed table position
+  
+ *Sengoku Ninjakun - Ninja Taro (J)
+  ~glitch when entered game
+  
+ *Space Invaders '94 
+  ~title flashed at the bottom after it had scrolled up
+  ~screen flashed green when started
+  
+ *Super Mario Land 1
+  ~when started gameplay, small sprite (coin?) flashed near Mario 
+  ~when exitted pipe, Mario sprite flashed in old position
+  
+ *Super Mario Land 2
+  ~title screen flashed in reversed colors when started
+  ~when entered map screen, Mario sprite flashed
+  ~glitch when entered stage
+  
+ *Tennis (JUA)
+  ~small graphics glitch in place of "1 set" text when entered game (hard to notice :)
+  
+ *Urusei Yatsura (J)
+  ~in-game graphics glitches
+----------------------------------------------------------------------------------
+-fixed control problems in:
+ *Donkey Kong Country (Mag Demo)(UE)(M5)[C][h1]
+  ~"soft reset" didn't work
+  
+ *Las Vegas Cool Hand (U)
+  ~freezed if pressed start
+  
+ *BHGOS - Y2Kode Combo (PD)
+  ~game "Pooper" didn't work
+----------------------------------------------------------------------------------
+-fixed sound problems in:
+ *A Boy and His Blob (U)[!]
+ *Altered Space (U)
+ *Block Kuzushi (J)
+ *Bubsy 2 (U)[!]
+ *Frogger (U)[C][!]
+----------------------------------------------------------------------------------
+-games that stopped working properly in v0.79 now work again:
+ *Dragon's Lair - The Legend 
+ *Joust & Defender (U)[C][!]
+ *Konami GB Collection 2 & 4 
+ *Lil' Monster (U) / Gem Gem Monster (J) 
+ *Megaman 2 & 4 (U) / Rockman World 2 & 4 (J)
+ *Mortal Kombat 3
+ *Super Mario Land 2 
+ *Tarzan (U)[C][!]
+ *Zen Intergalactic Ninja 
+----------------------------------------------------------------------------------
+-better support for "GBC with initial SGB border" with games that have no 
+ SGB features according to header: (system type must be set to SGB)
+ *Pokemon Diamond / Keitai Denjuu Telefang
+ *Pokemon Crystal
+ *Wetrix GB
+----------------------------------------------------------------------------------
+-Tomb Raider and Tomb Raider - Curse of the sword now work 
+ properly when you try to play them in GB mode
+-fixed channel 4 on bit bug (propably doesn't affect any games)
+-fixed GBC undocumented register writes bug (propably doesn't affect any games)
+-added support for Super Snaky intro border color effect
+-fixed SGB color problems in Revelations - The Demon Slayer (U)[C][!]
+-fixed wrong colors in Ghosts 'N' Goblins (U)[C][!] intro in SGB mode
+-fixed Ohasta Yamachan & Reimondo (J)[C][!] problems in SGB mode
+----------------------------------------------------------------------------------
+
+----------------------------------------------------------------------------------
+v0.79
+----------------------------------------------------------------------------------
+-fixed (minor) graphics problems in:
+ *Arctic zone (Unl)
+ *Boxing (JU)
+ *Carmageddon (U)
+ *Dancing Furby (J)
+ *Duck Tales (U)
+ *Korodice (J)
+ *Interrupts Demo (PD)
+ *Mega Man X PCX2GB Demo (PD)
+ *Popeye 2 (U)
+ *Puyo Wars (J)
+ *Urusei Yatsura (J)
+ *Worm Visitor (Unl)
+ 
+-fixed control problems in:
+ *Double Dragon 3 (U) : 
+   the player moves faster and you don't have to press the button
+   really quickly to see the intro 
+ *Lawnmower Man (U) :
+   no need to press both A and Start to get to game, in-game controls work better,
+   game doesn't freeze if you press Start or player dies 
+
+-Dino's Quest (Unl)(Beta) works again
+-GEST doesn't slow down other programs so much anymore if rom isn't loaded or it's paused
+
+ v0.78
+-fixed A Bug's Life (U)[C][!] and Bob the Builder screen blinking
+-Bokujou Monogatari 3 (Chinese) now starts
+-Armageddon video trailer (PD)(GBTK Video) now shows completely 
+-fixed Atlantis gfx problem
+-fixed Ant Soldier gfx problem
+-Captain Knick Knack now works
+-BH-GOS multicart now works
+-8-in-1 (Sachen) now works
+-fixed Work Master sound
+-modified rom loading -> no more complains about wrong rom size with some games
+
+v0.77
+-fixed Cannon Fodder sound problem
+-fixed Super Momotarou Densetsu 2 graphics problems
+-added support for Momotarou Collection and GB Genjin Collection 
+-added use zip filename option (for saves and states)
+
+v0.76
+-TAMA5 RTC emulation (incomplete, but you could also play the game without it)
+-Bomberman Collection (J)[S] emulation
+-added video layer enable/disable keys (F5-F7)
+-fixed screen stretching in SGB mode
+
+v0.75
+-TAMA5 emulation (RTC and saving doesn't work)
+
+v0.74
+-Road Rash (GBC) works again
+-Otogi Banashi Tai (J) now works in SGB mode
+-Work Master v1.00 - Multitask OS for Gameboy (PD) now works (better)
+-added more volume to digital sound -> Hamster Paradise 3 (J)[C][!]
+-fixed graphics problems: 
+ *missing sprites,gfx trash in Hunter X Hunter - Kindan no Hihou (J)[C][!]
+ *status bar incorrect display in Warriors of Might and Magic (U)[C][!]
+ *blinking sprites in Hitoride Dekirumon - Cooking Densetsu (J)
+ *'glitches' in ClassKing Yamazaki (J)[C][!], In Your Face (U) and Puyo Wars (J)
+ 
+v0.73
+-added support for one joystick
+-fixed graphics problems in AIR Pocket OP Demo (PD)
+-fixed a bug when loading a non-SGB rom in SGB mode 
+ sometimes made it stop working (SGB mask was left on)
+
+v0.72
+-Added support for 8MB roms: Densha de Go! 2 and maybe others
+-Joust & Defender (U)[C][t1] now works
+-Mr. Do! high scores show again
+-Pokemon Yellow works in SGB mode again
+-fixed a bug that prevented zipped roms from working
+-translations are now easier to do
+
+v0.71
+-Cardcaptor Sakura now works
+-fixed Block Kuzushi SGB color problems (most of them)
+-autofire buttons now work better in some SGB games
+
+v0.70
+-HuC3 RTC emulation 
+-added 'GBC with initial SGB border' option
+-config file now saves sound on,frame skip,sprite limit and LCD off options
+
+v0.69
+-fixed SGB controller problem in Killer Instinct
+-added clear button to control configs
+-added autofire buttons to other controllers
+-load rom now works with all kinds of file extensions
+
+v0.68
+-Luca's Puzzle Adventure now works in GBC mode
+-Beat Mania 2 now "works" in GB and SGB mode
+-Lake Effect Demo (PD) now works
+-Game Boy Smart Card (Unl) now works (does anyone care? :)
+-fixed problems, that happen if you associate GEST with GB rom files:
+ *GEST.exe "long filename game.gb" now works
+ *config file will now always be saved in the program directory
+
+v0.67
+-SGB multiplayer support (2-4 players)
+-fixed another sound bug
+
+v0.66
+-command-line rom load support e.g.
+ -GEST rom.gb
+ -drag and drop a file to GEST executable (doesn't seem to work very well, at least on my Win98)
+ 
+v0.65
+-Mortal Kombat 3 playable again
+-fixed minor graphics problems in 
+ Konami Collection 3 and Nettou Garou 2
+ 
+v0.64
+-fixed graphic problems in Barbie Magic Genie title 
+-GB Hi-Color Demo (PD) works
+-fixed random crashing in Beat Mania GB 2 (J)
+-fixed some bugs in rom loading
+
+v0.63
+-Rockman 8(pirate), a game that doesn't seem to work on other emulators,
+ now works perfectly! (or at least better :)
+-when starting the emulator the speedup options didn't get checked in the
+ menu even if they were on
+-fixed sound problems when the emulator is paused
+-small optimizations
+-some bug fixes
+
+v0.62
+-6 digit game genie codes supported
+-fixed the LCD fix of last version, this time in SGB mode
+
+v0.61
+-saving now works in Digimon 3
+-in GB mode when LCD was turned off the screen went black instead of white, fixed
+
+v0.60
+-zipped roms support
+-some bug fixes
+
+v0.57
+-better change controls dialog
+-added some speedup options
+-misc bug fixes
+
+v0.56
+-Super Robot War is now playable
+-stretching the window works properly with SGB games
+-mix frames should now work properly in 16bit screen modes
+-Controls now uses DirectInput and they can be changed
+-fixed border might not display sometimes in 'GBC with SGB border' mode
+
+v0.55
+-fixed graphics glitches in Heroes of Might and Magic
+-added 'Mix frames' option
+-fixed Pokemon Blue border colors
+-if BG was disabled, WIN got disabled too, fixed
+-added 'GBC with SGB border' option
+
+v0.50
+-save directories can be changed from the menu
+-saving in Final Fantasy 1 should now work
+-Game Genie cheat codes
+-SGB emulation
+
+v0.42
+-Pocket PuyoPuyo 4 graphics fixed
+-SQRXZ Color (PD) works
+ 
+v0.41
+-Gameboy games can be played in GBC mode with GBC default palettes
+-Magical Drop intro graphics fixed
+-Road Rash (GB) screen blinking fixed
+-added option 'Force GBC' to menu
+
+v0.40
+-Road Rash (GBC) is (finally!) playable
+-Demotronic Final Demo (PD) works
+-Initial D Gaiden graphics fixed
+-Pitfall works also in GB mode
+-also fixed minor graphic problems in 
+ Jeopardy!, Zen Intergalactic Ninja and Zankurou Musouken(Samurai Spirits)
+-"LCD off empty screen" option added to video menu
+-Drag and drop support
+
+v0.37
+-even more compatibility fixes 
+-fixes games: Initial D Gaiden,Korodice,Quest RPG,Altered Space,Jeopardy!
+
+v0.36
+-more compatibility fixes (Action Man,Battletoads,Legend of Zerd)
+-Donkey Kong GB playable again (broken in v0.20)
+-sprite limit option added to menu
+
+v0.35
+-some fixes (Tetris DX,Popeye 2)
+-fixed sound channel enable/disable
+-MBC7 emulation (numpad keys control the sensor)
+
+v0.31
+-removed "fix" for Mario Land (FF1 sound)
+-some misc fixes 
+-fixed config file
+
+v0.30
+-optimized memory writing/reading
+-frameskip can be selected
+-video layers can be disabled
+-sound channels can be disabled
+-MBC3 RTC emulation
+-HuC3 emulation (HuC3 games should be playable: Robopon,Pocket Family)
+-fixed state saves (not compatible with v0.20 save states!)
+
+v0.20
+-rumble emulation (window shakes a little :)
+-save state support
+ F2 - save state
+ F3 - increase state slot
+ F4 - load state
+-much better framelimit code, this fixes sound problems on slower machines
+-Pokémon Card (J) is now playable
+-config file (see readme for more info)
+-save states and SRAM saves are now saved in different folders
+  
+v0.11
+-fixed controls in some GBC games (Frogger 1 & 2)
+-added a fix for Game Boy Camera
+-system type can be selected
+-fixed saving in MBC2 games with battery (e.g. Final Fantasy Adventure)
+-choosing 'Cancel' in 'Load rom' dialog doesn't close the rom anymore
+-small speed optimizations to graphics
+
+v0.1
+-autofire buttons added
+-gfx in Ledeng of Zerd title fixed
+-gfx in Super Mario Land fixed
+-graphics trash in Qix fixed
+-Super Bomberman B-Daman(Super B-Daman Fighting Phoenix) playable
+-Double Dragon 3 playable

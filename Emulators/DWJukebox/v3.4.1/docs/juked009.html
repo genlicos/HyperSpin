@@ -1,0 +1,223 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: [Screensaver] Section (JUKEBOX.INI)
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="[Screensaver] Section (JUKEBOX.INI)">[Screensaver] Section (JUKEBOX.INI)</a></h1>
+
+<ul>
+<li><a href="#ColorVariance">ColorVariance</a> &mdash; Sets the color variance rate for the screensaver.
+<li><a href="#CornerMirror">CornerMirror</a> &mdash; Sets whether to mirror the screensaver display.
+<li><a href="#LineCount">LineCount</a> &mdash; Sets the number of lines that make up the screensaver display.
+<li><a href="#MaxBlue">MaxBlue</a> &mdash; Sets the maximum value of the blue component of the screensaver color.
+<li><a href="#MaxGreen">MaxGreen</a> &mdash; Sets the maximum value of the green component of the screensaver color.
+<li><a href="#MaxRed">MaxRed</a> &mdash; Sets the maximum value of the red component of the screensaver color.
+<li><a href="#MinBlue">MinBlue</a> &mdash; Sets the minimum value of the blue component of the screensaver color.
+<li><a href="#MinGreen">MinGreen</a> &mdash; Sets the minimum value of the green component of the screensaver color.
+<li><a href="#MinRed">MinRed</a> &mdash; Sets the minimum value of the red component of the screensaver color.
+<li><a href="#ScreenSaver">ScreenSaver</a> 
+<li><a href="#ScreenSaverCancelTimeout">ScreenSaverCancelTimeout</a> &mdash; Sets the number of minutes before the screen saver automatically deactivates.  
+<li><a href="#ScreenSaverTimeout">ScreenSaverTimeout</a> &mdash; Sets the number of minutes before the screen saver activates.
+<li><a href="#ShowSongInfo">ShowSongInfo</a> &mdash; Sets whether to display information about the current song while the screensaver is active.
+<li><a href="#SlideShowInterval">SlideShowInterval</a> 
+<li><a href="#SlideShowMaxImageSize">SlideShowMaxImageSize</a> &mdash; Sets the maximum size for a slideshow image in kilobytes.
+<li><a href="#SlideShowPath">SlideShowPath</a> 
+<li><a href="#SlideShowRandom">SlideShowRandom</a> 
+<li><a href="#SongInfoBGColor">SongInfoBGColor</a> &mdash; Sets the background color of the screensaver song information box.
+<li><a href="#SongInfoColor">SongInfoColor</a> &mdash; Sets the text color of the screensaver song information box.
+<li><a href="#SongInfoHeight">SongInfoHeight</a> &mdash; Sets the size of the screensaver song information box.
+<li><a href="#SongInfoLines">SongInfoLines</a> &mdash; Sets the number of lines for screensaver song information.
+<li><a href="#SongInfoWidth">SongInfoWidth</a> &mdash; Sets the size of the screensaver song information box.
+<li><a href="#StepSize">StepSize</a> &mdash; Sets distance between lines on screensaver display.
+</ul>
+The jukebox includes four screensaver options:
+
+<p>
+Lines: an extremely simple screensaver that shows a
+moving pattern of lines with an optional display showing information
+about the current song.
+
+<p>
+Blank: A blank screen with an optional moving information box
+about the current song.
+
+<p>
+Slideshow: Displays all of the images (JPG, PNG, or BMP) in a folder 
+either in sequence or randomly.
+
+<p>
+Windows: Activates the Windows default screensaver.
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="ScreenSaver">ScreenSaver</a></b></div><br>
+Sets the screensaver mode.  Available options are Blank, Lines,
+Windows, and Slideshow. 
+
+<p>
+<b>Default value:</b> Lines.
+
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="SlideShowPath">SlideShowPath</a></b></div><br>
+
+<p>
+SlideShowPath selects the folder for the images for the slideshow 
+screensaver.
+
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="SlideShowInterval">SlideShowInterval</a></b></div><br>
+SlideShowInterval sets the number of seconds each slideshow image is 
+displayed on the screen.  
+
+<p>
+<b>Default value:</b> 10.
+
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="SlideShowRandom">SlideShowRandom</a></b></div><br>
+SlideShowRandom sets whether each slideshow image is displayed randomly
+or sequentially. 
+
+<p>
+<b>Default value:</b> False.
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="SlideShowMaxImageSize">SlideShowMaxImageSize</a></b></div><br>
+SlideShowMaxImageSize sets the maximum size for slideshow images, in 
+kilobytes.  Images larger than this will be ignored.  If this value is 
+set to 0 or Disabled, the image size will not be checked and all images 
+will be used.
+
+<p>
+<b>Default value:</b> 1024.
+
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="ColorVariance">ColorVariance</a></b></div><br>
+The screensaver kaleidoscope smoothly transitions from one color to 
+another, but for variety, the color will occasionally jump to a random
+new color.  The ColorVariance setting controls how often this happens.
+The lower the ColorVariance setting, the more often the colors will 
+jump around.  This setting can range from 1 to 5000.
+
+<p>
+<b>Default value:</b> 100
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#MinRed" title="Sets the minimum value of the red component of the screensaver color.">MinRed</a>,
+<a class="xref" href="#MaxRed" title="Sets the maximum value of the red component of the screensaver color.">MaxRed</a>,
+<a class="xref" href="#MinGreen" title="Sets the minimum value of the green component of the screensaver color.">MinGreen</a>,
+<a class="xref" href="#MaxGreen" title="Sets the maximum value of the green component of the screensaver color.">MaxGreen</a>,
+<a class="xref" href="#MinBlue" title="Sets the minimum value of the blue component of the screensaver color.">MinBlue</a>,
+<a class="xref" href="#MaxBlue" title="Sets the maximum value of the blue component of the screensaver color.">MaxBlue</a>.</blockquote>
+<div class="al-api"><b>[ScreenSaver] <a name="CornerMirror">CornerMirror</a></b></div><br>
+The CornerMirror setting controls whether the kaleidoscope display is
+repeated in the corners of the screen. 
+
+<p>
+<b>Default value:</b> True
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="LineCount">LineCount</a></b></div><br>
+LineCount sets the number of lines used by the screensaver kaleidoscope 
+display.  You may need to reduce this setting for lower resolutions, 
+depending on how dense you prefer the kaleidoscope to be. This can range 
+from 1 to 500.
+
+<p>
+<b>Default value:</b> 80
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="MaxBlue">MaxBlue</a></b></div><br>
+<div class="al-api"><b>[ScreenSaver] <a name="MaxGreen">MaxGreen</a></b></div><br>
+<div class="al-api"><b>[ScreenSaver] <a name="MaxRed">MaxRed</a></b></div><br>
+<div class="al-api"><b>[ScreenSaver] <a name="MinBlue">MinBlue</a></b></div><br>
+<div class="al-api"><b>[ScreenSaver] <a name="MinGreen">MinGreen</a></b></div><br>
+<div class="al-api"><b>[ScreenSaver] <a name="MinRed">MinRed</a></b></div><br>
+MinRed, MaxRed, MinGreen, MaxGreen, MinBlue, and MaxBlue control the
+color range of the kaleidoscope lines. The range for these settings is
+0 to 255.
+<b>Default value:</b> 50 for minimums, 250 for maximums.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#ColorVariance" title="Sets the color variance rate for the screensaver.">ColorVariance</a>.</blockquote>
+<div class="al-api"><b>[ScreenSaver] <a name="ScreenSaverCancelTimeout">ScreenSaverCancelTimeout</a></b></div><br>
+ScreenSaverCancelTimeout sets the number of minutes before the screen
+saver automatically deactivates. Setting ScreenSaverCancelTimeout to 
+0 or DISABLED requires a keystroke or mouse movement to deactivate the 
+screensaver.
+
+<p>
+<b>Default value:</b> Disabled
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="ScreenSaverTimeout">ScreenSaverTimeout</a></b></div><br>
+ScreenSaverTimeout sets the number of minutes before the screen saver 
+activates.  Setting ScreenSaverTimeout to 0 or DISABLED deactivates the
+screensaver. 
+
+<p>
+<b>Default value:</b> Disabled
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="ShowSongInfo">ShowSongInfo</a></b></div><br>
+ShowSongInfo selects whether or not a floating box containing the Now 
+Playing display is show when the screensaver is active. 
+
+<p>
+<b>Default value:</b> True
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="SongInfoBGColor">SongInfoBGColor</a></b></div><br>
+SongInfoBgColor sets the color of the background used by the 
+screensaver's Song Info display. See <a href="colors.html">Colors.html</a> in the DOCS folder for
+information on specifying colors.
+
+<p>
+<b>Default value:</b> Black
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="SongInfoColor">SongInfoColor</a></b></div><br>
+SongInfoBgColor sets the color of the foreground text used by the 
+screensaver's Song Info display. See <a href="colors.html">Colors.html</a> in the DOCS folder for
+information on specifying colors.
+
+<p>
+<b>Default value:</b> Palegreen
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="SongInfoHeight">SongInfoHeight</a></b></div><br>
+<div class="al-api-cont"><b>[ScreenSaver] <a name="SongInfoWidth">SongInfoWidth</a></b></div><br>
+SongInfoWidth and SongInfoHeight set the size of the Song Info display
+in pixels.  Note that this size will not be adjusted for resolution or
+aspect ratio. 
+
+<p>
+<b>Default value:</b> The defaults are a percentage of the screen resolution. 
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="SongInfoLines">SongInfoLines</a></b></div><br>
+SongInfoLines sets the number of lines displayed on the screensaver's 
+Song Info display, from 1 to 5.  
+
+<p>
+<b>Default value:</b> 5
+
+<p><br>
+<div class="al-api"><b>[ScreenSaver] <a name="StepSize">StepSize</a></b></div><br>
+StepSize controls the distance between lines in the kaleidoscope 
+display. This can range from 1 to 50.
+
+<p>
+<b>Default value:</b> 5
+
+<p>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

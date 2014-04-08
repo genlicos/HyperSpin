@@ -1,0 +1,395 @@
+# DOSCab/WinCab Jukebox Skin File
+# Version 3.0
+# By Chris La Mantia
+
+# Notes:
+# - Supported image formats at this time are BMP, LBM, PCX, and TGA.
+# - Colors may be specified as hexadecimal RGB codes (FFA0CC) or by name.
+#   A reference to named colors can be found in docs/colors.htm.
+
+[skin]
+# All of the dimensions of objects in this file are relative to 
+# this image.
+
+background=bgcddrd.jpg
+
+
+[Selection]
+
+# SelectionMethod: Alphanumeric,Numeric,Alpha
+SelectionMethod=Numeric
+UseZero=True
+HighNumber=9
+HighLetter=Z
+DiscAddress=Absolute
+UseTrackZero=False
+
+[Fonts]
+# Note: The "Small" fonts are not yet implemented.
+
+TitleFont = dvsans.ttf
+TitleFontSize = 14
+TitleFontCondensed = dvsansc.ttf
+TitleFontCondensedSize = 12
+TitleFontSmall = dvsansc.ttf
+TitleFontSmallSize = 8
+TitleFontColor = ghostwhite
+TitleFontCase = Normal
+TitleFontAddQuotes = False
+TitleFontQuoteSymbol = "
+
+
+ArtistFont = dvsans.ttf
+ArtistFontSize = 13
+ArtistFontCondensed = dvsansc.ttf
+ArtistFontCondensedSize = 11
+ArtistFontSmall
+ArtistFontColor = lightgrey
+ArtistFontCase = Normal
+ArtistFontAddQuotes = False
+
+AlbumFont = dvsansb.ttf
+AlbumFontSize = 14
+AlbumFontCondensed = dvsansbc.ttf
+AlbumFontCondensedSize = 12
+AlbumFontSmall = dvsansbc.ttf
+AlbumFontSmallSize = 8
+AlbumFontColor = ghostwhite
+AlbumFontCase = Uppercase
+AlbumFontAddQuotes = False
+
+CDAddressFont = steelfis.ttf
+CDAddressFontSize = 35
+CDAddressFontColor = lightblue
+
+FixedFont=jbdotmat.fnt
+
+# Display definitions
+#
+# There are four displays: the Now Playing display, the Coming Up/Most 
+# Popular Songs display, the Selection display, and the Credit display.
+# Status messages appear on the Coming Up display.
+#
+# Displays have the following parameters:
+#
+# enabled - Set to True to enable the display, False to disable it.  
+# You may, for example, want to disable the Credit display if your
+# jukebox is not set to accept credits.
+#
+# x, y, w, and h - The position and size of the display.  These are all 
+# relative to the skin background image and not the screen resolution.
+#
+# lines - Sets the number of lines used by the Now Playing and Coming Up 
+# displays.  The size of the dot-matrix display font will automatically
+# be adjusted to fit the specified number of lines in the height of the 
+# display.  The Selection and Credit displays always show only one line.
+#
+# color and bgcolor - Sets the color of the font and the color of the 
+# display background.  See the note on how to specify colors above.
+
+
+
+[Display1]
+# Now Playing display
+enabled=True
+x=725
+y=500
+w=275
+h=110
+lines=6
+color=lime
+bgcolor=black
+
+[Display2]
+# Song List display
+enabled=True
+x=725
+y=640
+w=275
+h=110
+lines=6
+color=lime
+bgcolor=black
+
+[Display3]
+# Selection display
+enabled=True
+x=735
+y=42
+w=145
+h=35
+color=lime
+bgcolor=black
+
+[Display4]
+# Credit Display
+enabled=True
+x=948
+y=42
+w=50
+h=35
+color=lime
+bgcolor=black
+
+[TitleStrips]
+# The background file is scaled and stretched to fit the Width and Height below
+
+# Background=jb45lb01.jpg
+
+# bgcolor is only seen if no title strip image is specified
+
+bgcolor=101010
+
+SongsPerStrip=18
+Width=300
+Height=650
+FontSmoothing=true
+DefaultAlbumArt=defcdart.jpg
+#CDHeader=Top
+
+# If AddQuotes is set to True, song titles will be 
+# displayed in quotes.  This was a common practice on
+# old jukeboxes; it is less common today.
+
+AddQuotes=True
+
+
+# If ForceUpperCaseTitles or ForceUpperCaseArtists is set 
+# to True, song titles or artist names on the title strips
+# will always use uppercase.  This was a common practice 
+# on old jukeboxes; it is less common today.
+
+ForceUpperCaseTitles=False
+ForceUpperCaseArtists=True
+
+FontFocusColor=lightgoldenrodyellow
+FocusColor=ivory
+ShadowColor=White
+
+# Animation types: None, FlipHorizontal, FlipVertical, SlideHorizontal, or SlideVertical
+#Animation=SlideHorizontal
+
+[StripGrid]
+x=18
+y=21
+rows=1
+cols=2
+rowspace=7
+colspace=27
+CoverArtSide=top
+CoverArtSpace=4
+
+
+[Icon1]
+x=705
+y=345
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_PREVPG
+
+[Icon2]
+x=855
+y=345
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_NEXTPG
+
+[Icon3]
+x=705
+y=125
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_1
+
+[Icon4]
+x=780
+y=125
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_2
+
+[Icon5]
+x=855
+y=125
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_3
+
+[Icon6]
+x=705
+y=195
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_4
+
+[Icon7]
+x=780
+y=195
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_5
+
+[Icon8]
+x=855
+y=195
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_6
+
+[Icon9]
+x=705
+y=270
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_7
+
+[Icon10]
+x=780
+y=270
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_8
+
+[Icon11]
+x=855
+y=270
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_9
+
+[Icon12]
+x=780
+y=345
+w=75
+h=70
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_0
+
+[Icon13]
+x=930
+y=125
+w=75
+h=145
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_SELECT
+
+[Icon14]
+x=660
+y=490
+w=40
+h=110
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_SKIP
+
+[Icon15]
+x=930
+y=270
+w=75
+h=145
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_CLEAR
+
+#[Icon16]
+#x=755
+#y=687
+#w=40
+#h=57
+#FocusColor=yellow
+#ShadowColor=Black
+#Clickable=True
+#Action=BTN_RANDOM
+
+[icon17]
+x=50
+y=680
+w=70	
+h=30
+onimage=radioon.jpg
+aCtion=msg_radio
+
+[icon18]
+x=50
+y=715
+w=70	
+h=30
+clickable=True
+FocusColor=yellow
+Action=BTN_RADIO
+
+[Icon19]
+x=660
+y=635
+w=40
+h=110
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_POPULAR
+
+[Icon20]
+x=350
+y=680
+w=100
+h=120
+FocusColor=yellow
+Clickable=True
+Action=BTN_PREVALPHA
+
+[Icon21]
+x=550
+y=680
+w=100
+h=120
+FocusColor=yellow
+Clickable=True
+Action=BTN_NEXTALPHA
+
+[Icon22]
+x=950
+y=680
+w=70
+h=120
+FocusColor=yellow
+Clickable=True
+Action=BTN_EXIT

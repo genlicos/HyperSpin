@@ -1,0 +1,50 @@
+
+ 
+After re-reading the game.com music documentation with a Matt -
+understanding the constraints that ALL of us are under.  Here is what I
+propose:
+ 
+1) We are going to use the new_sp.asm sound driver as provided by Micom in
+it's current functionality.
+ 
+2) Matt is going to identify some additional enhancements that will bring
+the functionality up to what the gamegear offered - he will spec them out in
+technical terms AND hopefully we will be able to get Nathan or Someone to
+program the enhancements into our FUTURE games.  One of the needs Matt has
+already identified is to play a note and slide it down or up to a specific
+note over a specificed amount of time.
+ 
+3) For the Frogger Game - here is the sound effect plan:
+ 
+A) Level Intro music, Win &  Loose music will be played as songs using both
+SG0 and SG1 for a two instrument music effect.
+ 
+b) Level game music will use the Waveform Sound Generator 0 (SG0) - they
+will be written in the style of melody.asm.
+ 
+c) Level sound effects will use the Waveform Sound Generator 1 (SG1) - they
+will be written in the style of very short songs.
+ 
+D) Since we do not yet have documentation on the noise generator (SG2) - we
+will avoid using it until we can dig up more info or experiment.  NOTE: we
+are expecting sample code to us on sunday evening from Micom in HK)
+ 
+E) Sound effects that cannot be reproduced with on the Waveform Sound
+Generator will be Sampled effects (where the melody stops to play a desired
+sound effect).  These will probably include:  the two Frogger Death sounds
+and the Snake.
+ 
+F) Matt will need to possibly work with someone to define additional
+instruments in the new_sp.asm file as the game.com's two current instruments
+are pretty basic.  May be this is something that Al can help with if Matt
+provides the additional data???
+ 
+G) Matt will need to get a version of Frogger with the new_SP.asm,
+melody.inc and melody.asm incorporated into it and a way to select
+sounds/music from a menu  and play them after compiling.  Al - is this
+something you can help with??
+ 
+I hope this helps clear up the sound/music issue for now.  Is everyone OK
+with this???
+ 
+Thanks!

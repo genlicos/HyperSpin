@@ -1,0 +1,208 @@
+# DOSCab/WinCab Jukebox Skin File
+# Version 3.0
+# By Chris La Mantia
+
+# Notes:
+# - Supported image formats at this time are BMP, LBM, PCX, and TGA.
+# - Colors may be specified as hexadecimal RGB codes (FFA0CC) or by name.
+#   A reference to named colors can be found in docs/colors.htm.
+
+[skin]
+# All of the dimensions of objects in this file are relative to 
+# this image.
+
+background=cdbg3-v.jpg
+
+
+# Display definitions
+#
+# There are four displays: the Now Playing display, the Coming Up/Most 
+# Popular Songs display, the Selection display, and the Credit display.
+# Status messages appear on the Coming Up display.
+#
+# Displays have the following parameters:
+#
+# enabled - Set to True to enable the display, False to disable it.  
+# You may, for example, want to disable the Credit display if your
+# jukebox is not set to accept credits.
+#
+# x, y, w, and h - The position and size of the display.  These are all 
+# relative to the skin background image and not the screen resolution.
+#
+# lines - Sets the number of lines used by the Now Playing and Coming Up 
+# displays.  The size of the dot-matrix display font will automatically
+# be adjusted to fit the specified number of lines in the height of the 
+# display.  The Selection and Credit displays always show only one line.
+#
+# color and bgcolor - Sets the color of the font and the color of the 
+# display background.  See the note on how to specify colors above.
+
+[Selection]
+
+# SelectionMethod: Alphanumeric,Numeric,SingleLetter,SingleNumber
+SelectionMethod=Numeric
+UseZero=True
+HighNumber=9
+HighLetter=Z
+DiscAddress=Absolute
+
+[Display1]
+# Now Playing display
+enabled=True
+x=32
+y=840
+w=335
+h=95
+lines=5
+color=tomato
+bgcolor=black
+
+[Display2]
+# Song List display
+enabled=True
+x=397
+y=840
+w=335
+h=95
+lines=5
+color=tomato
+bgcolor=black
+
+[Display3]
+# Selection display
+enabled=True
+x=287
+y=978
+w=117
+h=32
+color=tomato
+bgcolor=black
+
+[Display4]
+# Credit Display
+enabled=True
+x=439
+y=978
+w=48
+h=30
+color=tomato
+bgcolor=black
+
+[TitleStrips]
+# The background file is scaled and stretched to fit the Width and Height below
+
+# Background=jb45lb01.jpg
+
+# bgcolor is only seen if no title strip image is specified
+
+bgcolor=black
+
+SongsPerStrip=CD
+Font=dvsansc.ttf
+FontSize=20
+FontColor=white
+SmallFont=dvsansc.ttf
+SmallFontSize=18
+Width=717
+Height=249
+FontSmoothing=true
+DefaultAlbumArt=defcdart.jpg
+CDHeader=Bottom
+
+# If AddQuotes is set to True, song titles will be 
+# displayed in quotes.  This was a common practice on
+# old jukeboxes; it is less common today.
+
+AddQuotes=True
+
+
+# If ForceUpperCaseTitles or ForceUpperCaseArtists is set 
+# to True, song titles or artist names on the title strips
+# will always use uppercase.  This was a common practice 
+# on old jukeboxes; it is less common today.
+
+ForceUpperCaseTitles=False
+ForceUpperCaseArtists=False
+
+FontFocusColor=lightgoldenrodyellow
+FocusColor=ivory
+ShadowColor=White
+
+# Animation types: None, FlipHorizontal, FlipVertical, SlideHorizontal, or SlideVertical
+Animation=None
+
+[StripGrid]
+x=25
+y=37
+rows=3
+cols=1
+rowspace=13
+CoverArtSide=Left
+CoverArtSpace=6
+
+[Icon1]
+x=88
+y=973
+w=40
+h=44
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_PREVPG
+
+[Icon2]
+x=134
+y=973
+w=40
+h=44
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_NEXTPG
+
+[Icon3]
+x=591
+y=973
+w=40
+h=44
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_POPULAR
+
+[Icon4]
+x=637
+y=973
+w=40
+h=44
+FocusColor=yellow
+ShadowColor=Black
+Clickable=True
+Action=BTN_RANDOM
+
+[Icon5]
+x=458
+y=937
+w=12
+h=12
+OnImage=r-ledoff.bmp
+OffImage=r-ledon.bmp
+Clickable=False
+Action=MSG_POPULAR
+
+[Icon6]
+x=574
+y=937
+w=12
+h=12
+OnImage=r-ledon.bmp
+OffImage=r-ledoff.bmp
+Clickable=False
+Action=MSG_POPULAR
+
+[Sounds]
+BTN_COIN1=coin.wav
+BTN_COIN2=coin.wav
+BTN_COIN3=coin.wav
+BTN_COIN4=coin.wav
+MSG_INVALID=invalid.wav

@@ -1,0 +1,1306 @@
+	title	new speech
+	type	8521
+	program
+	
+
+	include frogger.tmp
+	
+	global	start_speech1
+        global  start_chan0
+        global  start_chan1
+        global  stop_melody
+	global	init_isr
+	global	restore_isr
+
+
+
+TMR1_new_ibank  equ     0a6h
+sp_control      equ     0a8h
+SP_CTR1 equ     0ach
+SP_CTR2 EQU     0ADH
+PVOICE  EQU     0B0H
+UT_clk	equ	0b4h
+ScanTMR equ     0b5h
+SYSFLAG	EQU	0BCH
+KBDFLAG	EQU	0BDH
+TMR1_new_isr	equ	102h
+DMG_timer	equ	112h
+UTimer1C	equ	150h		;-------------------------
+Melody_Register	equ	169h		;-------------------------
+KBDTMR		EQU	17FH
+melodyupdate	equ	1ach
+
+
+
+MAX_UT		equ	8
+SP_TIMER1ISR_RP	equ	38h
+N_TIMER1ISR_RP	equ	48h
+SCANFREQ	equ	20/5		;10ms
+REPEATTM        equ     10              ;500ms
+DEBOU_TM	equ	16
+ALARM_ALERT_KEY	equ	0a4h
+COMM_ERROR	equ	0a5h
+WARN_BEEP	equ	0a8h
+UT_CLK_		equ	50/5	;49.152 ms per count
+UT_STOP         equ     00h
+UT_RUN		equ	01h
+SP_CTR1_VAL	equ	3	;41.6us*3 == 124.8us (8013Hz)
+SP_CTR2_VAL	equ	40	;118	;4.91ms
+;
+SP_TMR1_VAL	equ	208
+;
+;
+STUFFKEY	EQU	22FAH
+SlopeTable	equ	36d4h
+;stop_speech	equ	2398h
+end_TMR1_isr    equ     2142h
+disp_tmrovr0	equ	2b84h
+
+
+mel_counter	equ	01a8h
+mel_counter1	equ	mel_counter+1
+mel_flag	equ	mel_counter1+1
+mel_flag1	equ	mel_flag+1
+Tone0content	equ	171h		;amplitdue control for channel 0
+Tone1content	equ	172h		;amplitude control for channel 1
+ToneLength0	equ	173h		;length of the tone in channel 0
+ToneLength1	equ	174h		;length of the tone in channel 1
+no_of_voice	equ	175h
+Melody_timer	equ	176h		;count = 10 --> 49ms per unit
+Tone0Holdtimer	equ	177h
+Tone1Holdtimer	equ	178h
+;Melody_Register equ     169h            ;-------------------------
+Mel_address0	equ	16ah
+Mel_address1	equ	16ch
+Mel_bank0	equ	16eh
+Mel_bank1	equ	16fh
+LOOP_CODE	equ	81h
+STOP_CODE	equ	00h
+PAUSE_CODE	equ	80h
+
+        program
+
+;---------------------------------------;
+;	Speech processing
+;
+; for new approach :
+;
+;	RP = B - 58h to 67h
+;	rr0 - general
+;	rr2 - sp_address
+;	r4 - sp_bank
+;	r5 - STPID
+;	rr6 - end_address
+;	r8 - end bank
+;	
+;---------------------------------------;
+sp_timer:
+;	bclr	0b1h,#5
+	dec	SP_CTR1
+	br	eq,sp_timer1		;it is time to update the D/A register
+sp_timerx:
+        jmp     end_TMR1_isr
+sp_timer1:
+	mov	SP_CTR1,#SP_CTR1_VAL	;reload the counter value
+	;---- update the speech data ---;
+	mov	r15,mmu3
+	mov	mmu3,r4
+        mov     sgda,PVOICE    ;joe 9/12/97
+;        mov     4eh,PVOICE
+voice_mute1:
+	bbc	sp_control,#2,process_low_nibble
+;--- process high nibble ---;
+	bclr	sp_control,#2
+	mov	r0,(rr2)+
+	bbc	r2,#7,adpcm4
+	inc	r4
+	mov	r2,#60h
+adpcm4:
+	swap	r0
+	jmp	adpcm3
+process_low_nibble:
+;-------------------------------;
+;	R0 - voice data
+;	R1 - temp
+;	RR2 - table 
+;--------------------------------;
+	bset	sp_control,#2
+	mov	r0,@rr2
+adpcm3: srl     r0                      ;carry holds the sign bit
+	movm	r0,#7,r1
+	mov	r13,r0
+	br	c,vslope_down
+	sll	r13
+	clr	r12
+	movw	rr0,SlopeTable(rr12)
+	add	PVOICE,r0
+	jmp	nc,adpcm1
+	mov	PVOICE,#0ffh
+adpcm1:
+	mov	mmu3,r15
+sp_timer4:
+	cmp	r4,r8
+	br	eq,sp_timerxx
+sp_timer3:
+	dec	SP_CTR2
+        jmp     ne,end_TMR1_isr
+	mov	SP_CTR2,#SP_CTR2_VAL
+	jmp	sp_timer2				;timer routine
+sp_timerxx:
+	cmpw	rr2,rr6
+	jmp	c,sp_timer3
+	call	stop_speech
+	mov	r0,#0a0h		;stuff 'stop speech' key into the buffer
+	call	STUFFKEY
+	jmp	sp_timer3
+
+vslope_down:
+	sll	r13
+	clr	r12
+	movw	rr0,SlopeTable(rr12)
+	sub	PVOICE,r0
+	jmp	nc,adpcm1
+	clr	PVOICE
+	jmp	adpcm1	
+sp_timer2:
+	
+normal_timerx:
+	push	0a4h
+	push	r14
+	mov	ps0,#N_TIMER1ISR_RP
+;       ei
+;        di
+	;--- check scanning timer ---;
+	dec	ScanTMR	
+	br	nz,tmr19
+	mov	ScanTMR,#SCANFREQ	;reload the scanning timer value
+	bset	KBDFLAG,#3		;set scan cycle flag
+tmr11:
+	bbc	KBDFLAG,#5,tmr20
+	mov	r0,KBDTMR
+	dec	r0
+	mov	KBDTMR,r0
+	br	nz,tmr20
+	bclr	KBDFLAG,#5	
+tmr20:
+	bbc	KBDFLAG,#6,tmr19
+	mov	r0,KBDTMR
+	dec	r0
+	mov	KBDTMR,r0
+	br	nz,tmr19
+	bclr	KBDFLAG,#6
+	bset	KBDFLAG,#5
+	mov	r0,#40
+	mov	KBDTMR,r0
+;---- User timer checking ----;
+tmr19:	
+	btst	sp_control,#90h
+	br	nz,tmr14x
+
+	mov	r0,DMG_timer
+	inc	r0
+	mov	DMG_timer,r0
+					; timer used
+	dec	UT_clk			;see User timer prescalar
+	br	nz,tmr14
+	mov	UT_clk,#UT_CLK_		;reload the value
+	movw	rr2,#UTimer1C		;points to first user timer
+	mov	r4,#MAX_UT		;r4 == max # of user timer
+tmr13:
+	mov	r0,@rr2			;LOAD the control byte of user timer
+	cmp	r0,#UT_RUN		;Running??
+	br	eq,tmr12
+tmr15:
+	addw	rr2,#3			;no running, so next timer
+	dbnz	r4,tmr13		;last one???
+	br	tmr14			;no more, return
+tmr12:	movw	rr0,1(rr2)		;load user timer content
+	decw	rr0			;user timer content --1
+	movw	1(rr2),rr0
+	br	nz,tmr15		;time's up???
+	;--- the timer reaches zero, so stuff timer value into key buffer
+	push	r4
+	neg	r4
+	and	r4,#7
+	or	r4,#90h			;Stuff timer value from 90 - 97
+	mov	r0,r4
+	;--- check timer #7 is overflow?? ---
+	cmp	r0,#97h			;check display timer overflow
+	br	ne,tmr_17
+	mov	r0,#UT_STOP
+	mov	@rr2,r0
+        call    disp_tmrovr
+	pop	r4
+	br	tmr15
+tmr_17:
+	clr	r1
+	call	STUFFKEY		;stuff the timer value into the keyboard
+					; buffer
+	br	nc,tmr16		;no problem in stuff key
+	;--- fail to stuff ---;
+	movw	rr0,#1			;next time stuff
+	movw	1(rr2),rr0
+	pop	r4
+	br	tmr15
+tmr16:
+	pop	r4
+	mov	r0,#UT_STOP		;stop the timer
+	mov	@rr2,r0
+	br	tmr15	
+;-------------------------------;
+;	Check Melody
+;-------------------------------;
+tmr14x:
+	bbc	SYSFLAG,#4,tmr18
+tmr14:
+	mov	r0,Melody_Register
+	btst	r0,#11h
+	br	z,tmr18
+;	call	@melodyupdate
+	bbs	0a8h,#0,tmr18
+        call    updatemelody
+;-------------------------------;
+;
+tmr18:
+	di
+	mov	ps0,#SP_TIMER1ISR_RP
+	pop	r14
+	pop	0a4h
+        jmp     end_TMR1_isr
+;
+;
+;
+start_speech1:
+	push	ps1
+	di
+	push	ps0
+	movm	ps0,#7,#SP_TIMER1ISR_RP
+;	bbs	sp_control,#0,start_speech4
+	movw	rr10,TMR1_new_isr
+	mov	r9,TMR1_new_ibank
+	movw	rr0,#sp_timer
+	movw	TMR1_new_isr,rr0
+	mov	r0,mmu2
+	mov	TMR1_new_ibank,r0
+start_speech4:
+        mov     tm1d,#SP_TMR1_VAL       ;set up the new timer for speech
+;joe 9/12/97        mov     53h,#SP_TMR1_VAL       ;set up the new timer for speech
+        mov     tm1c,#80h               ;41.6us interrupt frequency
+;joe 9/12/97        mov     52h,#80h               ;41.6us interrupt frequency
+	bset	SYSFLAG,#6		;set up the speech intr flag
+	mov	SP_CTR1,#SP_CTR1_VAL	;counter 1 for update speech
+	mov	SP_CTR2,#SP_CTR2_VAL	;counter 2 for update software timer
+	mov	PVOICE,#80h
+	pop	ps0
+	bbs	SYSFLAG,#5,mute_speech
+					;flag
+talk:
+        btst    sgc,#88h
+;joe 9/12/97        btst    40h,#88h
+	br	nz,talk1
+        bbs     0f8h,#0,talk1
+
+        push    r0
+	clr	r0
+talk2:
+        mov     sgda,r0
+;joe 9/12/97        mov     4eh,r0
+        mov     sgc,#88h
+        mov     40h,#88h
+	inc	r0
+	bbc	r0,#7,talk2
+	pop	r0
+talk1:
+        mov     sgc,#88h                ;enable d/a output
+;joe 9/12/97        mov     40h,#88h                ;enable d/a output
+mute_speech:
+	bset	sp_control,#0
+;	mov	ie1,#40h
+;	mov	ir1,#40h
+	pop	ps1
+no_sp:
+	ret
+;
+
+;(2/4_) end_TMR1_isrx:
+;(2/4_)        cmp     r14,mmu2
+;(2/4_)        br      eq,good
+;(2/4_)        nop
+;(2/4_) good:
+;(2/4_)        jmp     end_TMR1_isr
+
+stop_speech:
+	push	ps1
+	push	ps0
+	di
+	and	sp_control,#0f8h		;clear speech control
+;	call	init_timer1		;restore the timer setting
+        mov     tm1d,#24        ;24*0.2048ms => 4.9152ms
+;joe 9/12/97                mov     53h,#24        ;24*0.2048ms => 4.9152ms
+        mov     tm1c,#81h       ;start timer, fck/1024
+;joe 9/12/97                mov     52h,#81h       ;start timer, fck/1024
+
+	movm	ps0,#7,#SP_TIMER1ISR_RP
+	;--- restore the original timer interrupt ---;
+	mov	TMR1_new_ibank,r9
+	movw	TMR1_new_isr,rr10
+	
+	and	SYSFLAG,#0bfh		;stop all controls
+
+	mov	r0,Melody_Register
+	btst	r0,#11h
+	br	z,stop_sp1
+	mov	r1,sgc
+	movm	r1,#80h,#8h
+	bbc	r0,#3,stop_sp4
+	bset	r0,#0
+stop_sp4:
+	bbc	r0,#7,stop_sp5
+	bset	r0,#1
+stop_sp5:
+	mov	sgc,r1
+	mov	sgda,#80h
+	mov	sg0l,#0
+	mov	sg1l,#0
+	mov	r0,#0
+	mov	Tone0content,r0
+	mov	Tone1content,r0
+	br	stop_sp11
+;        btst    sgc,#07h
+;joe 12/9/97        btst    40h,#07h
+;       br      nz,stop_sp1
+stop_sp1:
+        call    ramp_down
+        clr     sgc                     ;disable all sound outptu
+;joe 12/9/97        clr     40h                     ;disable all sound outptu
+;        br      stop_sp11
+;stop_sp1:
+;	mov	sgda,#80h
+stop_sp11:
+	pop	ps0
+        pop     ps1
+        bclr    0f8h,#0
+	ret
+
+ramp_down:
+;        RET
+        push    r0
+        mov     r0,sgda
+;joe 12/9/97        mov     r0,4eh
+
+stop_sp3:
+	cmp	r0,#0
+	br	z,stop_sp2
+	dec	r0
+	push	r0
+	pop	r0
+	push	r0
+	pop	r0
+	push	r0
+	pop	r0
+	push	r0
+	pop	r0
+        mov     sgda,r0
+;joe 12/9/97        mov     4eh,r0
+	br	stop_sp3
+stop_sp2:
+	pop	r0
+	ret
+
+;====================================================
+;====================================================
+;
+;ADSR_register	equ	170h		;-------------------------
+;mel_counter     equ     01a8h
+;mel_counter1    equ     mel_counter+1
+;mel_flag        equ     mel_counter1+1
+;mel_flag1       equ     mel_flag+1
+;Tone0content	equ	171h		;amplitdue control for channel 0
+;Tone1content	equ	172h		;amplitude control for channel 1
+;ToneLength0	equ	173h		;length of the tone in channel 0
+;ToneLength1	equ	174h		;length of the tone in channel 1
+;no_of_voice	equ	175h
+;Melody_timer	equ	176h		;count = 10 --> 49ms per unit
+;Tone0Holdtimer	equ	177h
+;Tone1Holdtimer	equ	178h
+;Melody_Register	equ	169h		;-------------------------
+;Mel_address0	equ	16ah
+;Mel_address1	equ	16ch
+;Mel_bank0	equ	16eh
+;Mel_bank1	equ	16fh
+;LOOP_CODE	equ	81h
+;STOP_CODE	equ	00h
+;PAUSE_CODE	equ	80h
+
+;;--------------------------------------;
+;;	UpdateMelody : update the melody channels
+;
+;--------------------------------------;
+updatemelody:
+	di
+	mov	r0,Melody_timer
+	cmp	r0,#0
+        jmp      nz,upmel1
+;----------------------------;
+;	update tone length counter
+;	it is one unit of the tone length
+;----------------------------;
+upmel2:
+        mov     r0,#5                  ;daniell mov r0,#20
+        mov     Melody_timer,r0
+
+;---- update next counter ---;
+	mov	r1,Melody_Register
+	bbc	r1,#0,upmel3		;check channel 0 active??
+;--- channel 0 active ---;
+        mov     r0,ToneLength0
+	dec	r0
+        mov     ToneLength0,r0
+        br      nz,upmel3
+
+        movw    rr2,Mel_address0	;advance melody pointer of 
+	addw	rr2,#3			;channel 0
+	movw	Mel_address0,rr2
+	
+	
+;	mov	r0,@rr2			;load frequency code
+;	cmp	r0,#LOOP_CODE
+;	br	eq,looping0
+;
+;	CMP	R0,#STOP_CODE
+;	br	nz,looping0_e
+;
+;	mov	r0,Melody_Register
+;	bclr	r0,#0
+;	mov	Melody_Register,r0
+;looping0_e:
+;	clr	r0
+;	mov	r1,#1
+;       call    Control_Melody          ;start next melody note
+	call	start_melody0
+upmel3:
+	mov	r1,Melody_Register
+	btst	r1,#10h			;check channel 1 active??
+	br	z,upmel6
+
+        mov     r0,ToneLength1
+        dec     r0
+        br      nz,upmel4
+
+        movw    rr2,Mel_address1
+	addw	rr2,#3
+	movw	Mel_address1,rr2
+	
+;	mov	r0,@rr2
+;	cmp	r0,#LOOP_CODE
+;	br	eq,looping1
+;	cmp	r0,#0
+;	br	z,stop_mel1
+;looping1_e:
+;	mov	r0,#1
+;	mov	r1,#1
+;	call	Control_Melody
+	call	start_melody1
+upmel6:
+	ret
+
+;looping0:
+;	movw	rr2,1(rr2)
+;	movw	Mel_address0,rr2
+;	br	looping0_e
+;stop_mel0:
+;	mov	r1,Melody_Register
+;	bclr	r1,#0			;make channel 0 inactive
+;	mov	Melody_Register,r1
+;	and	sgc,#0feh
+;	br	looping0_e
+;stop_mel1:
+;	mov	r1,Melody_Register
+;	bclr	r1,#4
+;	mov	Melody_Register,r1
+;	and	sgc,#0fdh
+;	br	looping1_e		
+;looping1:
+;	movw	rr2,1(rr2)
+;	movw	Mel_address1,rr2
+;	br	looping1_e
+upmel4:
+	mov	ToneLength1,r0
+	ret
+;
+;
+;
+upmel1:
+	dec	r0			;dec melody_timer
+	jmp	z,upmel2
+	mov	Melody_timer,r0
+
+;----------------------------------------;
+;	check ADSR status and update the hardware
+;----------------------------------------;
+	mov	r0,Melody_Register
+	bbs	r0,#0,upadsr00_1
+        jmp     upadsr10
+
+upadsr00_1:
+	;--- active, check ADSR
+
+test_loop:
+        mov     r0,mel_flag
+        cmp     r0,#1
+        br      eq,test_end1		;if [mel_flag] set, then complete
+					; the envelope
+
+        clr     r2
+        mov     r3,mel_counter		;load envelope step
+
+        pushw   rr4
+	pushw	rr2
+	clr	r2
+	mov	r3,Melody_Register
+	and	r3,#6
+	movw	rr4,Instru_pointer(rr2)
+	popw	rr2
+	addw	rr4,rr2
+	mov	r0,@rr4
+        popw    rr4
+
+        cmp     r0,#0
+        br      eq,test_end
+        add     r3,#3
+        br      c,test_pre
+        mov     mel_counter,r3
+test_pre:
+        br      under_ff_0              ;testing
+
+test_end:
+        mov     r0,#1                   ;set the melody flag
+        mov     mel_flag,r0
+
+;        mov     r0,ADSR_register        ;reset the ADSR_register
+;       bclr    r0,#0
+;        mov     ADSR_register,r0
+
+test_end1:
+        mov     r0,#0
+        br      under_ff_0x
+
+under_ff_0:
+upadsr01_1:
+upadsr03_1:
+        sub     r0,#80h
+        sll     r0
+        cmp     r0,#0
+        br      ne,under_ff_0x
+        mov     r1,#1
+        mov     mel_flag,r1
+
+under_ff_0x:
+        mov     Tone0content,r0
+	movw	rr2,Mel_address0
+	push	mmu3
+	mov	mmu3,#program_bank4
+	mov	r1,1(rr2)
+	pop	mmu3
+	call	mixer0
+
+;....... TESTING END!!
+
+;       check channel 1 active??
+;
+upadsr10:
+	mov	r0,Melody_Register
+	bbc	r0,#4,upadsr_ret	;check channel 1 active
+
+        mov     r0,mel_flag1
+        cmp     r0,#1
+        br      eq,test_end1w
+
+        clr     r2
+        mov     r3,mel_counter1
+
+        pushw   rr4
+	pushw	rr2
+	clr	r2
+	mov	r3,Melody_Register
+	swap	r3
+	and	r3,#6
+	movw	rr4,Instru_pointer(rr2)
+	popw	rr2
+	addw	rr4,rr2
+	mov	r0,@rr4
+        popw    rr4
+
+        cmp     r0,#0
+        br      eq,test_endw
+        add     r3,#3
+        br      c,test_prew
+        mov     mel_counter1,r3
+
+test_prew:
+        br      under_ff_1              ;testing
+
+test_endw:
+        mov     r0,#1                   ;set the melody flag
+        mov     mel_flag1,r0
+
+;        mov     r0,ADSR_register        ;reset the ADSR_register
+;        bclr    r0,#0
+;        mov     ADSR_register,r0
+
+test_end1w:
+        mov     r0,#0
+        br      under_ff_0xw
+
+under_ff_1:
+upadsr11_1:
+upadsr13_1:
+        sub     r0,#80h
+        sll     r0
+        cmp     r0,#0
+        br      ne,under_ff_0xw
+        mov     r1,#1
+        mov     mel_flag1,r1
+
+under_ff_0xw:
+	mov	Tone1content,r0
+;	call	getmelamp1
+	movw	rr2,Mel_address1
+	push	mmu3
+	mov	mmu3,#program_bank4
+	mov	r1,1(rr2)
+	pop	mmu3
+	call	mixer1			;re-adjust the output level
+
+upadsr_ret:
+        ret
+;--------------------------------------------;
+;	mixer of channel 0
+;	input : r1 - melody amplitude
+;		[Tone0content] holds the level of channel 0
+;	output : setup the final mixer's equalizer.
+;
+;---------------------------------------------;
+mixer0:
+;
+;	sg0l = ( [r1] * [Tone0content] / 255 ) / 2
+;
+	clr	r0
+	mov	r3,Tone0content
+	clr	r2
+	mult	rr0,r3
+	movw	rr2,#0ffh
+	div	rr0,rr2	
+	cmp	r1,#1fh
+	br	c,mixer0_1
+	mov	r1,#1fh
+mixer0_1:
+	srl	r1
+	mov	sg0l,r1
+        ret
+
+;--------------------------------------------;
+;	mixer of channel 1
+;	input : r1 - melody amplitude
+;		[Tone1content] holds the level of channel 1
+;	output : setup the final mixer's equalizer.
+;
+;---------------------------------------------;
+mixer1:
+;
+;	sg1l = ( [r1] * [Tone1content] / 255 ) / 2
+;
+	clr	r0
+	mov	r3,Tone1content
+	clr	r2
+	mult	rr0,r3
+	movw	rr2,#0ffh
+	div	rr0,rr2	
+	cmp	r1,#1fh
+	br	c,mixer1_1
+	mov	r1,#1fh
+mixer1_1:
+	srl	r1
+	mov	sg1l,r1
+        ret
+
+Instru_pointer:
+        dw      0
+        dw      PianoSound
+	dw	OrganSound
+        dw      PureTone
+
+OrganSound:
+        db      000h
+
+
+PianoSound:
+        db      0b0h        ; ,0f0h,0fdh
+        db      0fdh        ; ,0fdh,0fdh
+        db      0fdh        ; ,0feh,0feh
+        db      0feh        ; ,0feh,0feh
+        db      0feh        ; ,0ffh,0ffh
+        db      0ffh        ; ,0feh,0feh
+        db      0fdh        ; ,0fch,0fbh
+        db      0fah        ; ,0f9h,0f8h
+        db      0f7h        ; ,0f6h,0f5h
+        db      0f4h        ; ,0f3h,0f2h
+        db      0f1h        ; ,0f0h,0efh
+        db      0eeh        ; ,0edh,0ech
+        db      0ebh        ; ,0eah,0e9h
+        db      0e8h        ; ,0e7h,0e6h
+        db      0e5h        ; ,0e4h,0e3h
+        db      0e2h        ; ,0e1h,0e0h
+        db      0dfh        ; ,0deh,0ddh
+        db      0dch        ; ,0dbh,0dah
+        db      0d9h        ; ,0d8h,0d7h
+        db      0d6h        ; ,0d5h,0d4h
+        db      0d3h        ; ,0d2h,0d1h
+        db      0d0h        ; ,0cfh,0ceh
+        db      0cdh        ; ,0cch,0cbh
+        db      0cah        ; ,0c9h,0c8h
+        db      0c7h        ; ,0c6h,0c5h
+        db      0c4h        ; ,0c3h,0c2h
+        db      0c1h        ; ,0c0h,0bfh
+        db      0bfh        ; ,0beh,0beh
+        db      0bdh        ; ,0bdh,0bch
+        db      0bch        ; ,0bbh,0bbh
+        db      0bah        ; ,0bah,0b9h
+        db      0b9h        ; ,0b8h,0b8h
+        db      0b7h        ; ,0b7h,0b6h
+        db      0b6h        ; ,0b5h,0b5h
+        db      0b4h        ; ,0b4h,0b3h
+        db      0b3h        ; ,0b2h,0b2h
+        db      0b1h        ; ,0b1h,0b0h
+        db      0b0h        ; ,0afh,0afh
+        db      0aeh        ; ,0aeh,0adh
+        db      0adh        ; ,0ach,0ach
+        db      0abh        ; ,0abh,0aah
+        db      0aah        ; ,0a9h,0a9h
+        db      0a8h        ; ,0a8h,0a7h
+        db      0a7h        ; ,0a7h,0a6h
+        db      0a6h        ; ,0a6h,0a5h
+        db      0a5h        ; ,0a5h,0a4h
+        db      0a4h        ; ,0a4h,0a3h
+        db      0a3h        ; ,0a3h,0a2h
+        db      0a2h        ; ,0a2h,0a1h
+        db      0a1h        ; ,0a1h,0a0h
+        db      0a0h        ; ,0a0h,09fh
+        db      09fh        ; ,09fh,09eh
+        db      09eh        ; ,09eh,09dh
+        db      09dh        ; ,09dh,09ch
+        db      09ch        ; ,09ch,09bh
+        db      09bh        ; ,09bh,09ah
+        db      09ah        ; ,09ah,099h
+        db      099h        ; ,099h,098h
+        db      098h        ; ,098h,097h
+        db      097h        ; ,097h,096h
+        db      096h        ; ,096h,095h
+        db      095h        ; ,095h,094h
+        db      094h        ; ,094h,093h
+        db      093h        ; ,093h,092h
+        db      092h        ; ,091h,091h
+        db      090h        ; ,090h,08fh
+        db      08fh        ; ,08eh,08eh
+        db      08eh        ; ,08dh,08dh
+        db      08dh        ; ,08ch,08ch
+        db      08ch        ; ,08bh,08bh
+        db      08bh        ; ,08bh,08ah
+        db      08ah        ; ,08ah,08ah
+        db      089h        ; ,089h,089h
+        db      089h        ; ,088h,088h
+        db      088h        ; ,088h,087h
+        db      087h        ; ,087h,087h
+        db      086h        ; ,086h,086h
+        db      086h        ; ,085h,085h
+        db      085h        ; ,085h,084h
+        db      084h        ; ,084h,084h
+        db      083h        ; ,083h,083h
+        db      083h        ; ,082h,082h
+        db      082h        ; ,082h,081h
+        db      081h        ; ,081h,081h
+        db      080h        ; ,080h,080h
+        db      080h
+        db      080h        ;
+        db      080h        ;
+        db      080h        ;
+        db      080h        ;
+        db      080h        ;
+        db      080h        ;
+        db      080h        ;
+        db      080h        ;
+        db      080h        ;
+        db      080h        ;
+        db      000h
+
+PureTone:
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h        ;
+        db      0f0h
+        db      000h
+
+;---------------------------------------------
+;	start melody channel #0
+;	input rr2 = address of the melody data
+;---------------------------------------------
+start_chan0:
+	movw	Mel_address0,rr2
+	mov	r0,Melody_Register
+	movm	r0,#0f0h,#2
+	mov	Melody_Register,r0
+start_melody0:
+;&&& manuel 3/4
+	push	mmu3
+	mov	mmu3,#program_bank4
+;&&& manuel 3/4
+;-------------------------------;
+;	start every note
+;-------------------------------;
+	push	ps1
+	di
+	;--- start channel 0
+	mov	r1,#0
+	mov	mel_counter,r1		;reset the melody counter -->
+					; start the envelope from 0
+	mov	mel_flag,r1		;reset the melody flag --> enable
+					;envelope
+
+	clr	r1
+	mov	Tone0content,r1 	;clear tone amplitude
+	mov	r0,2(rr2)
+	mov	ToneLength0,r0
+
+	mov	r0,@rr2
+	cmp	r0,#STOP_CODE
+	br	z,stop_m0
+	cmp	r0,#PAUSE_CODE
+	br	z,no_toneout0
+
+        call    translate_note          ;translate the note into the frequency
+	mov	sg0th,r0		;write the timer value translated table
+	mov	sg0tl,r1
+
+	mov	r6,#80h
+	mov	sgda,r6 		;set up centre bias voltage
+
+	mov	r6,sgc
+	or	r6,#9h
+	bbs	SYSFLAG,#5,mute_music
+	bset	r6,#7
+mute_music:
+	mov	r1,1(rr2)
+	call	mixer0			;adjust the amplitude according to the
+					;input value and also the # channel activated
+	mov	r0,Melody_Register
+	movm	r0,#0f6h,#9	;enable channel 0 and enable output
+					;of channel 0
+no_toneout00:
+	mov	Melody_Register,r0
+	mov	sgc,r6
+start_mel0_ret:
+	pop	ps1
+;&&& manuel 3/4
+	pop	mmu3
+;&&& manuel 3/4
+	ret
+
+no_toneout0:
+	mov	r0,#80h
+	mov	sgda,r0 		;still set up the bias voltage
+	mov	r6,sgc
+	and	r6,#0feh
+	mov	r0,Melody_Register
+	movm	r0,#0f6h,#1
+	br	no_toneout00
+
+stop_m0:
+	mov	r0,Melody_Register
+	and	r0,#0f6h		;disable channel 0
+	mov	Melody_Register,r0
+	mov	r0,sgc
+
+	and	r0,#0fch		;%% both channel stop
+
+;%%	bbs	batman_status2,#BIT_CONT_MEL,stop_m00
+;%% for jp2 8/1
+	br	stop_m00
+;%%
+	mov	r0,#0			;single shot of melody
+					; stop all
+stop_m00:
+	mov	sgc,r0
+	br	start_mel0_ret
+
+;---------------------------------------------
+;	start melody channel #1
+;	input rr2 = address of the melody data
+;---------------------------------------------
+start_chan1:
+	movw	Mel_address1,rr2
+	mov	r0,Melody_Register
+	movm	r0,#0fh,#20h
+	mov	Melody_Register,r0
+start_melody1:
+;-------------------------------;
+;	start every note
+;-------------------------------;
+;&& manuel 3/4
+	push	mmu3
+	mov	mmu3,#program_bank4
+;&& manuel 3/4
+	push	ps1
+	di
+	;--- start channel 1
+	mov	r1,#0
+	mov	mel_counter1,r1 	 ;reset the melody counter -->
+					; start the envelope from 0
+	mov	mel_flag1,r1		 ;reset the melody flag --> enable
+					;envelope
+
+	clr	r1
+	mov	Tone1content,r1 	;clear tone amplitude
+
+	mov	r0,2(rr2)
+	mov	ToneLength1,r0
+
+	mov	r0,@rr2
+	cmp	r0,#STOP_CODE
+	br	z,stop_m1
+	cmp	r0,#PAUSE_CODE
+	br	z,no_toneout1
+
+	call	translate_note		;translate the note into the frequency
+	mov	sg1th,r0		;write the timer value translated table
+	mov	sg1tl,r1
+
+	mov	r6,sgc
+	bset	r6,#1			;all output control is done in channel 0
+
+	mov	r1,1(rr2)
+	call	mixer1			;adjust the amplitude according to the
+					;input value and also the # channel activated
+	bbs	SYSFLAG,#5,mute_music1
+	or	r6,#88h
+mute_music1:
+
+	mov	r0,Melody_Register
+	movm	r0,#06fh,#90h	;enable channel 0 and enable output
+					;of channel 0
+no_toneout10:
+	mov	Melody_Register,r0
+	mov	sgc,r6
+start_mel1_ret:
+	pop	ps1
+	pop	mmu3
+	ret
+
+no_toneout1:
+	mov	r6,sgc
+	bclr	r6,#1
+	mov	r0,Melody_Register
+	movm	r0,#06fh,#10h
+	br	no_toneout10
+
+stop_m1:
+	mov	r0,Melody_Register
+	and	r0,#0f6h		;disable channel 0
+	mov	Melody_Register,r0
+	mov	r0,sgc
+
+	bclr	r0,#1
+
+	mov	sgc,r0
+	br	start_mel1_ret
+
+translate_note:
+	pushw	rr2
+	mov	r3,r0
+	clr	r2
+	subw	rr2,#10h
+	br	c,error_note
+	cmpw	rr2,#46h
+	br	nc,error_note
+has_note:
+	sll	r3
+	movw	rr0,freq_table(rr2)
+	popw	rr2
+	ret
+error_note:
+	clr	r2
+	clr	r3
+	br	has_note
+
+freq_table:
+	dw	0FB2h
+	dw	0ED0h
+	dw	0DFBh
+	dw	0D32h
+	dw	0C75h
+	dw	0BC2h
+	dw	0B19h
+	dw	0A79h
+	dw	09E3h
+	dw	0955h
+	dw	08CFh
+	dw	0850h
+	dw	07D9h
+	dw	0768h
+	dw	06FEh
+	dw	0699h
+	dw	063Ah
+	dw	05E1h
+	dw	058Ch
+	dw	053Dh
+	dw	04F1h
+	dw	04AAh
+	dw	0467h
+	dw	0428h
+	dw	03ECh
+	dw	03B4h
+	dw	037Fh
+	dw	034Dh
+	dw	031Dh
+	dw	02F0h
+	dw	02C6h
+	dw	029Eh
+	dw	0277h
+	dw	0255h
+	dw	0234h
+	dw	0214h
+	dw	01F6h
+	dw	01DAh
+	dw	01BFh
+	dw	01A6h
+	dw	018Fh
+	dw	0178h
+	dw	0163h
+	dw	014Fh
+	dw	013Ch
+	dw	012Bh
+	dw	011Ah
+	dw	010Ah
+	dw	00FBh
+	dw	00EDh
+	dw	00E0h
+	dw	00D3h
+	dw	00C7h
+	dw	00BCh
+	dw	00B2h
+	dw	00A8h
+	dw	009Eh
+	dw	0095h
+	dw	008Dh
+	dw	0085h
+	dw	007Eh
+	dw	0077h
+	dw	0070h
+	dw	006Ah
+	dw	0064h
+	dw	005Eh
+	dw	0059h
+	dw	0054h
+	dw	004Fh
+	dw	004Bh
+
+
+
+stop_melody:
+	mov	r0,#0
+	mov	Melody_Register,r0
+	mov	r0,sgc
+	bbs	0a8h,#0,stop_mel1
+	clr	r0
+	mov	sgc,r0
+	ret
+stop_mel1:
+	and	r0,#0fch
+	mov	sgc,r0
+	ret
+
+cont_melody: global cont_melody
+	bbs	sound_flag,#7,start_melody	   ;start again.
+	bbs	sp_control,#0,bat_mel1
+	mov	r0,Melody_Register
+	bbs	r0,#0,bat_mel1
+start_melody: global start_melody
+	bclr	sound_flag,#7
+	push	mmu3
+	mov	mmu3,#program_bank4
+	mov	r3,new_melody_ptr
+	cmp	r3,#0
+	br	eq,bat_mel1
+	dec	r3
+	sll	r3
+	clr	r2
+	movw	rr2,melody_high(rr2)
+        call    start_chan0
+	mov	r3,new_melody_ptr
+	dec	r3
+	sll	r3
+	clr	r2
+	movw	rr2,melody_low(rr2)
+	call	start_chan1
+	pop	mmu3
+bat_mel1:
+	ret
+
+
+;--------------------------------------------;
+;	mixer of channel 0
+;	input : r1 - melody amplitude
+;		[Tone0content] holds the level of channel 0
+;	output : setup the final mixer's equalizer.
+;
+;---------------------------------------------;
+;mixer0:
+;
+;	sg0l = ( [r1] * [Tone0content] / 255 ) / 2
+;
+;	clr	r0
+;	mov	r3,Tone0content
+;	clr	r2
+;	mult	rr0,r3
+;	movw	rr2,#0ffh
+;	div	rr0,rr2
+;	cmp	r1,#1fh
+;	br	c,mixer0_1
+;	mov	r1,#1fh
+;mixer0_1:
+;	srl	r1
+;	mov	sg0l,r1
+;	ret
+
+
+
+;--------------------------------------------;
+;	mixer of channel 1
+;	input : r1 - melody amplitude
+;		[Tone1content] holds the level of channel 1
+;	output : setup the final mixer's equalizer.
+;
+;---------------------------------------------;
+;mixer1:
+;
+;	sg1l = ( [r1] * [Tone1content] / 255 ) / 2
+;
+;	clr	r0
+;	mov	r3,Tone1content
+;	clr	r2
+;	mult	rr0,r3
+;	movw	rr2,#0ffh
+;	div	rr0,rr2
+;	cmp	r1,#1fh
+;	br	c,mixer1_1
+;	mov	r1,#1fh
+;mixer1_1:
+;	srl	r1
+;	mov	sg1l,r1
+;	ret
+init_isr:
+	di
+	push	ps0
+	movm	ps0,#7,#68h
+	mov	r2,0a6h
+	movw	rr0,102h
+	pop	ps0
+	mov	0a6h,mmu2
+	movw	rr0,#normal_timerx
+	movw	102h,rr0
+	ei
+	ret
+restore_isr:
+	di
+	push	ps0
+	movm	ps0,#7,#68h
+	mov	0a6h,r2
+	movw	102h,rr0
+	pop	ps0
+	ei
+	ret	
+;
+
+
+	end

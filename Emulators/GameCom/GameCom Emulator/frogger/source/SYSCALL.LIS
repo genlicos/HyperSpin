@@ -1,0 +1,1076 @@
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page    1
+
+
+      1                         title   System Call
+      2                 	type	8521
+      3                 			
+      4                 
+      5                         include frogger.tmp
+      5+                             data
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game Equates
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     0008       MaxPlayers	equ	8
+      5+     000C       MaxLevels	equ	12
+      5+     0009       NumBands	equ	9
+      5+     0004       NumStrips	equ	4
+      5+     0008       NumAnims	equ	8
+      5+     0012       NumSAnims	equ	NumBands*2
+      5+     0013       NumSounds	equ	19
+      5+                
+      5+     4E00       TimerFull	equ	04e00h	;78*256 is full time per level
+      5+     0007       TimerDec	equ	7	;timer decrease per loop
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game Equates: Game.Com Control
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     0000       ini_game        EQU     0   ; INITIAL
+      5+     0001       exe_game        EQU     1   ; EXECUTE
+      5+     0002       close_game      EQU     2   ; CLOSE GAME
+      5+     0003       reset_game      EQU     3   ; RESET
+      5+     0426       frogger_id      equ     0426h
+      5+                
+      5+     0000       override        equ     00h
+      5+     0001       composite       equ     01h
+      5+     0040       left_right      equ     40h
+      5+     0080       up_down         equ     80h
+      5+     00C0       lr_up           equ     0c0h
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game Equates: Scoring
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     000A       SCORE_forward equ	10
+      5+     0032       SCORE_home	equ	50
+      5+     03E8       SCORE_five	equ	1000
+      5+     00C8       SCORE_lady	equ	200
+      5+     00C8       SCORE_fly	equ	200
+      5+     000A       SCORE_time	equ	10
+      5+                
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page    2
+
+
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game Equates: Home Bases
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     000C       HomeBase1	equ	12
+      5+     0034       HomeBase2	equ	52
+      5+     005C       HomeBase3	equ	92
+      5+     0084       HomeBase4	equ	132
+      5+     00AC       HomeBase5	equ	172
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game Structures
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+                ; ROM
+      5+                
+      5+                	; Game Data
+      5+                                         ;                 struct      
+      5+     0000       GameLevel        equ 0   ;GameLevel        word    1   
+      5+     0002       GameMult         equ 2   ;GameMult         byte    1   
+      5+     0003       GameDiv          equ 3   ;GameDiv          byte    1   
+      5+     0004       GameFrogX        equ 4   ;GameFrogX        byte    1   
+      5+     0005       GameFrogY        equ 5   ;GameFrogY        byte    1   
+      5+     0006       GameSize         equ 6   ;GameSize         size        
+      5+                
+      5+                	; Level Data
+      5+                                         ;                 struct      
+      5+     0000       LevelFlags       equ 0   ;LevelFlags       byte    1   
+      5+                ;                equ 1   ;;                byte    1   
+      5+     0002       LevelBaseU       equ 2   ;LevelBaseU       byte    1   
+      5+     0003       LevelBaseF       equ 3   ;LevelBaseF       byte    1   
+      5+     0004       LevelIncM        equ 4   ;LevelIncM        byte    1   
+      5+     0005       LevelIncD        equ 5   ;LevelIncD        byte    1   
+      5+     0006       LevelDecM        equ 6   ;LevelDecM        byte    1   
+      5+     0007       LevelDecD        equ 7   ;LevelDecD        byte    1   
+      5+     0008       LevelStrips      equ 8   ;LevelStrips      byte    4   ;NumStrips
+      5+     000C       LevelSize        equ 12  ;LevelSize        size        
+      5+                
+      5+                	;Level Data: strip byte values
+      5+                
+      5+     0000       StripStill	equ	0	;Frog doesn't move and is safe
+      5+     0001       StripMove	equ	1	;Frog is moving and is safe
+      5+     0002       StripHome	equ	2	;Frog has reached home
+      5+     0003       StripWall	equ	3	;Frog can't go here: wall
+      5+     0004       StripWDead	equ	4	;Frog dies in water
+      5+     0005       StripXDead	equ	5	;Frog Dies not in water
+      5+     000A       StripBDead	equ	10	;Frog can't move here, trying dies
+      5+                
+      5+                	; Anim Data
+      5+                                         ;                 struct      
+      5+     0000       AnimStrip        equ 0   ;AnimStrip        byte    1   ;the art strip holding the anim
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page    3
+
+
+      5+     0001       AnimWidth        equ 1   ;AnimWidth        byte    1   ;width of anim in 8 pixel pieces
+      5+     0002       AnimNum          equ 2   ;AnimNum          byte    1   ;Number of frames in animation
+      5+     0003       AnimPal          equ 3   ;AnimPal          byte    1   ;Palette
+      5+     0004       AnimStripX       equ 4   ;AnimStripX       byte    1   ;Number of 8 bit pixels into strip
+      5+     0005       AnimMove         equ 5   ;AnimMove         byte    1   ;Number of pixels movement each frame
+      5+     0006       AnimSize         equ 6   ;AnimSize         size        ;size of header
+      5+     0006       AnimTicks        equ 6   ;AnimTicks        byte    1   ;start of frame tickers
+      5+                
+      5+                	; Strip Animation
+      5+                                         ;                 struct      
+      5+     0000       SAnimNum         equ 0   ;SAnimNum         byte    1   ;number of frames in the animation
+      5+     0001       SAnimTick        equ 1   ;SAnimTick        byte    1   ;Number of ticks between frames
+      5+     0002       SAnimStrips      equ 2   ;SAnimStrips      byte    1   ;The first strip in the list of animating strips
+      5+                
+      5+                ; RAM
+      5+                	; Player Data
+      5+                                         ;                 struct      
+      5+     0000       PlayerScore      equ 0   ;PlayerScore      word    1   
+      5+     0002       PlayerLevel      equ 2   ;PlayerLevel      byte    1   
+      5+     0003       PlayerLives      equ 3   ;PlayerLives      byte    1   
+      5+     0004       PlayerHomeF      equ 4   ;PlayerHomeF      byte    1   
+      5+     0005       PlayerUnused     equ 5   ;PlayerUnused     byte    1   
+      5+     0006       PlayerVSize      equ 6   ;PlayerVSize      size        
+      5+                
+      5+                	; Level Data
+      5+                                         ;                 struct      
+      5+     0000       LevelSpeedU      equ 0   ;LevelSpeedU      byte    1   ;composite (current) speed
+      5+     0001       LevelSpeedF      equ 1   ;LevelSpeedF      byte    1   ;
+      5+     0002       LevelVFlags      equ 2   ;LevelVFlags      byte    1   
+      5+     0003       LevelOffset      equ 3   ;LevelOffset      byte    1   ;offset (LevelStrips - +3) to left strip number
+      5+     0004       LevelPageA       equ 4   ;LevelPageA       byte    1   ;Art page
+      5+     0005       LevelYoffA       equ 5   ;LevelYoffA       byte    1   ;Art yoffset
+      5+     0006       LevelAddr1       equ 6   ;LevelAddr1       word    1   ;Left Strip table address
+      5+     0008       LevelAddr2       equ 8   ;LevelAddr2       word    1   ;Right strip table address
+      5+     000A       LevelPage1       equ 10  ;LevelPage1       byte    1   ;Left or unmoving art page
+      5+     000B       LevelPage2       equ 11  ;LevelPage2       byte    1   ;Right or unused art page
+      5+     000C       LevelYoff1       equ 12  ;LevelYoff1       byte    1   ;Left or unmoving art offset
+      5+     000D       LevelYoff2       equ 13  ;LevelYoff2       byte    1   ;Right or unused art offset
+      5+     000E       LevelXoff1       equ 14  ;LevelXoff1       byte    1   ;Left X offset for art (pixels)
+      5+     000F       LevelXofff       equ 15  ;LevelXofff       byte    1   ;Left X offset fraction (pixels)
+      5+     0010       LevelVSize       equ 16  ;LevelVSize       size        
+      5+                
+      5+                	; Animation Data
+      5+                                         ;                 struct      
+      5+     0000       AnimBand         equ 0   ;AnimBand         word    1   ;Band animation is on
+      5+     0002       AnimAnim         equ 2   ;AnimAnim         word    1   ;which animation am I controlling
+      5+     0004       AnimXOff         equ 4   ;AnimXOff         word    1   ;offset from left edge of screen (+100h)
+      5+     0006       AnimXOffH        equ 6   ;AnimXOffH        byte    1   ;X offset high value
+      5+     0007       AnimFNum         equ 7   ;AnimFNum         byte    1   ;the frame number currently diplayed
+      5+     0008       AnimFTick        equ 8   ;AnimFTick        byte    1   ;how many ticks left till anim changes
+      5+     0009       AnimRange        equ 9   ;AnimRange        byte    1   ;width of animation area in pixels
+      5+     000A       AnimVFlags       equ 10  ;AnimVFlags       byte    1   ;flags
+      5+     000B       AnimXRel         equ 11  ;AnimXRel         word    1   ;relative position in area U.F
+      5+     000D       AnimYOff         equ 13  ;AnimYOff         byte    1   ;offset from top of screen
+      5+     000E       AnimCall         equ 14  ;AnimCall         byte    1   ;routine to call (1 to ...)
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page    4
+
+
+      5+     000F       AnimVSize        equ 15  ;AnimVSize        size        
+      5+                
+      5+                	;Strip Animation
+      5+                                         ;                 struct      
+      5+     0000       SAnimTime        equ 0   ;SAnimTime        byte    1   ;Time left before change
+      5+     0001       SAnimCur         equ 1   ;SAnimCur         byte    1   ;current strip in animation
+      5+     0002       SAnimVSize       equ 2   ;SAnimVSize       size        
+      5+                
+      5+                ; these two flags are also copied to LevelVFlag
+      5+     0001       LevelFlagS	equ	01h  	;Art does not move
+      5+     0002       LevelFlagH	equ	02h	;Art doesn't h-flip on direction change
+      5+                
+      5+     0080       LevelVFlagD	equ	80h	;80h= left to right
+      5+     0040       LevelVFlagH	equ	40h	;last byte processed was anim header
+      5+     0020       LevelVFlagT	equ	20h	;last byte processed was anim non-header
+      5+                
+      5+     0080       AnimVFlagD	equ	80h	;anim moving left to right
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game States
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     0000       Game_Open	equ	0
+      5+     0001       Game_Menus	equ	1
+      5+     0002       Game_Init	equ	2
+      5+     0003       Game_Next	equ	3	;go to next (or first, or only)
+      5+     0004       Game_Play	equ	4
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Zero Page Ram (0beh-0ffh)
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+00BE                         org     0beh
+      5+00BE            HoldSP      defs    2                   ;hold the game SP
+      5+00C0            CursorX     defs    1                   ;Cursor X,Y
+      5+00C1            CursorY     defs    1                   ;
+      5+00C2            GameState   defs    1                   ;game state
+      5+00C3            NumPlayers  defs    1                   ;1-MaxPlayers
+      5+00C4            GameMode    defs    1                   ;0=Arcade, 1=Tiger
+      5+00C5            Difficulty  defs    1                   ;0=Easy, 1=Arcade
+      5+00C6            Lives       defs    1                   ;3-5
+      5+00C7            Continue    defs    1                   ;0=Off, 1=On
+      5+00C8            StartLevel  defs    1                   ;1-5
+      5+00C9            Paused      defs    1                   ;1=game paused
+      5+00CA            SfxOn       defs    1                   ;1=Sound Effects on
+      5+00CB            MusicOn     defs    1                   ;1=Music On
+      5+00CC            DemoMode    defs    1                   ;1=Demo, 0=regular
+      5+00CD            sound_flag	defs	1
+      5+00CE            Timer	defs	2	;Time on level remaining (4E00h=full time)
+      5+                
+      5+00D0            temp0w      defs    2                   ;work areas word
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page    5
+
+
+      5+00D2            temp1w      defs    2                   ;work areas word
+      5+00D4            temp0       defs    1                   ;work areas
+      5+00D5            temp1       defs    1                   ;work areas
+      5+00D6            temp2       defs    1                   ;work areas
+      5+                
+      5+                	; Game Data
+      5+                
+      5+00D7            NextPlayer	defs	1
+      5+00D8            PlayerVAddr	defs	2
+      5+00DA            LevelAddr	defs	2
+      5+                
+      5+                	; Frog animation controls
+      5+                
+      5+00DC            FrogX	defs	2	;Current screen X
+      5+00DE            FrogY	defs	1	;Current screen Y
+      5+00DF            FrogMinY	defs	1	;Current minimum Y for scoring
+      5+00E0            FrogTick	defs	1	;Ticks till next move
+      5+00E1            FrogDir	defs	1	;1=S, 2=N, 3=E, 4=W, 0=sitting
+      5+00E2            FrogCnt	defs	1	;Count of remaining animations
+      5+00E3            FrogFlags	defs	1	;Frog Flags
+      5+00E4            FrogPage	defs	1	;page of frog art
+      5+00E5            FrogArtX	defs	1	;x of frog art
+      5+00E6            FrogArtY	defs	1	;y of frog art
+      5+00E7            FrogRest	defs	1	;resting animation
+      5+                
+      5+00E8            TargetX	defs	1	;Where Frog will be for texting
+      5+00E9            TargetY	defs	1	;
+      5+                
+      5+00EA            LastKey	defs	1	;Last Key entered
+      5+                
+      5+00EB            hold_byte1	defs	1
+      5+                
+      5+     0080       FrogFlagM	equ	80h	;on if moving with strip
+      5+                
+      5+     0001       FrogDirS	equ	1	;moving south
+      5+     0002       FrogDirN	equ	2	;moving north
+      5+     0003       FrogDirE	equ	3	;moving east
+      5+     0004       FrogDirW	equ	4	;moving west
+      5+     0005       FrogDirXW	equ	5	;dying waterdeath
+      5+     0006       FrogDirXL	equ	6	;dying landdeath
+      5+                
+      5+     0002       FrogSpeed	equ	2	;Number of ticks per move
+      5+     0004       FrogMoves	equ	4	;Number of movement pixels
+      5+     0004       FrogFrames	equ	4	;Number of frames
+      5+                
+      5+00EC            ZZZ	defs	10
+      5+                
+      5+00F6            testff:
+      5+                            if      testff .gt. 0ffh
+      5+                            error 	Too much data in zero page ram
+      5+                            endif
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Non-Zero page Ram (208h-37fh)
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page    6
+
+
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+0208             	org	208h
+      5+0208            PlayerData	defs	MaxPlayers*PlayerVSize
+      5+0238            LevelData	defs	NumBands*LevelVSize
+      5+02C8            AnimData	defs	NumAnims*AnimVSize
+      5+0340            SAnimData	defs	NumSAnims*SAnimVSize
+      5+                
+      5+0364            new_melody_ptr defs 1
+      5+0365            DemoPtr	defs	2
+      5+0367            DemoCnt	defs	1
+      5+                
+      5+0368            page_ptr1	defs	2
+      5+036A            index0	defs	1
+      5+036B            index1	defs	1
+      5+036C            index2	defs	1
+      5+036D            index3	defs	1
+      5+                
+      5+036E            test37f:
+      5+                	if	test37f .gt. 37fh
+      5+                	error	Too much data in non-zero page ram
+      5+                	endif
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; User input equates
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+                ;	001-013	 ;row 0 of screen, column 0 to 12
+      5+                ;	...	 ;...
+      5+                ;	118-082h ;row 9 of screen, column 0 to 12
+      5+                ;
+      5+                ;	spot on screen = row*13+column+1
+      5+                
+      5+     0082       UserScreen	equ	082h	;highest screen press
+      5+                
+      5+     0083       UserUp	equ	083h	;joypad up
+      5+     0084       UserDown	equ	084h	;joypad down
+      5+     0085       UserLeft	equ	085h	;joypad left
+      5+     0086       UserRight	equ	086h	;joypad right
+      5+                
+      5+     0087       UserMenu	equ	087h	;Menu button
+      5+     0089       UserSound	equ	089h	;Sound button
+      5+     008A       UserPause	equ	08ah	;Pause button
+      5+                
+      5+     008B       UserA	equ	08bh	;A button
+      5+     008C       UserB	equ	08ch	;B button
+      5+     008D       UserC	equ	08dh	;C button
+      5+     008E       UserD	equ	08eh	;D button
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Bank definitions
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page    7
+
+
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     0020       program_bank1   equ     020h
+      5+     0021       program_bank2   equ     021h
+      5+     0023       program_bank3   equ     023h
+      5+     0024       program_bank4   equ     024h
+      5+     0025       program_bank5   equ     025h
+      5+     0026       program_bank6   equ     026h
+      5+                
+      5+     0020       bankno_front0 equ   20h
+      5+     0021       bankno_front1 equ   21h
+      5+     0022       bankno_front2 equ   22h
+      5+     0023       bankno_sprite equ   23h
+      5+     0024       bankno_strip  equ   24h
+      5+     0072       bankno_winpic10 equ 72h ;    bankno_winpic9+2
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Macros
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+                ;	; long conditional branches
+      5+                ;
+      5+                ;breq:	macro	?dest
+      5+                ;	br	ne,cont???
+      5+                ;	jmp	eq,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+      5+                ;brne:	macro	?dest
+      5+                ;	br	eq,cont???
+      5+                ;	jmp	ne,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+      5+                ;brnz:	macro	?dest
+      5+                ;	br	z,cont???
+      5+                ;	jmp	nz,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+      5+                ;bruge:	macro	?dest
+      5+                ;	br	ult,cont???
+      5+                ;	jmp	uge,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+      5+                ;brugt:	macro	?dest
+      5+                ;	br	ule,cont???
+      5+                ;	jmp	ugt,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page    8
+
+
+      5+                ;brule:	macro	?dest
+      5+                ;	br	ugt,cont???
+      5+                ;	jmp	ule,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+      5+                ;brz:	macro	?dest
+      5+                ;	br	nz,cont???
+      5+                ;	jmp	z,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; The old stuff here
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+                ;ASB	include oldstuff.inc
+      5+                
+      5+                            program
+      6                 
+      7                         program
+      8                 
+      9      20F1       System_Call     equ     20f1h
+     10      00A8       sp_control      equ     0a8h
+     11                 
+     12      0028       UARTISR_RP      EQU     28H
+     13      00A5       UART_new_ibank  equ     0a5h
+     14      0100       UART_new_isr    equ     100h
+     15                 
+     16                 ;ASB        global          init_new_uart
+     17                         global          restore_uart
+     18                         global          Fi_graph
+     19                         global          Fi_patt
+     20                         GLOBAL          disable_pause,enable_pause
+     21                 	GLOBAL		Disp_setup
+     22                         global          Dsp_ch
+     23                 ;        global          Dsp_ch_i
+     24                         global          Ch_abs
+     25                         GLOBAL          Ch_abs_i
+     26                 ;        global          D_str,D_str_n,D_str_i
+     27                 ;       GLOBAL          D_str_i_n
+     28                         global          Str_abs
+     29                 ;        global          Str_abs_n,Str_abs_i_n
+     30                         GLOBAL          Str_abs_i
+     31                 ;        global          On_cur,Off_cur,Cur_ctrl
+     32                 ;       global          Line_n,Cls_line,Cls_eol
+     33                         global          Set_win
+     34                         global          Cur_pos
+     35                 ;	GLOBAL		Cls_win,Cls_eow
+     36                 	global		Cls_scn,Sel_font
+     37                         GLOBAL          Set_colr
+     38                         global          Def_font
+     39                         GLOBAL          Scn_colr
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page    9
+
+
+     40                 ;	GLOBAL		Scroll_h
+     41                 ;	GLOBAL		Scroll_v
+     42                 ;        GLOBAL          Blk_mov
+     43                         GLOBAL          Blk_rev
+     44                 	GLOBAL		Blk_cls
+     45                 ;	GLOBAL		Pan_h
+     46                 ;	GLOBAL		Pan_v
+     47                 	GLOBAL		Draw_line_v
+     48                 	GLOBAL		Draw_line_h
+     49                        GLOBAL          clear_A
+     50                        GLOBAL          clear_B
+     51                 	GLOBAL		Dsp_ch_sp
+     52                 ;	GLOBAL		Inc_cur_pos
+     53                         GLOBAL          Select_mode
+     54                 ;        GLOBAL          Text_back_colr
+     55                         GLOBAL          Fill_blk_colr
+     56                 	GLOBAL		SCAN_KEY
+     57                 	GLOBAL		CTRL_KBD
+     58                 	GLOBAL		SET_TMR
+     59                 	GLOBAL		CTRL_TMR
+     60                 	GLOBAL		SND_ADDR
+     61                         GLOBAL          CTRL_SP,CTRL_SPX
+     62                         GLOBAL          READTIME
+     63                 ;	GLOBAL		READDATE
+     64                 ;	GLOBAL		WR_TIME
+     65                 ;	GLOBAL		WR_DATE
+     66                 ;	GLOBAL		ALM_CTRL
+     67                 ;	GLOBAL		ALMALERT
+     68                 ;	GLOBAL		SETALARM
+     69                        GLOBAL          UART_setup
+     70                        GLOBAL          UART_enable
+     71                        GLOBAL          Reset_UART_queue
+     72                        GLOBAL          Send_a_byte
+     73                        GLOBAL          Receive_a_byte
+     74                 
+     75                 ;       GLOBAL          Modem_control
+     76                 ;	GLOBAL		Modem_status
+     77                 ;	GLOBAL		X_JUMP
+     78                 ;	GLOBAL		X_CALL
+     79                         GLOBAL          Switch_bank
+     80                 ;	GLOBAL		X_READ
+     81                 ;	GLOBAL		X_READ_N
+     82                 	GLOBAL		Setup_Melody
+     83                 	GLOBAL		Control_Melody
+     84                 ;	GLOBAL		Melody_Stop0
+     85                 ;        GLOBAL          Melody_Stop1
+     86                         GLOBAL          MemoryBlkReq
+     87                 ;        GLOBAL          MemoryBlkCreate
+     88                 	GLOBAL		Short_Beep
+     89                 	GLOBAL		Speech_Stop
+     90                 	GLOBAL		Check_Timer
+     91                 	GLOBAL		Delay_Timer
+     92                 
+     93                 	GLOBAL	disp_tmrovr
+     94                 ;	GLOBAL	Normal_colr
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page   10
+
+
+     95                        GLOBAL  Active_page_B
+     96                        GLOBAL  Active_page_A
+     97                 	GLOBAL	Fi_graph2
+     98                 	global	Swap_page
+     99                         global  Blk_mov_2
+    100                 ;	global	text_2_pixel
+    101                 ;	global	Cur_blinking
+    102                 ;	global	Blk_mov_swap_pg
+    103                 ;	global	Blk_mov_ab
+    104                 ;	global	set_timer
+    105                 ;	global	Chk_timer
+    106                 ;	global	check_font16
+    107                 ;	global	vramast1
+    108                 ;	global	vramast
+    109                 ;	global	Init_intnet
+    110                 ;	global	End_intnet
+    111                 ;	global	Fi_graph7
+    112                 ;	global	end_display7
+    113                 ;	global	init_display
+    114                 ;	global	ret_cur
+    115                 ;	global	save_cur
+    116                 	
+    117                 ;        global  Cls_from_line
+    118                 ;        global  Cls_from_start
+    119                 ;        global  Cart_open
+    120                 
+    121                         global  Text_in_A
+    122                         global  Text_in_B
+    123                 	
+    124                 ;        global  OFF_UNIT
+    125                 ;        global  Setup_vector
+    126                 ;        global  Int_lda,Int_sta
+    127                 	global	SysKeyHandler
+    128                 	global	quit_box
+    129                 ;        global  Output_scan
+    130                         global  Return_line
+    131                 	global	enable_timeout
+    132                 	global	disable_timeout
+    133                 	global	call_appl
+    134                 	global	restart_timeout
+    135                 	global	Req_RAM_Block
+    136                 ;        global  Scheme_B_start
+    137                 ;        global  WGSpeechStart
+    138                 	global	yn_box
+    139                 
+    140                 
+    141                 	global	Output_scan
+    142                 
+    143 0000            Output_scan:
+    144 0000 1E06       	pushw	rr6
+    145 0002 C77A       	mov	r7,#7ah
+    146 0004 9820F1     	jmp	System_Call
+    147                 
+    148 0007            Return_line:
+    149 0007 1E06       	pushw	rr6
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page   11
+
+
+    150 0009 C77B       	mov	r7,#7bh
+    151 000B 9820F1     	jmp	System_Call
+    152                 
+    153 000E            Active_page_B:
+    154 000E 1E06       	pushw	rr6
+    155 0010 C754       	mov	r7,#54h
+    156 0012 9820F1     	jmp	System_Call
+    157 0015            Active_page_A:
+    158 0015 1E06       	pushw	rr6
+    159 0017 C755       	mov	r7,#55h
+    160 0019 9820F1     	jmp	System_Call
+    161                 
+    162                 
+    163 001C            Str_abs_i:
+    164 001C 1E06       	pushw	rr6
+    165 001E C70B       	mov	r7,#0bh
+    166 0020 D82E               br      System_Call1
+    167                 
+    168 0022            Ch_abs_i:
+    169 0022 1E06       	pushw	rr6
+    170 0024 C704       	mov	r7,#4
+    171 0026 D828               br      System_Call1
+    172                 
+    173 0028            Fill_blk_colr:
+    174 0028 1E06               pushw   rr6
+    175 002A C72E               mov     r7,#2eh
+    176 002C D822               br      System_Call1
+    177 002E            Disp_setup:
+    178 002E 1E06       	pushw	rr6
+    179 0030 C700       	mov	r7,#0
+    180 0032 D81C       	br	System_Call1
+    181 0034            Dsp_ch:
+    182 0034 1E06              pushw   rr6
+    183 0036 C701              mov     r7,#1
+    184 0038 D816              br      System_Call1
+    185                 
+    186 003A            Ch_abs:
+    187 003A 1E06              pushw   rr6
+    188 003C C703              mov     r7,#3
+    189 003E D810              br      System_Call1
+    190                 
+    191 0040            Str_abs:
+    192 0040 1E06              pushw   rr6
+    193 0042 C709              mov     r7,#9
+    194 0044 D80A              br      System_Call1
+    195                 
+    196 0046            Cur_pos:
+    197 0046 1E06              pushw   rr6
+    198 0048 C710              mov     r7,#10h
+    199 004A D804              br      System_Call1
+    200 004C            Set_win:
+    201 004C 1E06              pushw   rr6
+    202 004E C711              mov     r7,#11h
+    203                 
+    204 0050            System_Call1:
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page   12
+
+
+    205 0050 9820F1     	jmp	System_Call
+    206                 
+    207 0053            Cls_scn:
+    208 0053 1E06       	pushw	rr6
+    209 0055 C717       	mov	r7,#17h
+    210 0057 D834       	br	System_Call2
+    211 0059            Sel_font:
+    212 0059 1E06       	pushw	rr6
+    213 005B C718       	mov	r7,#18h
+    214 005D D82E       	br	System_Call2
+    215 005F            Set_colr:
+    216 005F 1E06              pushw   rr6
+    217 0061 C719              mov     r7,#19h
+    218 0063 D828              br      System_Call2
+    219 0065            Def_font:
+    220 0065 1E06              pushw   rr6
+    221 0067 C71A              mov     r7,#1ah
+    222 0069 D822              br      System_Call2
+    223 006B            Scn_colr:
+    224 006B 1E06       	pushw	rr6
+    225 006D C71B       	mov	r7,#1bh
+    226 006F D81C       	br	System_Call2
+    227                 
+    228 0071            Fi_patt:
+    229 0071 1E06              pushw   rr6
+    230 0073 C71C              mov     r7,#1ch
+    231 0075 D816              br      System_Call2
+    232                 
+    233 0077            Fi_graph:
+    234 0077 1E06               pushw   rr6
+    235 0079 C71D               mov     r7,#1dh
+    236 007B D810               br      System_Call2
+    237                 
+    238 007D            set_line_color:
+    239 007D 1E06       	pushw	rr6
+    240 007F C721       	mov	r7,#21h
+    241 0081 D80A       	br	System_Call2
+    242 0083            Blk_rev:
+    243 0083 1E06              pushw   rr6
+    244 0085 C722              mov     r7,#22h
+    245 0087 D804              br      System_Call2
+    246 0089            Blk_cls:
+    247 0089 1E06       	pushw	rr6
+    248 008B C723       	mov	r7,#23h
+    249 008D            System_Call2:
+    250 008D D8C1               br     System_Call1
+    251                 
+    252 008F            Draw_line_v:
+    253 008F 1E06       	pushw	rr6
+    254 0091 C726       	mov	r7,#26h
+    255 0093 D834       	br	System_Call3
+    256 0095            Draw_line_h:
+    257 0095 1E06       	pushw	rr6
+    258 0097 C727       	mov	r7,#27h
+    259 0099 D82E       	br	System_Call3
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page   13
+
+
+    260 009B            clear_A:
+    261 009B 1E06              pushw   rr6
+    262 009D C728              mov     r7,#28h
+    263 009F D828              br      System_Call3
+    264 00A1            clear_B:
+    265 00A1 1E06              pushw   rr6
+    266 00A3 C729              mov     r7,#29h
+    267 00A5 D822              br      System_Call3
+    268 00A7            Dsp_ch_sp:
+    269 00A7 1E06       	pushw	rr6
+    270 00A9 C72A       	mov	r7,#2ah
+    271 00AB D81C       	br	System_Call3
+    272                 
+    273 00AD            Select_mode:
+    274 00AD 1E06               pushw   rr6
+    275 00AF C72C               mov     r7,#2ch
+    276 00B1 D816               br      System_Call3
+    277                 
+    278 00B3            SCAN_KEY:
+    279 00B3 1E06       	pushw	rr6
+    280 00B5 C72F       	mov	r7,#2fh
+    281 00B7 D810       	br	System_Call3
+    282 00B9            CTRL_KBD:
+    283 00B9 1E06       	pushw	rr6
+    284 00BB C730       	mov	r7,#30h
+    285 00BD D80A       	br	System_Call3
+    286 00BF            SET_TMR:
+    287 00BF 1E06       	pushw	rr6
+    288 00C1 C731       	mov	r7,#31h
+    289 00C3 D804       	br	System_Call3
+    290 00C5            CTRL_TMR:
+    291 00C5 1E06       	pushw	rr6
+    292 00C7 C732       	mov	r7,#32h
+    293 00C9            System_Call3:
+    294 00C9 9820F1     	jmp	System_Call
+    295 00CC            SND_ADDR:
+    296 00CC 1E06       	pushw	rr6
+    297 00CE C733       	mov	r7,#33h
+    298 00D0 D83A       	br	System_Call4
+    299                 
+    300 00D2            CTRL_SPX:
+    301                 ;-----------------------------------
+    302                        ;(26/3_)
+    303                        ;check if it is START speech
+    304                         ;
+    305                 
+    306 00D2 1E00               pushw   rr0
+    307 00D4 550300             and     r0,#3h
+    308 00D7 500100             cmp     r0,#1
+    309 00DA DE24               br      ne,not_start
+    310                 
+    311 00DC            is_start:
+    312 00DC 8DBC1A             bbs     0bch,#5,delay_200
+    313                 
+    314                 ;        mov     sgda,r0
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page   14
+
+
+    315                 ;        mov     sgc,#88h
+    316 00DF B84E               mov     4eh,r0
+    317 00E1 588840             mov     40h,#88h
+    318 00E4 0800               inc     r0
+    319 00E6 1E00               pushw   rr0
+    320 00E8 1F00               popw    rr0
+    321 00EA 1E00               pushw   rr0
+    322 00EC 1F00               popw    rr0
+    323 00EE 1E00               pushw   rr0
+    324 00F0 1F00               popw    rr0
+    325 00F2 1E00               pushw   rr0
+    326 00F4 1F00               popw    rr0
+    327 00F6 8700E3             bbc     r0,#7,is_start          ;ramp_up
+    328                 
+    329 00F9            delay_200:
+    330 00F9 78F000             movw    rr0,#0f000h             ;6
+    331 00FC            delay_200ms:
+    332 00FC 1900               decw    rr0                     ;8
+    333 00FE DEFC               br      nz,delay_200ms          ;8
+    334 0100            not_start:
+    335 0100 1F00               popw    rr0
+    336                 
+    337                 ;----------------------------------------
+    338 0102            CTRL_SP:
+    339                 ;	bbc	r0,#0,ctrl_sp1
+    340                 ;	jmp	start_speech1
+    341                 
+    342 0102            ctrl_sp1:
+    343 0102 1E06               pushw   rr6
+    344 0104 C734       	mov	r7,#34h
+    345 0106 D804       	br	System_Call4
+    346 0108            READTIME:
+    347 0108 1E06              pushw   rr6
+    348 010A C735              mov     r7,#35h
+    349 010C            System_Call4:
+    350 010C 9820F1     	jmp	System_Call
+    351                 
+    352 010F            Switch_bank:
+    353 010F 1E06              pushw   rr6
+    354 0111 C745              mov     r7,#45h
+    355 0113 D828              br      System_Call5
+    356                 
+    357 0115            Setup_Melody:
+    358 0115 1E06       	pushw	rr6
+    359 0117 C748       	mov	r7,#48h
+    360 0119 D822       	br	System_Call5
+    361 011B            Control_Melody:
+    362 011B 1E06       	pushw	rr6
+    363 011D C749       	mov	r7,#49h
+    364 011F D81C       	br	System_Call5
+    365                 
+    366 0121            MemoryBlkReq:
+    367 0121 1E06       	pushw	rr6
+    368 0123 C74C       	mov	r7,#4ch
+    369 0125 D816       	br	System_Call5
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page   15
+
+
+    370                 
+    371 0127            Short_Beep:
+    372 0127 1E06       	pushw	rr6
+    373 0129 C74E       	mov	r7,#4eh
+    374 012B D810       	br	System_Call5
+    375 012D            Speech_Stop:
+    376 012D 1E06       	pushw	rr6
+    377 012F C74F       	mov	r7,#4fh
+    378 0131 D80A       	br	System_Call5
+    379 0133            Check_Timer:
+    380 0133 1E06       	pushw	rr6
+    381 0135 C750       	mov	r7,#50h
+    382 0137 D804       	br	System_Call5
+    383 0139            Delay_Timer:
+    384 0139 1E06       	pushw	rr6
+    385 013B C751       	mov	r7,#51h
+    386 013D            System_Call5:
+    387 013D 9820F1     	jmp	System_Call
+    388                 
+    389 0140            disp_tmrovr:
+    390 0140 1E06       	pushw	rr6
+    391 0142 C752       	mov	r7,#52h
+    392 0144 D8F7       	br	System_Call5
+    393                 
+    394 0146            Fi_graph2:
+    395 0146 1E06       	pushw	rr6
+    396 0148 C756       	mov	r7,#56h
+    397 014A D8F1       	br	System_Call5
+    398                 
+    399 014C            Swap_page:
+    400 014C 1E06       	pushw	rr6
+    401 014E C757       	mov	r7,#57h
+    402 0150 D8EB       	br	System_Call5
+    403                 
+    404 0152            Blk_mov_2:
+    405 0152 1E06               pushw   rr6
+    406 0154 C758               mov     r7,#58h
+    407 0156 D8E5               br      System_Call5
+    408                 
+    409 0158            Text_in_A:
+    410 0158 1E06               pushw   rr6
+    411 015A C76C               mov     r7,#6ch
+    412 015C            System_Call6:
+    413 015C 9820F1             jmp     System_Call
+    414                 
+    415 015F            Text_in_B:
+    416 015F 1E06               pushw   rr6
+    417 0161 C76D               mov     r7,#6dh
+    418 0163 D8F7               br	System_Call6
+    419                 
+    420                 ;Alt_fi_graph2:
+    421                 ;        pushw   rr6
+    422                 ;        mov     r7,#70h
+    423                 ;        br      System_Call6
+    424                 ;
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page   16
+
+
+    425                 ;Alt_fi_graph:
+    426                 ;        pushw   rr6
+    427                 ;        mov     r7,#71h
+    428                 ;        br      System_Call6
+    429                 ;
+    430                 ;Toggle_cart:
+    431                 ;        pushw   rr6
+    432                 ;        mov     r7,#72h
+    433                 ;        br      System_Call6
+    434                 ;
+    435                 ;Alt_cart_disp:
+    436                 ;        pushw   rr6
+    437                 ;        mov     r7,#73h
+    438                 ;        br      System_Call6
+    439                 
+    440                 ;Pre_fi_graph:
+    441                 ;        pushw   rr6
+    442                 ;        mov     r7,#74h
+    443                 ;        br      System_Call6
+    444                 ;
+    445                 ;Post_fi_graph:
+    446                 ;        pushw   rr6
+    447                 ;        mov     r7,#75h
+    448                 ;        br      System_Call6
+    449                 
+    450 0165            SysKeyHandler:
+    451 0165 1E06       	pushw	rr6
+    452 0167 C778       	mov	r7,#78h
+    453 0169 D8F1       	br	System_Call6	
+    454                 
+    455 016B            quit_box:
+    456 016B 1E06       	pushw	rr6
+    457 016D C779       	mov	r7,#79h
+    458 016F D8EB       	br	System_Call6
+    459                 
+    460 0171            enable_timeout:
+    461                 ;        pushw   rr6
+    462                 ;        mov     r7,#7ch
+    463                 ;        br      System_Call7
+    464 0171 A5A8               bclr    sp_control,#5           ;enable time_out
+    465 0173 F8                 ret
+    466                 
+    467 0174            disable_timeout:
+    468                 ;        pushw   rr6
+    469                 ;        mov     r7,#7dh
+    470                 ;        br      System_Call7
+    471 0174 ADA8               bset    sp_control,#5           ;disable time_out
+    472 0176 F8                 ret
+    473                 
+    474                 
+    475 0177            call_appl:
+    476 0177 1E06       	pushw	rr6
+    477 0179 C77E       	mov	r7,#7eh
+    478 017B            System_Call7:
+    479 017B 9820F1             jmp     System_Call
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page   17
+
+
+    480                 
+    481 017E            restart_timeout:
+    482 017E 1E06       	pushw	rr6
+    483 0180 C77F       	mov	r7,#7fh
+    484 0182 D8F7       	br	System_Call7
+    485 0184            Req_RAM_Block:
+    486 0184 1E06       	pushw	rr6
+    487 0186 C780       	mov	r7,#80h
+    488 0188 D8F1       	br	System_Call7
+    489                 
+    490 018A            yn_box:
+    491 018A 1E06       	pushw	rr6
+    492 018C C781       	mov	r7,#81h
+    493 018E D8EB       	br	System_Call7	
+    494                 	
+    495 0190            enable_pause:
+    496 0190 1E06       	pushw	rr6
+    497 0192 C782       	mov	r7,#82h
+    498 0194 D8E5       	br	System_Call7	
+    499                 	
+    500 0196            disable_pause:
+    501 0196 1E06       	pushw	rr6
+    502 0198 C783       	mov	r7,#83h
+    503 019A D8DF       	br	System_Call7	
+    504                 
+    505 019C            UART_setup:
+    506 019C 1E06               pushw   rr6
+    507 019E C73C               mov     r7,#3ch
+    508 01A0 D8D9               br      System_Call7
+    509 01A2            UART_enable:
+    510 01A2 1E06               pushw   rr6
+    511 01A4 C73D               mov     r7,#3dh
+    512 01A6 D8D3               br      System_Call7
+    513 01A8            Reset_UART_queue:
+    514 01A8 1E06               pushw   rr6
+    515 01AA C73E               mov     r7,#3eh
+    516 01AC D8CD               br      System_Call7
+    517 01AE            Send_a_byte:
+    518 01AE 1E06               pushw   rr6
+    519 01B0 C73F               mov     r7,#3fh
+    520 01B2 D8C7               br      System_Call7
+    521 01B4            Receive_a_byte:
+    522 01B4 1E06               pushw   rr6
+    523 01B6 C740               mov     r7,#40h
+    524 01B8 D8C1               br      System_Call7
+    525                 
+    526                 
+    527                 ;ASBinit_new_uart:
+    528                 ;ASB        push    ps1
+    529                 ;ASB        di
+    530                 ;ASB        push    ps0
+    531                 ;ASB        movm    ps0,#7,#UARTISR_RP
+    532                 ;ASB        movw    rr10,UART_new_isr
+    533                 ;ASB        mov     r9,UART_new_ibank
+    534                 ;ASB        movw    rr0,#new_uartisr
+
+
+
+System C SM8521 Assembler V1.10            Wed Dec 23 17:35:34 1998  Page   18
+
+
+    535                 ;ASB        movw    UART_new_isr,rr0
+    536                 ;ASB        mov     r0,mmu2
+    537                 ;ASB        mov     UART_new_ibank,r0
+    538                 ;ASB        POP     PS0
+    539                 ;ASB        POP     PS1
+    540                 ;ASB        RET
+    541                 
+    542                 
+    543                 
+    544 01BA            restore_uart:
+    545 01BA 0E1F       	push	ps1
+    546 01BC FE         	di
+    547 01BD 0E1E       	push	ps0
+    548 01BF 5F1E0728   	movm	ps0,#7,#UARTISR_RP
+    549 01C3 4809A5     	mov	UART_new_ibank,r9
+    550 01C6 3B980100   	movw	UART_new_isr,rr10
+    551 01CA 0F1E       	pop	ps0
+    552 01CC 0F1F       	pop	ps1
+    553 01CE F8         	ret
+    554                 
+    555                 
+    556                 ;ASBnew_uartisr:
+    557                 ;ASB        push    ps0
+    558                 ;ASB        movm    ps0,#7,#UARTISR_RP
+    559                 ;ASB        mov     r7,uarts
+    560                 ;ASB;//        mov     0d0h,r7
+    561                 ;ASB        mov     uart_ram,r7
+    562                 ;ASB        movw    rr2,rr10
+    563                 ;ASB        addw    rr2,#8
+    564                 ;ASB        jmp     @rr2
+    565                 
+    566                 
+    567 01CF             	end

@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: [Joystick] Section (JUKEBOX.INI)
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="[Joystick] Section (JUKEBOX.INI)">[Joystick] Section (JUKEBOX.INI)</a></h1>
+
+<ul>
+<li><a href="#JoyType">JoyType</a> 
+</ul>
+
+<p>
+The [Joystick] section is not normally used; its purpose is to load 
+special drivers for non-standard DOS joysticks, or to specify the Win32
+joystick driver in Windows as opposed to the standard DirectInput driver.
+
+<p><br>
+<div class="al-api"><b>[Joystick] <a name="JoyType">JoyType</a></b></div><br>
+
+<p>
+DOS joystick drivers :
+
+<blockquote class="text"><pre>
+  0        - none
+  STD      - standard 2-button
+  2PAD     - dual standard 2-button
+  4BUT     - standard 4-button
+  6BUT     - standard 6-button
+  8BUT     - standard 8-button
+  FPRO     - CH Flightstick Pro
+  WING     - Logitech Wingman Extreme
+  SW       - Microsoft Sidewinder digital pad
+  SWAG     - Microsoft Sidewinder digital pad (aggressive)
+  SWPP     - Microsoft Sidewinder 3D/Precision/Force Feedback Pro
+  GPRO     - Gravis GamePad Pro
+  GRIP     - Gravis GrIP
+  GRI4     - Gravis GrIP (4-axis only)
+  SNE1     - SNES joypads connected to LPT1
+  SNE2     - SNES joypads connected to LPT2
+  SNE3     - SNES joypads connected to LPT3
+  PSX1     - PSX joypads connected to LPT1
+  PSX2     - PSX joypads connected to LPT2
+  PSX3     - PSX joypads connected to LPT3
+  N641     - N64 joypads connected to LPT1
+  N642     - N64 joypads connected to LPT2
+  N643     - N64 joypads connected to LPT3
+  DB91     - Pair of 2-button joysticks connected to LPT1
+  DB92     - Pair of 2-button joysticks connected to LPT2
+  DB93     - Pair of 2-button joysticks connected to LPT3
+  TGX1     - TurboGraFX joysticks connected to LPT1
+  TGX2     - TurboGraFX joysticks connected to LPT2
+  TGX3     - TurboGraFX joysticks connected to LPT3
+  SEGI     - IF-SEGA joystick interface card (ISA bus)
+  SEGP     - IF-SEGA joystick interface card (PCI bus)
+  SGPF     - IF-SEGA joystick interface card (fast PCI bus)
+  WWAR     - Wingman Warrior
+</pre></blockquote>
+
+<p>
+Windows joystick drivers :
+
+<blockquote class="text"><pre>
+  0        - none
+  DX       - DirectInput joystick
+  W32      - Win32 joystick
+</pre></blockquote>
+
+
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked022.html#Joystick" title="">Joystick</a>.</blockquote>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

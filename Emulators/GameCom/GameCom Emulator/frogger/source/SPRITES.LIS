@@ -1,0 +1,517 @@
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:55 1998  Page    1
+
+
+      1                 ;****************************************************************************************
+      2                 ;**  Animation Definition Table
+      3                 ;****************************************************************************************
+      4                 ;**
+      5                 ;** Questions/Comments: 
+      6                 
+      7 0000            ANIMATIONS:
+      8 0000 0055'      	defw	frogger_up
+      9 0002 0064'      	defw	frogger_left
+     10 0004 0073'      	defw	frogger_water
+     11 0006 0085'      	defw	frogger_ground
+     12 0008 0097'      	defw	frogger_home
+     13 000A 00A0'      	defw	score_100
+     14 000C 00A9'      	defw	score_200
+     15 000E 00B2'      	defw	bonus_bug
+     16 0010 00CA'      	defw	c_slowcar
+     17 0012 00D6'      	defw	c_dozer
+     18 0014 00E2'      	defw	c_fastcar1
+     19 0016 00ED'      	defw	c_truck
+     20 0018 00FD'      	defw	c_fastcar2
+     21 001A 0109'      	defw	dozer
+     22 001C 0114'      	defw	transam1
+     23 001E 0122'      	defw	transam2
+     24 0020 0130'      	defw	miata
+     25 0022 013E'      	defw	gmcpickup
+     26 0024 014C'      	defw	copcar
+     27 0026 015A'      	defw	limo
+     28 0028 016C'      	defw	truck
+     29 002A 017C'      	defw	bus
+     30 002C 0190'      	defw	bigtruck
+     31 002E 01AA'      	defw	train
+     32 0030 01BC'      	defw	turtle
+     33 0032 01FC'      	defw	otter
+     34 0034 0040'      	defw	snake
+     35 0036 0208'      	defw	gator
+     36 0038 0229'      	defw	gatorhead
+     37 003A 0235'      	defw	c_gator
+     38 003C 0249'      	defw	speedboat
+     39 003E 0255'      	defw	ferry
+     40                 
+     41                 snake: global snake
+     42 0040 0A         	defb	10		;strip containing animation
+     43 0041 04         	defb	04		;width of frame in 8x8 blocks
+     44 0042 03         	defb	03		;frames of animation
+     45 0043 E4         	defb	0e4h		;PAL
+     46 0044 00         	defb	00		;Indented by X 8x8 blocks
+     47 0045 04         	defb	4		;Pixels movement per frame
+     48 0046 191919     	defb	25,25,25		;how many ticks each frame of animtion is held for
+     49 0049 05050505   	defb	5,5,5,5		;collsion for each frame of animation (repeat)
+     50 004D 05050505   	defb	5,5,5,5		;collsion for each frame of animation (repeat)
+     51 0051 05050505   	defb	5,5,5,5		;collsion for each frame of animation (repeat)
+     52                 
+     53                 frogger_up: global frogger_up
+     54 0055 00         	defb	00		;strip containing animation
+     55 0056 02         	defb	02		;width of frame in 8x8 blocks
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:55 1998  Page    2
+
+
+     56 0057 03         	defb	03		;frames of animation
+     57 0058 E4         	defb	0e4h		;PAL
+     58 0059 00         	defb	00		;Indented by X 8x8 blocks
+     59 005A 04         	defb	4		;Pixels moved each frame
+     60 005B 020202     	defb	02,02,02	;how many ticks each frame of animtion is held for
+     61 005E 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     62 0060 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     63 0062 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     64                 
+     65                 frogger_left: global frogger_left
+     66 0064 00         	defb	00		;strip containing animation
+     67 0065 02         	defb	02		;width of frame in 8x8 blocks
+     68 0066 03         	defb	03		;frames of animation
+     69 0067 E4         	defb	0e4h		;PAL
+     70 0068 06         	defb	06		;Indented by X 8x8 blocks
+     71 0069 04         	defb	4		;Pixels moved each frame
+     72 006A 020202     	defb	02,02,02	;how many ticks each frame of animtion is held for
+     73 006D 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     74 006F 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     75 0071 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     76                 
+     77                 frogger_water: global frogger_water
+     78 0073 00         	defb	00		;strip containing animation
+     79 0074 02         	defb	02		;width of frame in 8x8 blocks
+     80 0075 04         	defb	04		;frames of animation
+     81 0076 E4         	defb	0e4h		;PAL
+     82 0077 0C         	defb	12		;Indented by X 8x8 blocks
+     83 0078 04         	defb	4		;Pixels moved each frame
+     84 0079 05050509   	defb	05,05,05,09	;how many ticks each frame of animtion is held for
+     85 007D 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     86 007F 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     87 0081 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     88 0083 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     89                 
+     90                 frogger_ground: global frogger_ground
+     91 0085 00         	defb	00		;strip containing animation
+     92 0086 02         	defb	02		;width of frame in 8x8 blocks
+     93 0087 04         	defb	04		;frames of animation
+     94 0088 E4         	defb	0e4h		;PAL
+     95 0089 14         	defb	20		;Indented by X 8x8 blocks
+     96 008A 04         	defb	4		;Pixels moved each frame
+     97 008B 05050509   	defb	05,05,05,09	;how many ticks each frame of animtion is held for
+     98 008F 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+     99 0091 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+    100 0093 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+    101 0095 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+    102                 
+    103                 frogger_home: global frogger_home
+    104 0097 00         	defb	00		;strip containing animation
+    105 0098 02         	defb	02		;width of frame in 8x8 blocks
+    106 0099 01         	defb	01		;frames of animation
+    107 009A E4         	defb	0e4h		;PAL
+    108 009B 1C         	defb	28		;Indented by X 8x8 blocks
+    109 009C 04         	defb	4		;Pixels moved each frame
+    110 009D 02         	defb	02		;how many ticks each frame of animtion is held for
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:55 1998  Page    3
+
+
+    111 009E 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+    112                 
+    113                 score_100: global score_100
+    114 00A0 01         	defb	01		;strip containing animation
+    115 00A1 02         	defb	02		;width of frame in 8x8 blocks
+    116 00A2 01         	defb	01		;frames of animation
+    117 00A3 E4         	defb	0e4h		;PAL
+    118 00A4 00         	defb	00		;Indented by X 8x8 blocks
+    119 00A5 04         	defb	4		;Pixels moved each frame
+    120 00A6 0A         	defb	10		;how many ticks each frame of animtion is held for
+    121 00A7 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+    122                 
+    123                 score_200: global score_200
+    124 00A9 01         	defb	01		;strip containing animation
+    125 00AA 02         	defb	02		;width of frame in 8x8 blocks
+    126 00AB 01         	defb	01		;frames of animation
+    127 00AC E4         	defb	0e4h		;PAL
+    128 00AD 02         	defb	02		;Indented by X 8x8 blocks
+    129 00AE 04         	defb	4		;Pixels moved each frame
+    130 00AF 0A         	defb	10		;how many ticks each frame of animtion is held for
+    131 00B0 0606       	defb	06,06		;collsion for each frame of animation (repeat)
+    132                 
+    133                 bonus_bug: global bonus_bug
+    134 00B2 01         	defb	01		;strip containing animation
+    135 00B3 02         	defb	02		;width of frame in 8x8 blocks
+    136 00B4 01         	defb	01		;frames of animation
+    137 00B5 E4         	defb	0e4h		;PAL
+    138 00B6 04         	defb	04		;Indented by X 8x8 blocks
+    139 00B7 04         	defb	4		;Pixels moved each frame
+    140 00B8 0A         	defb	10		;how many ticks each frame of animtion is held for
+    141 00B9 0707       	defb	07,07		;collsion for each frame of animation (repeat)
+    142                 
+    143                 frogger_right: global frogger_right
+    144 00BB 01         	defb	01		;strip containing animation
+    145 00BC 02         	defb	02		;width of frame in 8x8 blocks
+    146 00BD 03         	defb	03		;frames of animation
+    147 00BE E4         	defb	0e4h		;PAL
+    148 00BF 06         	defb	06		;Indented by X 8x8 blocks
+    149 00C0 04         	defb	4		;Pixels moved each frame
+    150 00C1 020202     	defb	02,02,02	;how many ticks each frame of animtion is held for
+    151 00C4 0808       	defb	08,08		;collsion for each frame of animation (repeat)
+    152 00C6 0808       	defb	08,08		;collsion for each frame of animation (repeat)
+    153 00C8 0808       	defb	08,08		;collsion for each frame of animation (repeat)
+    154                 
+    155                 
+    156                 
+    157                 c_slowcar: global c_slowcar
+    158 00CA 02         	defb	02		;strip containing animation
+    159 00CB 02         	defb	02		;width of frame in 8x8 blocks
+    160 00CC 02         	defb	02		;frames of animation
+    161 00CD E4         	defb	0e4h		;PAL
+    162 00CE 00         	defb	00		;Indented by X 8x8 blocks
+    163 00CF 04         	defb	4		;Pixels moved each frame
+    164 00D0 0505       	defb	05,05		;how many ticks each frame of animtion is held for
+    165 00D2 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:55 1998  Page    4
+
+
+    166 00D4 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    167                 
+    168                 c_dozer: global c_dozer
+    169 00D6 02         	defb	02		;strip containing animation
+    170 00D7 02         	defb	02		;width of frame in 8x8 blocks
+    171 00D8 02         	defb	02		;frames of animation
+    172 00D9 E4         	defb	0e4h		;PAL
+    173 00DA 04         	defb	04		;Indented by X 8x8 blocks
+    174 00DB 04         	defb	4		;Pixels moved each frame
+    175 00DC 0505       	defb	05,05		;how many ticks each frame of animtion is held for
+    176 00DE 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    177 00E0 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    178                 
+    179                 c_fastcar1: global c_fastcar1
+    180 00E2 02         	defb	02		;strip containing animation
+    181 00E3 02         	defb	02		;width of frame in 8x8 blocks
+    182 00E4 02         	defb	02		;frames of animation
+    183 00E5 E4         	defb	0e4h		;PAL
+    184 00E6 08         	defb	08		;Indented by X 8x8 blocks
+    185 00E7 04         	defb	4		;Pixels moved each frame
+    186 00E8 05         	defb	05		;how many ticks each frame of animtion is held for
+    187 00E9 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    188 00EB 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    189                 
+    190                 c_truck: global c_truck
+    191 00ED 02         	defb	02		;strip containing animation
+    192 00EE 04         	defb	04		;width of frame in 8x8 blocks
+    193 00EF 02         	defb	02		;frames of animation
+    194 00F0 E4         	defb	0e4h		;PAL
+    195 00F1 0C         	defb	12		;number of 8x8 squares of space before animation starts
+    196 00F2 04         	defb	4		;Pixels moved each frame
+    197 00F3 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    198 00F5 05050505   	defb	5,5,5,5		;collsion for each frame of animation (repeat)
+    199 00F9 05050505   	defb	5,5,5,5		;collsion for each frame of animation (repeat)
+    200                 
+    201                 c_fastcar2: global c_fastcar2
+    202 00FD 02         	defb	02		;strip containing animation
+    203 00FE 03         	defb	03		;width of frame in 8x8 blocks
+    204 00FF 02         	defb	02		;frames of animation
+    205 0100 E4         	defb	0e4h		;PAL
+    206 0101 14         	defb	20		;number of 8x8 squares of space before animation starts
+    207 0102 04         	defb	4		;Pixels moved each frame
+    208 0103 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    209 0105 0505       	defb	5,5		;collsion for each frame of animation (repeat)
+    210 0107 0505       	defb	5,5		;collsion for each frame of animation (repeat)
+    211                 
+    212                 dozer: global dozer
+    213 0109 02         	defb	02		;strip containing animation
+    214 010A 03         	defb	03		;width of frame in 8x8 blocks
+    215 010B 02         	defb	02		;frames of animation
+    216 010C E4         	defb	0e4h		;PAL
+    217 010D 18         	defb	24		;number of 8x8 squares of space before animation starts
+    218 010E 04         	defb	4		;Pixels moved each frame
+    219 010F 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    220 0111 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:55 1998  Page    5
+
+
+    221                 
+    222                 transam1: global transam1
+    223 0114 03         	defb	03		;strip containing animation
+    224 0115 02         	defb	02		;width of frame in 8x8 blocks
+    225 0116 02         	defb	02		;frames of animation
+    226 0117 E4         	defb	0e4h		;PAL
+    227 0118 00         	defb	00		;Indented by X 8x8 blocks
+    228 0119 04         	defb	4		;Pixels moved each frame
+    229 011A 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    230 011C 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+    231 011F 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+    232                 
+    233                 
+    234                 transam2: global transam2
+    235 0122 03         	defb	03		;strip containing animation
+    236 0123 03         	defb	03		;width of frame in 8x8 blocks
+    237 0124 02         	defb	02		;frames of animation
+    238 0125 E4         	defb	0e4h		;PAL
+    239 0126 06         	defb	06		;Indented by X 8x8 blocks
+    240 0127 04         	defb	4		;Pixels moved each frame
+    241 0128 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    242 012A 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+    243 012D 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+    244                 
+    245                 miata: global miata
+    246 0130 03         	defb	03		;strip containing animation
+    247 0131 03         	defb	03		;width of frame in 8x8 blocks
+    248 0132 02         	defb	02		;frames of animation
+    249 0133 E4         	defb	0e4h		;PAL
+    250 0134 0C         	defb	12		;Indented by X 8x8 blocks
+    251 0135 04         	defb	4		;Pixels moved each frame
+    252 0136 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    253 0138 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+    254 013B 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+    255                 
+    256                 gmcpickup: global gmcpickup
+    257 013E 03         	defb	03		;strip containing animation
+    258 013F 03         	defb	03		;width of frame in 8x8 blocks
+    259 0140 02         	defb	02		;frames of animation
+    260 0141 E4         	defb	0e4h		;PAL
+    261 0142 12         	defb	18		;Indented by X 8x8 blocks
+    262 0143 04         	defb	4		;Pixels moved each frame
+    263 0144 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    264 0146 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+    265 0149 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+    266                 
+    267                 copcar: global copcar
+    268 014C 03         	defb	03		;strip containing animation
+    269 014D 03         	defb	03		;width of frame in 8x8 blocks
+    270 014E 02         	defb	02		;frames of animation
+    271 014F E4         	defb	0e4h		;PAL
+    272 0150 18         	defb	24		;Indented by X 8x8 blocks
+    273 0151 04         	defb	4		;Pixels moved each frame
+    274 0152 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    275 0154 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:55 1998  Page    6
+
+
+    276 0157 050505     	defb	5,5,5		;collsion for each frame of animation (repeat)
+    277                 
+    278                 limo: global limo
+    279 015A 04         	defb	04		;strip containing animation
+    280 015B 05         	defb	05		;width of frame in 8x8 blocks
+    281 015C 02         	defb	02		;frames of animation
+    282 015D E4         	defb	0e4h		;PAL
+    283 015E 00         	defb	0		;Indented by X 8x8 blocks
+    284 015F 04         	defb	4		;Pixels moved each frame
+    285 0160 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    286 0162 05050505   	defb	5,5,5,5,5	;collsion for each frame of animation (repeat)
+        0166 05
+    287 0167 05050505   	defb	5,5,5,5,5	;collsion for each frame of animation (repeat)
+        016B 05
+    288                 
+    289                 truck: global truck
+    290 016C 04         	defb	04		;strip containing animation
+    291 016D 04         	defb	04		;width of frame in 8x8 blocks
+    292 016E 02         	defb	02		;frames of animation
+    293 016F E4         	defb	0e4h		;PAL
+    294 0170 0A         	defb	10		;Indented by X 8x8 blocks
+    295 0171 04         	defb	4		;Pixels moved each frame
+    296 0172 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    297 0174 05050505   	defb	5,5,5,5		;collsion for each frame of animation (repeat)
+    298 0178 05050505   	defb	5,5,5,5		;collsion for each frame of animation (repeat)
+    299                 
+    300                 bus: global bus
+    301 017C 04         	defb	04		;strip containing animation
+    302 017D 06         	defb	06		;width of frame in 8x8 blocks
+    303 017E 02         	defb	02		;frames of animation
+    304 017F E4         	defb	0e4h		;PAL
+    305 0180 12         	defb	18		;Indented by X 8x8 blocks
+    306 0181 04         	defb	4		;Pixels moved each frame
+    307 0182 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    308 0184 05050505   	defb	5,5,5,5,5,5	;collsion for each frame of animation (repeat)
+        0188 0505
+    309 018A 05050505   	defb	5,5,5,5,5,5	;collsion for each frame of animation (repeat)
+        018E 0505
+    310                 
+    311                 
+    312                 bigtruck: global bigtruck
+    313 0190 05         	defb	05		;strip containing animation
+    314 0191 09         	defb	09		;width of frame in 8x8 blocks
+    315 0192 02         	defb	02		;frames of animation
+    316 0193 E4         	defb	0e4h		;PAL
+    317 0194 00         	defb	0		;Indented by X 8x8 blocks
+    318 0195 04         	defb	4		;Pixels moved each frame
+    319 0196 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    320 0198 05050505   	defb	5,5,5,5,5,5,5,5,5	;collsion for each frame of animation (repeat)
+        019C 05050505
+        01A0 05
+    321 01A1 05050505   	defb	5,5,5,5,5,5,5,5,5	;collsion for each frame of animation (repeat)
+        01A5 05050505
+        01A9 05
+    322                 
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:55 1998  Page    7
+
+
+    323                 train: global train
+    324 01AA 05         	defb	05		;strip containing animation
+    325 01AB 05         	defb	05		;width of frame in 8x8 blocks
+    326 01AC 02         	defb	02		;frames of animation
+    327 01AD E4         	defb	0e4h		;PAL
+    328 01AE 12         	defb	18		;Indented by X 8x8 blocks
+    329 01AF 04         	defb	4		;Pixels moved each frame
+    330 01B0 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    331 01B2 05050505   	defb	5,5,5,5,5	;collsion for each frame of animation (repeat)
+        01B6 05
+    332 01B7 05050505   	defb	5,5,5,5,5	;collsion for each frame of animation (repeat)
+        01BB 05
+    333                 
+    334                 turtle: global turtle
+    335 01BC 07         	defb	07		;strip containing animation
+    336 01BD 02         	defb	02		;width of frame in 8x8 blocks
+    337 01BE 04         	defb	04		;frames of animation
+    338 01BF E4         	defb	0e4h		;PAL
+    339 01C0 00         	defb	00		;Indented by X 8x8 blocks
+    340 01C1 04         	defb	4		;Pixels moved each frame
+    341 01C2 05050505   	defb	5,5,5,5,5	;how many ticks each frame of animtion is held for
+        01C6 05
+    342 01C7 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    343 01C9 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    344 01CB 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    345 01CD 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    346                 
+    347                 turtle2: global turtle2
+    348 01CF 07         	defb	07		;strip containing animation
+    349 01D0 02         	defb	02		;width of frame in 8x8 blocks
+    350 01D1 09         	defb	09		;frames of animation
+    351 01D2 E4         	defb	0e4h		;PAL
+    352 01D3 08         	defb	08		;Indented by X 8x8 blocks
+    353 01D4 04         	defb	4		;Pixels moved each frame
+    354 01D5 05050505   	defb	5,5,5,5,5,5,5,5,5	;how many ticks each frame of animtion is held for
+        01D9 05050505
+        01DD 05
+    355 01DE 0101       	defb	01,01		;collsion for each frame of animation (repeat)
+    356 01E0 0101       	defb	01,01		;collsion for each frame of animation (repeat)
+    357 01E2 0101       	defb	01,01		;collsion for each frame of animation (repeat)
+    358 01E4 0101       	defb	01,01		;collsion for each frame of animation (repeat)
+    359 01E6 0404       	defb	04,04		;collsion for each frame of animation (repeat)
+    360 01E8 0404       	defb	04,04		;collsion for each frame of animation (repeat)
+    361 01EA 0404       	defb	04,04		;collsion for each frame of animation (repeat)
+    362 01EC 0404       	defb	04,04		;collsion for each frame of animation (repeat)
+    363 01EE 0404       	defb	04,04		;collsion for each frame of animation (repeat)
+    364                 
+    365                 otter2: global otter2
+    366 01F0 07         	defb	07		;strip containing animation
+    367 01F1 02         	defb	02		;width of frame in 8x8 blocks
+    368 01F2 02         	defb	02		;frames of animation
+    369 01F3 E4         	defb	0e4h		;PAL
+    370 01F4 0D         	defb	13		;Indented by X 8x8 blocks
+    371 01F5 04         	defb	4		;Pixels moved each frame
+    372 01F6 0909       	defb	09,09		;how many ticks each frame of animtion is held for
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:55 1998  Page    8
+
+
+    373 01F8 0404       	defb	04,04		;collsion for each frame of animation (repeat)
+    374 01FA 0404       	defb	04,04		;collsion for each frame of animation (repeat)
+    375                 
+    376                 otter: global otter
+    377 01FC 07         	defb	07		;strip containing animation
+    378 01FD 02         	defb	02		;width of frame in 8x8 blocks
+    379 01FE 02         	defb	02		;frames of animation
+    380 01FF E4         	defb	0e4h		;PAL
+    381 0200 0D         	defb	13		;Indented by X 8x8 blocks
+    382 0201 04         	defb	4		;Pixels moved each frame
+    383 0202 0505       	defb	05,05		;how many ticks each frame of animtion is held for
+    384 0204 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    385 0206 0505       	defb	05,05		;collsion for each frame of animation (repeat)
+    386                 
+    387                 gator: global gator
+    388 0208 08         	defb	08		;strip containing animation
+    389 0209 08         	defb	08		;width of frame in 8x8 blocks
+    390 020A 03         	defb	03		;frames of animation
+    391 020B E4         	defb	0e4h		;PAL
+    392 020C 00         	defb	00		;Indented by X 8x8 blocks
+    393 020D 04         	defb	4		;Pixels moved each frame
+    394 020E 050505     	defb	5,5,5		;how many ticks each frame of animtion is held for
+    395 0211 05050101   	defb	5,5,1,1,1,1,4,4	;collsion for each frame of animation (repeat)
+        0215 01010404
+    396 0219 05050101   	defb	5,5,1,1,1,1,4,4	;collsion for each frame of animation (repeat)
+        021D 01010404
+    397 0221 05050101   	defb	5,5,1,1,1,1,4,4	;collsion for each frame of animation (repeat)
+        0225 01010404
+    398                 
+    399                 gatorhead: global gatorhead
+    400 0229 08         	defb	08		;strip containing animation
+    401 022A 02         	defb	02		;width of frame in 8x8 blocks
+    402 022B 02         	defb	02		;frames of animation
+    403 022C E4         	defb	0e4h		;PAL
+    404 022D 0C         	defb	12		;Indented by X 8x8 blocks
+    405 022E 04         	defb	4		;Pixels moved each frame
+    406 022F 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    407 0231 0505       	defb	5,5		;collsion for each frame of animation (repeat)
+    408 0233 0505       	defb	5,5		;collsion for each frame of animation (repeat)
+    409                 
+    410                 c_gator: global c_gator
+    411 0235 09         	defb	09		;strip containing animation
+    412 0236 06         	defb	06		;width of frame in 8x8 blocks
+    413 0237 02         	defb	02		;frames of animation
+    414 0238 E4         	defb	0e4h		;PAL
+    415 0239 00         	defb	00		;Indented by X 8x8 blocks
+    416 023A 04         	defb	4		;Pixels moved each frame
+    417 023B 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    418 023D 01010101   	defb	1,1,1,1,1,1	;collsion for each frame of animation (repeat)
+        0241 0101
+    419 0243 05050101   	defb	5,5,1,1,1,1	;collsion for each frame of animation (repeat)
+        0247 0101
+    420                 
+    421                 speedboat: global speedboat
+    422 0249 09         	defb	09		;strip containing animation
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:55 1998  Page    9
+
+
+    423 024A 03         	defb	03		;width of frame in 8x8 blocks
+    424 024B 02         	defb	02		;frames of animation
+    425 024C E4         	defb	0e4h		;PAL
+    426 024D 0C         	defb	12		;Indented by X 8x8 blocks
+    427 024E 04         	defb	4		;Pixels moved each frame
+    428 024F 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    429 0251 0505       	defb	5,5		;collsion for each frame of animation (repeat)
+    430 0253 0505       	defb	5,5		;collsion for each frame of animation (repeat)
+    431                 
+    432                 ferry: global ferry
+    433 0255 09         	defb	09		;strip containing animation
+    434 0256 05         	defb	05		;width of frame in 8x8 blocks
+    435 0257 02         	defb	02		;frames of animation
+    436 0258 E4         	defb	0e4h		;PAL
+    437 0259 12         	defb	18		;Indented by X 8x8 blocks
+    438 025A 04         	defb	4		;Pixels moved each frame
+    439 025B 0505       	defb	5,5		;how many ticks each frame of animtion is held for
+    440 025D 05010101   	defb	5,1,1,1,5	;collsion for each frame of animation (repeat)
+        0261 05
+    441 0262 05010101   	defb	5,1,1,1,5	;collsion for each frame of animation (repeat)
+        0266 05
+    442                 
+    443 0267             	end

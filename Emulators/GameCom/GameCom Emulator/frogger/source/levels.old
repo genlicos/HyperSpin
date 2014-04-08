@@ -1,0 +1,1161 @@
+;****************************************************************************************
+;**  Strip Definition Table
+;****************************************************************************************
+;** STRIP TABLE VALUE DEFINITIONS
+;**
+
+		;0 ;STILL, SAFE
+		;1 ;MOVING   SAFE
+		;2 ;HOME SAFE
+		;3 ;IMPASSIBLE
+		;4 ;WATER DEATH
+		;5 ;GROUND DEATH
+		;6 ;Frogger
+		;7 ;bonus 100
+		;7 ;bonus 200
+A	equ	10 ;Can't Move here-- attempt causes death
+B	equ	11 ;???
+C	equ	12 ;???
+D	equ	13 ;???
+E	equ	14 ;???
+F	equ	15 ;NOT USED - BLANK
+
+;** Questions/Comments: 
+;
+;ASB: A through F must be equated to a number (the hex value is 0ah, not a)
+;ASB: I have done so above in a way that also defines their meaning.
+;**
+
+
+;****************************************************************************************
+;**  Game Definiton tables
+;****************************************************************************************
+;**
+;** Questions/Comments: 
+;	Does Level Renumbering reset between classic/updated game levels?
+;ASB: Yes.  The first is level 1 through five (or whatever),
+;ASB: the second is 1 through 5 (or whatever).
+;ASB:
+;ASB: Also, the label after the defw opcode must exist, even if it is
+;ASB: temporarily refering to another level (as I did with the level tables
+;ASB: below.
+
+ClassicGame: global	ClassicGame
+	;Classic Level 1
+	defw	ClassLev1	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	defw	ClassLev1A	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	defw	ClassLev1B	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	defw	ClassLev1C	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	defw	ClassLev1D	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	defw	ClassLev1E	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	defw	ClassLev1F	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	defw	ClassLev1G	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+
+UpdatedGame: global UpdatedGame
+	;Updated Level 5
+
+	defw	Updated5	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	defw	Updated1	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	;Updated Level 2
+	defw	Updated2	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	;Updated Level 3
+	defw	Updated3	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+	;Updated Level 4
+	defw	Updated4	;Level Name - up to 16 characters
+	defb	1,0		;speed multiplier
+	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+
+
+
+;****************************************************************************************
+;**  Classic Level 1
+;****************************************************************************************
+;**	Band Type: 	0 - normal	1 - band moves - art stands still	
+;**	Base Speed:	-X move right	0 stationary	+X moves left
+;** 	Speed Increase	X/10 Ratio  - 11/10 = 10% increase
+;**	Speed Decrease	10/X Ratio  - 10/9  = 10% decrease
+;**	Strips Used	Taken from strip table above
+;** Questions / Comments:
+;
+;ASB: each band has four strip numbers, although the last 3 can
+;ASB: all be '255' (meaning unused)
+;ASB:
+;ASB: I also recommend using three digit decimal numbers.
+
+
+
+
+Updated1:	;Street with sidewalk divider
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	001,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	32,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	045,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	32		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	046,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	004,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	044,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-80		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	041,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-30		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	040,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	004,255,255,255	;strips used
+
+
+Updated2:  ;All cars no divider
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	001,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	32,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	100		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	045,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-32		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	046,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	20		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	035,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	044,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	80		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	041,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-30		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	040,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	004,255,255,255	;strips used
+
+
+Updated3:	;Street with sidewalk divider
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	001,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	036,035,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	20		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	043,042,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-110		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	045,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	00		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	005,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-20		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	042,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	100		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	041,045,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	047,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	004,255,255,255	;strips used
+
+
+Updated4:	;Street with sidewalk divider
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	000,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	81h,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	20		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	96,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-110		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	111,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	00		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	009,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	81h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	100		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	093,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	-10		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	84h,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	007,255,255,255	;strips used
+
+
+
+Updated5:	;Street with sidewalk divider
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	000,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	81h,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	20		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	96,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-110		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	11,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	00		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	009,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	81h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	100		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	093,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	-10		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	84h,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	007,255,255,255	;strips used
+
+
+
+ClassLev1:	;you can modify this one to make the next classic level!
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	001,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	32,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	100		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	045,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-32		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	046,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	20		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	035,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	044,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	80		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	041,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-30		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	040,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	004,255,255,255	;strips used
+
+
+
+ClassLev1A: ; classic level 1
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	000,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	81h,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	-60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	12,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	32		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	80h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	06,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	048,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-40		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	050,053,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	20		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	059,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	007,255,255,255	;strips used
+
+
+ClassLev1B:  ;classic level 02
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	000,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	81h,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	-40		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	089h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	32		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	80h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	06,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	049,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-40		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	053,051,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	20		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	059,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	007,255,255,255	;strips used
+
+ClassLev1C:	;CLASSIC LEVEL 03
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	000,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	70		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	81h,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	-40		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	12,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	42		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	82h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	06,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	049,048,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-30		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	052,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	128		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	055,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	007,255,255,255	;strips used
+
+
+
+ClassLev1D:   ;Classic Level 04
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	000,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	70		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	83h,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	-60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	085h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	80h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	06,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	054,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-30		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	052,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	128		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	055,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	007,255,255,255	;strips used
+
+
+ClassLev1E:	;classic level 05
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	000,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	70		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	83h,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	-60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	085h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	80h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	06,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	049,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-20		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	054,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	128		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	057,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	007,255,255,255	;strips used
+
+
+ClassLev1F:
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	000,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	70		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	83h,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	-60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	085h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	80h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	06,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	054,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-30		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	052,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	128		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	055,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	007,255,255,255	;strips used
+
+ClassLev1G:
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	000,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	81h,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	-60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	12,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	32		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	80h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	06,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	048,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-40		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	050,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	100		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	059,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	007,255,255,255	;strips used
+
+
+
+
+
+
+StripAnims:	global	StripAnims
+	defw	turtle01
+	defw	turtle02
+	defw	turtle03
+	defw	turtle04
+	defw	gator01	
+	defw	gator02
+	defw	gator03
+	defw	gator04
+	defw	gator05
+	defw	gator06
+
+turtle01:
+	defb	6	;number of frames
+	defb	50	;clock rate
+	defb	64,65,66,67,68,69
+	
+
+turtle02:
+	defb	6
+	defb	50
+	defb	70,71,72,73,74,75
+
+turtle03:
+	defb	6	;number of frames
+	defb	50	;clock rate
+	defb	80,81,82,83,84,85
+
+
+turtle04:
+	defb	6	;number of frames
+	defb	50	;clock rate
+	defb	86,87,88,89,90,91
+
+
+gator01:
+	defb	2	;number of frames
+	defb	100	;clock rate
+	defb	76,77
+
+
+gator02:
+	defb	2	;number of frames
+	defb	100	;clock rate
+	defb	78,79
+
+gator03:
+	defb	2	;number of frames
+	defb	100	;clock rate
+	defb	98,99
+
+gator04:
+	defb	4	;number of frames
+	defb	25	;clock rate
+	defb	100,101,102,101
+
+
+gator05:
+	defb	3	;number of frames
+	defb	100	;clock rate
+	defb	103,104,105
+
+
+gator06:
+	defb	2	;number of frames
+	defb	100	;clock rate
+	defb	106,107
+
+
+StripTable:	Global	StripTable
+	defb	A,2,2,2,A,A,2,2,2,A,A,2,2,2,A,A,2,2,2,A,A,2,2,2,A,F,F,F,F,F,F,F ;00 WIN1	START OF PAGE 1
+	defb	3,2,2,2,3,3,2,2,2,3,3,2,2,2,3,3,2,2,2,3,3,2,2,2,3,F,F,F,F,F,F,F ;01 WIN2
+	defb	0,2,2,2,0,0,2,2,2,0,0,2,2,2,0,0,2,2,2,0,0,2,2,2,0,F,F,F,F,F,F,F ;02 WIN3
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;03 RAILROAD
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;04 SIDEWALK
+	defb	0,0,0,0,0,3,3,3,3,0,0,0,0,0,0,0,0,0,0,3,3,3,3,0,0,0,0,0,0,0,0,0 ;05 SIDEWALK WITH WALLS
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;06 SAFE GRASS
+	defb	0,0,0,0,0,3,3,3,0,0,0,0,0,0,0,0,3,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0 ;07 SAFE GRASS
+	defb	E,E,E,E,1,1,1,E,E,E,E,E,1,1,1,E,E,E,E,E,1,1,1,E,E,E,E,E,0,0,0,0 ;08 ISLANDS 1
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;09 ROAD7
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;10 GRASS1
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;11 GRASS2
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;12 BLANK1
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;13 BLANK2
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;14 BLANK3
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;15 BLANK4	END OF PAGE 1
+	defb	4,4,4,81h,87h,80h,80h,80h,80h,80h,4,4,4,4,4,1,1,1,1,1,1,1,4,4,4,4,4,4,4,4,4,4 ;11 LOG1	START OF PAGE 2
+	defb	4,1,1,1,1,1,4,4,4,1,82h,84h,80h,80h,1,4,4,4,1,1,1,1,1,4,4,4,4,4,4,4,4,4 ;12 LOG2
+	defb	1,4,4,4,4,4,81h,83h,80h,4,4,4,4,4,82h,83h,80h,4,4,4,4,4,4,1,1,4,4,4,4,4,4,4 ;13 LOG3
+	defb	4,4,4,4,0,0,0,4,4,4,4,0,0,0,4,4,4,4,0,0,0,4,4,4,4,4,4,4,4,4,4,4 ;19 ISLE1
+	defb	1,1,1,4,4,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,4,4,1,1,1,4,4,4,4,4,4,4 ;20 ISLE2
+	defb	4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4 ;21 WATER DEATH
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;22 BLANK
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;23 BLANK
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;24 BLANK
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;25 BLANK	
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;26 BLANK
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;27 BLANK
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;28 BLANK
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;29 BLANK
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;30 BLANK
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;31 BLANK 	END OF PAGE 1
+	defb	0,0,5,5,5,5,0,0,0,0,0,0,0,5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,0,0,0 ;32 3 TRUCKS EVENLY SPACED		 START OF PAGE 2
+	defb	0,0,5,5,5,5,0,0,0,0,0,0,0,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;33 2 TRUCKS
+	defb	0,0,0,0,0,5,5,5,5,0,0,5,5,5,5,0,0,0,0,0,0,0,0,0,5,5,5,5,0,0,0,0 ;34 3 TRUCKS - 2 CLOSE TOGETHER
+	defb	5,5,5,5,5,5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,5,5,5,5,5,0,0,0,0,0,0 ;35 2 LONG TRUCKS
+	defb	0,0,5,5,5,5,0,0,4,0,0,5,5,5,5,5,5,5,5,5,0,0,0,0,0,5,5,5,5,0,0,0 ;36 2 SHORT 1 LONG TRUCK
+	defb	0,5,5,5,5,5,5,0,0,0,0,0,0,5,5,5,0,0,0,0,0,0,5,5,5,5,5,5,0,0,0,0 ;37 BUS TRACTOR BUS
+	defb	0,0,0,0,0,0,0,0,5,5,5,0,0,0,0,0,0,0,5,5,5,0,0,0,0,0,0,0,5,5,5,5 ;38 TRACTOR PICKUP TRUCK
+	defb	5,5,5,0,0,0,0,0,0,0,5,5,5,0,0,0,0,0,0,0,5,5,5,0,0,0,0,0,0,0,0,0 ;39 TA MIATA PICKUP
+	defb	0,0,0,0,5,5,5,5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,5,5,5,0,0,0,0,0,0 ;40 TA MIATA COP TA
+	defb	0,0,0,5,5,5,0,0,0,5,5,5,5,5,0,0,0,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0 ;41 COP LIMO COP
+	defb	0,5,5,5,0,0,0,0,0,0,5,5,5,0,0,0,0,0,0,5,5,5,0,0,0,5,5,5,5,0,0,0 ;42 PUCKUP TRACTOP PICKUP TRUCK
+	defb	5,5,5,0,0,0,0,0,5,5,5,5,5,0,0,0,0,0,0,5,5,5,0,0,0,0,0,5,5,5,0,0 ;43 MIATA LIMO TA PICKUP
+	defb	0,0,0,5,5,5,0,0,0,0,0,0,5,5,5,0,0,0,0,0,5,5,5,5,5,5,0,0,0,0,0,0 ;44 COP COP BUS
+	defb	0,0,5,5,5,0,0,0,5,5,5,0,0,0,0,0,0,0,0,0,0,5,5,5,0,0,0,0,0,0,0,0 ;45 TA MIATA TA
+	defb	0,0,0,0,0,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,5,0,0,0,0,0,0,0,0 ;46 TA COP
+	defb	0,0,0,5,5,5,0,0,0,0,5,5,5,0,0,0,0,0,0,5,5,5,0,0,0,0,5,5,5,0,0,0 ;47 PICKUP TRACT TRACT	PICKUP END OF PAGE 2
+	defb	5,5,5,5,0,0,0,0,0,0,0,0,5,5,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ;48 TWO CLASSIC TRUCKS START OF PAGE 3
+	defb	5,5,5,5,0,0,0,0,0,5,5,5,5,0,0,0,0,5,5,5,5,0,0,0,0,5,5,5,5,0,0,0 ;49 4 CLASSIC TRUCKS
+	defb	5,5,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,0,0,0,0 ;50 3 SEDANS
+	defb	5,5,0,0,0,0,0,5,5,0,0,0,0,0,5,5,0,0,0,0,0,5,5,0,0,0,0,0,5,5,0,0 ;51 5 SEDANS
+	defb	5,5,0,0,0,5,5,0,0,0,5,5,0,0,0,5,5,0,0,0,5,5,0,0,0,5,5,0,0,0,0,0 ;52 6 SEDANS
+	defb	0,0,0,0,0,5,5,0,0,0,0,0,5,5,0,0,0,0,0,5,5,0,0,0,0,0,5,5,0,0,0,0	;53 4 TRACTORS
+	defb	0,0,0,0,5,5,0,0,0,0,5,5,0,0,0,0,5,5,0,0,0,0,5,5,0,0,0,0,5,5,0,0 ;54 5 TRACTORS
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,0,5,5 ;55 2 RACE CARS
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,0,0,0,5,5 ;56 2 RACE CARS
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,5,5,0,0,0,0,5,5 ;57 3 RACE CARS
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5 ;58 2 RACE CARS
+	defb	0,0,0,0,0,0,5,5,0,0,0,0,0,0,5,5,0,0,0,0,0,0,5,5,0,0,0,0,0,0,5,5 ;59 4 RACE CARS
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,0,0,0,5,5 ;60 2 RACE CARS
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,5,5,0,0,0,0,5,5 ;61 3 RACE CARS
+	defb	0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,5 ;62 2 RACE CARS
+	defb	0,0,0,0,0,0,5,5,0,0,0,0,0,0,5,5,0,0,0,0,0,0,5,5,0,0,0,0,0,0,5,5 ;63 4 RACE CARS	END OF PAGE 3
+	defb	0,0,0,0,0,0,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E ;64 3 SETS 3 TURTLES SART OF PAGE 4
+	defb	0,0,0,0,0,0,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E ;65 
+	defb	0,0,0,0,0,0,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E ;66 
+	defb	0,0,0,0,0,0,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E ;67 
+	defb	0,0,0,0,0,0,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E ;68
+	defb	0,0,0,0,0,0,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E ;69 
+	defb	0,0,0,0,E,E,0,0,0,0,E,E,0,0,0,0,E,E,0,0,0,0,E,E,E,0,0,0,0,E,E,E ;70 5 SETS 2 TURTLES
+	defb	0,0,0,0,E,E,0,0,0,0,E,E,0,0,0,0,E,E,0,0,0,0,E,E,E,0,0,0,0,E,E,E ;71 
+	defb	0,0,0,0,E,E,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,E,E,E,0,0,0,0,E,E,E ;72 
+	defb	1,0,0,0,E,E,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,E,E,E,0,0,0,0,E,E,E ;73 
+	defb	1,0,0,0,E,E,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,E,E,E,0,0,0,0,E,E,E ;74 
+	defb	1,0,0,0,E,E,0,0,0,0,E,E,0,0,0,0,E,E,0,0,0,0,E,E,E,0,0,0,0,E,E,E ;75 
+	defb	1,0,0,0,0,0,E,E,E,0,0,0,0,0,0,E,E,0,0,0,0,0,0,E,E,0,0,0,0,E,E,E ;76 ALLEGATOR & LILLY PADS
+	defb	1,0,0,0,0,0,E,E,E,0,0,0,0,5,5,E,E,0,0,0,0,0,0,E,E,0,0,0,0,E,E,E ;77 
+	defb	1,0,0,0,0,0,E,E,E,0,0,0,0,0,0,E,E,0,0,0,0,0,0,E,0,0,0,0,0,0,E,E ;78 2 GATORS AND LILLY PADS
+	defb	1,0,0,0,0,0,E,E,E,0,0,0,0,5,5,E,E,0,0,0,0,0,0,E,0,0,0,0,5,5,E,E ;79 		end of page 4
+	defb	1,0,0,0,0,0,E,E,E,E,E,E,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E,E,E,E,E,E ;80 2 SETS 3 TURTLES	start of page 5
+	defb	1,0,0,0,0,0,E,E,E,E,E,E,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E,E,E,E,E,E ;81 
+	defb	1,0,0,0,0,0,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E ;82 
+	defb	1,0,0,0,0,0,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E ;83 
+	defb	1,0,0,0,0,0,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E ;84 
+	defb	1,0,0,0,0,0,E,E,E,E,E,E,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E,E,E,E,E,E ;85 
+	defb	1,0,0,0,E,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,E ;86 3 SETS 2 TURTLES
+	defb	1,0,0,0,E,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,E ;87 
+	defb	1,0,0,0,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,E ;88 
+	defb	1,0,0,0,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,E ;89 
+	defb	1,0,0,0,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,E ;90 
+	defb	1,0,0,0,E,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,0,0,0,0,E,E,E,E,E,E,E ;91 
+	defb	E,0,0,0,0,0,0,E,E,E,E,0,0,0,0,E,E,E,0,0,0,0,0,0,E,E,0,0,0,0,E,E ;92 VARIOUS LILLY PADS & LOGS
+	defb	E,0,0,0,0,0,0,E,E,E,E,0,0,0,0,E,E,E,0,0,0,0,0,0,E,E,0,0,0,0,E,E ;93 
+	defb	E,0,0,0,0,0,0,E,E,E,E,0,0,0,0,E,E,E,0,0,0,0,0,0,E,E,E,E,E,E,E,E ;94 
+	defb	E,0,0,0,0,E,E,E,E,0,0,0,0,E,E,E,E,0,0,0,0,E,E,E,E,0,0,0,0,E,E,E ;95 END OF PAGE 5
+	defb	1,0,0,0,0,0,0,0,E,E,E,E,E,E,E,E,0,0,0,0,0,0,0,0,E,E,E,E,E,E,E,E ;96 		START OF PAGE 6
+	defb	1,0,0,0,0,0,0,E,E,E,E,E,E,E,E,E,0,0,0,0,0,0,0,E,E,E,E,E,E,E,E,E ;97 
+	defb	1,0,0,0,0,0,0,E,E,E,E,E,E,E,E,E,0,0,0,0,0,0,E,E,E,E,E,E,E,E,E,E ;98 
+	defb	1,0,0,0,0,0,0,E,E,E,E,E,E,E,E,E,0,0,0,0,5,5,E,E,E,E,E,E,E,E,E,E ;99 
+	defb	1,0,0,0,0,0,E,E,E,E,5,5,0,0,0,0,5,5,E,E,E,E,0,0,0,0,0,0,E,E,E,E ;100
+	defb	1,0,0,0,0,0,E,E,E,E,0,0,0,0,0,0,5,5,E,E,E,E,0,0,0,0,0,0,E,E,E,E ;101
+	defb	1,0,0,0,0,0,E,E,E,E,5,5,0,0,0,0,5,5,E,E,E,E,0,0,0,0,0,0,E,E,E,E ;102
+	defb	1,0,0,0,0,0,0,0,E,E,E,E,E,E,E,E,5,5,0,0,0,0,5,5,E,E,E,E,E,E,E,E ;103
+	defb	1,0,0,0,0,0,0,0,E,E,E,E,E,E,E,E,0,0,0,0,0,0,5,5,E,E,E,E,E,E,E,E ;104
+	defb	1,0,0,0,0,0,0,0,E,E,E,E,E,E,E,E,5,5,0,0,0,0,5,5,E,E,E,E,E,E,E,E ;105
+	defb	1,0,0,0,0,E,E,E,0,0,0,0,0,0,E,E,E,0,0,0,0,E,E,E,0,0,0,0,0,E,E,E ;106
+	defb	1,0,0,0,0,E,E,E,0,0,0,0,5,5,E,E,E,0,0,0,0,E,E,E,0,0,0,0,0,E,E,E ;107
+	defb	1,0,0,0,0,0,E,E,0,0,0,0,0,0,E,E,0,0,0,0,0,0,E,E,0,0,0,0,0,0,E,E ;108
+	defb	1,0,0,0,0,E,E,E,0,0,0,0,0,E,E,E,0,0,0,0,0,E,E,E,0,0,0,0,0,E,E,E ;109
+	defb	1,0,0,0,E,E,E,E,0,0,0,0,E,E,E,E,0,0,0,0,E,E,E,E,0,0,0,0,E,E,E,E ;110
+	defb	1,0,0,E,E,E,E,E,0,0,0,E,E,E,E,E,0,0,0,E,E,E,E,E,0,0,0,E,E,E,E,E ;111		END OF PAGE 6
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;112		START OF PAGE 7
+	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;113
+	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;114
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;115
+	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;116
+	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;117
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;118
+	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;119
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;120
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;121
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;122
+	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;123
+	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;124
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;125
+	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;126
+	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;127		END OF PAGE 7
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;128		START OF PAGE 8
+	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;129
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;130
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;131
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;132
+	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;133
+	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;134
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;135
+	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;136
+	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;137
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;138
+	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;139
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;140
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;141
+	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;142
+	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;143		END OF PAGE 8
+;	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;144		START OF PAGE 9
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;145
+;	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;146
+;	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;147
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;148
+;	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;149
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;150
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;151
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;152
+;	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;153
+;	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;154
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;155
+;	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;156
+;	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;157
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;158
+;	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;159		END OF PAGE 9
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;160		START OF PAGE 10
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;161
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;162
+;	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;163
+;	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;164
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;165
+;	defb	4,0,0,0,0,0,4,4,4,0,0,0,0,0,0,4,4,4,0,0,0,0,0,4,4,4,4,4,4,4,4,4 ;166
+;	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;167
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;168
+;	defb	1,4,4,4,4,4,0,0,0,4,4,4,4,4,0,0,0,4,4,4,4,4,4,0,0,4,4,4,4,4,4,4 ;169
+;	defb	4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4 ;170
+
+
+	end
+
+ClassLev1G:
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	000,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	50		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	81h,255,255,255	;strips used
+
+	defb	2,0		;Band Type / Unused
+	defw	-60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	12,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	32		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	80h,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase 
+
+- X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	06,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	60		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	048,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	-40		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	050,255,255,255	;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	100		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	059,255,255,255		;strips used
+
+	defb	0,0		;Band Type / Unused
+	defw	0		;base speed
+	defb	0,0		;speed increase - X/10 Ratio - player doing well
+	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+	defb	007,255,255,255	;strips used
+
+

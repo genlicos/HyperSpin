@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: [Selection] Section
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="[Selection] Section">[Selection] Section</a></h1>
+
+<ul>
+<li><a href="#DiscAddress">DiscAddress</a> 
+<li><a href="#HighLetter">HighLetter</a> 
+<li><a href="#HighNumber">HighNumber</a> 
+<li><a href="#LetterASymbol">LetterASymbol</a> &mdash; Changes the symbol displayed for a particular selection value.
+<li><a href="#Number1Symbol">Number1Symbol</a> &mdash; Changes the symbol displayed for a particular selection value.
+<li><a href="#SelectionMethod">SelectionMethod</a> 
+<li><a href="#ShowSelectionAddress">ShowSelectionAddress</a> 
+<li><a href="#SkipLetterA">SkipLetterA</a> &mdash; Skips the specified letter in the selection order.
+<li><a href="#SkipNumber1">SkipNumber1</a> &mdash; Skips the specified number in the selection order.
+<li><a href="#UseTrackZero">UseTrackZero</a> 
+<li><a href="#UseZero">UseZero</a> 
+</ul>
+
+<p><br>
+<div class="al-api"><b>[Selection] <a name="DiscAddress">DiscAddress</a></b></div><br>
+
+
+
+
+
+
+<p><br>
+<div class="al-api"><b>[Selection] <a name="HighLetter">HighLetter</a></b></div><br>
+
+
+
+
+
+
+<p><br>
+<div class="al-api"><b>[Selection] <a name="HighNumber">HighNumber</a></b></div><br>
+
+
+
+
+
+
+<p><br>
+<div class="al-api"><b>[Selection] <a name="LetterASymbol">LetterASymbol</a>, LetterBSymbol, etc.</b></div><br>
+<div class="al-api"><b>[Selection] <a name="Number1Symbol">Number1Symbol</a>, Number2Symbol, etc.</b></div><br>
+Letter<i>X</i>Symbol and Number<i>N</i>Symbol change the symbol displayed
+for the corresponding selection value.  There is probably never a need to 
+use this setting.  It could be used, for example, on a jukebox with an 
+alphanumeric selection scheme where the number is first rather than the 
+letter.  In this case, the symbols would be swapped as follows:
+<blockquote class="code"><pre>
+<a href="#LetterASymbol" class="autotype" title="Changes the symbol displayed for a particular selection value.">LetterASymbol</a> = 1
+LetterBSymbol = 2
+LetterCSymbol = 3
+LetterDSymbol = 4
+<a href="#Number1Symbol" class="autotype" title="Changes the symbol displayed for a particular selection value.">Number1Symbol</a> = A
+Number2Symbol = B
+Number3Symbol = C
+Number4Symbol = D
+</pre></blockquote>
+
+<p>
+Note that a symbol can contain more than one letter or number.
+
+<p>
+<b>Default value:</b> Equal to the normal symbol for that value.
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#SkipLetterA" title="Skips the specified letter in the selection order.">SkipLetterA</a>,
+<a class="xref" href="#SkipNumber1" title="Skips the specified number in the selection order.">SkipNumber1</a>.</blockquote>
+<div class="al-api"><b>[Selection] <a name="SelectionMethod">SelectionMethod</a></b></div><br>
+
+
+
+
+
+
+<p><br>
+<div class="al-api"><b>[Selection] <a name="ShowSelectionAddress">ShowSelectionAddress</a></b></div><br>
+
+
+
+
+
+
+<p><br>
+<div class="al-api"><b>[Selection] <a name="SkipLetterA">SkipLetterA</a>, SkipLetterB, etc.</b></div><br>
+<div class="al-api"><b>[Selection] <a name="SkipNumber1">SkipNumber1</a>, SkipNumber2, etc.</b></div><br>
+SkipLetter<i>X</i> and SkipNumber<i>N</i> skip the specified letter or
+number in the selection order.  Many jukeboxes did not use the letters 
+I or O to avoid confusion with 1 and 0.  If SkipLetter<i>X</i> 
+or SkipNumber<i>N</i> are set to True, the specified letter or number
+will not be available.  If a key is mapped to that letter or number, it
+will trigger MSG_INVALID if pressed.
+
+<p>
+<b>Default value:</b> False
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked003.html#MSG_INVALID" title="">MSG_INVALID</a>.</blockquote>
+<div class="al-api"><b>[Selection] <a name="UseTrackZero">UseTrackZero</a></b></div><br>
+
+
+
+
+
+
+<p><br>
+<div class="al-api"><b>[Selection] <a name="UseZero">UseZero</a></b></div><br>
+
+
+
+
+
+<p><br>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

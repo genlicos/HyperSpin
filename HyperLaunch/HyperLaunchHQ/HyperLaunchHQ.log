@@ -1,18 +1,14 @@
-DEBUG 2014-04-08 04:03:06 [1] HyperEmu.Ini.HyperLaunchHQIni HyperEmu.Ini.HyperLaunchHQIni..ctor(:0) – HyperLaunchHQ ini file path is C:\Projects\HyperSpin\HyperLaunch\HyperLaunchHQ\Settings\HyperLaunchHQ.ini
-DEBUG 2014-04-08 04:03:07 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\HyperLaunchHQ\Settings\HyperLaunchHQ.ini
-DEBUG 2014-04-08 04:03:07 [1] HyperEmu.Ini.HyperLaunchHQIni HyperEmu.Ini.HyperLaunchHQIni.readIniValues(:0) – Window coordinates are : 1150|960|-1|-1
-DEBUG 2014-04-08 04:03:07 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\HyperLaunch.ini
-DEBUG 2014-04-08 04:03:07 [1] HyperEmu.Ini.HyperLaunchHQIni HyperEmu.Ini.HyperLaunchHQIni..ctor(:0) – HyperLaunchHQ ini file path is C:\Projects\HyperSpin\HyperLaunch\HyperLaunchHQ\Settings\HyperLaunchHQ.ini
-DEBUG 2014-04-08 04:03:07 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\HyperLaunchHQ\Settings\HyperLaunchHQ.ini
-DEBUG 2014-04-08 04:03:07 [1] HyperEmu.Ini.HyperLaunchHQIni HyperEmu.Ini.HyperLaunchHQIni.readIniValues(:0) – Window coordinates are : 1150|960|-1|-1
-DEBUG 2014-04-08 04:03:07 [1] HyperEmu.Forms.BaseWindow HyperEmu.Forms.BaseWindow..ctor(:0) – Main Folder is C:\Projects\HyperSpin\HyperLaunch
-DEBUG 2014-04-08 04:03:07 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\HyperLaunch.ini
-DEBUG 2014-04-08 04:03:12 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\Global Emulators.ini
-DEBUG 2014-04-08 04:03:12 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\Global HyperLaunch.ini
-DEBUG 2014-04-08 04:03:13 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\Global HyperPause.ini
-DEBUG 2014-04-08 04:03:13 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\Global Bezel.ini
-DEBUG 2014-04-08 04:04:46 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\MAME\Emulators.ini
-DEBUG 2014-04-08 04:04:47 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\MAME\HyperLaunch.ini
-DEBUG 2014-04-08 04:04:47 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\MAME\HyperPause.ini
-DEBUG 2014-04-08 04:04:47 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\MAME\Bezel.ini
-DEBUG 2014-04-08 04:09:29 [1] HyperEmu.Ini.HyperLaunchHQIni HyperEmu.Ini.HyperLaunchHQIni.updateWindowCoordinates(:0) – Updating window coordinates, From :  To : 1150|960|356|41
+DEBUG 2014-04-08 06:48:00 [1] HyperEmu.Ini.HyperLaunchHQIni HyperEmu.Ini.HyperLaunchHQIni..ctor(:0) – HyperLaunchHQ ini file path is C:\Projects\HyperSpin\HyperLaunch\HyperLaunchHQ\Settings\HyperLaunchHQ.ini
+DEBUG 2014-04-08 06:48:00 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\HyperLaunchHQ\Settings\HyperLaunchHQ.ini
+DEBUG 2014-04-08 06:48:00 [1] HyperEmu.Ini.HyperLaunchHQIni HyperEmu.Ini.HyperLaunchHQIni.readIniValues(:0) – Window coordinates are : 1357|960|356|41
+DEBUG 2014-04-08 06:48:00 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\HyperLaunch.ini
+DEBUG 2014-04-08 06:48:00 [1] HyperEmu.Ini.HyperLaunchHQIni HyperEmu.Ini.HyperLaunchHQIni..ctor(:0) – HyperLaunchHQ ini file path is C:\Projects\HyperSpin\HyperLaunch\HyperLaunchHQ\Settings\HyperLaunchHQ.ini
+DEBUG 2014-04-08 06:48:00 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\HyperLaunchHQ\Settings\HyperLaunchHQ.ini
+DEBUG 2014-04-08 06:48:00 [1] HyperEmu.Ini.HyperLaunchHQIni HyperEmu.Ini.HyperLaunchHQIni.readIniValues(:0) – Window coordinates are : 1357|960|356|41
+DEBUG 2014-04-08 06:48:00 [1] HyperEmu.Forms.BaseWindow HyperEmu.Forms.BaseWindow..ctor(:0) – Main Folder is C:\Projects\HyperSpin\HyperLaunch
+DEBUG 2014-04-08 06:48:00 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\HyperLaunch.ini
+DEBUG 2014-04-08 06:48:04 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\Global Emulators.ini
+DEBUG 2014-04-08 06:48:04 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\Global HyperLaunch.ini
+DEBUG 2014-04-08 06:48:04 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\Global HyperPause.ini
+DEBUG 2014-04-08 06:48:04 [1] HyperEmu.Ini.IniFile HyperEmu.Ini.IniFile..ctor(:0) – Loading INI File C:\Projects\HyperSpin\HyperLaunch\Settings\Global Bezel.ini
+DEBUG 2014-04-08 07:08:11 [1] HyperEmu.Ini.HyperLaunchHQIni HyperEmu.Ini.HyperLaunchHQIni.updateWindowCoordinates(:0) – Updating window coordinates, From : 1357|960|356|41 To : 960|1080|1920|0

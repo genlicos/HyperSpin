@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: [VolumeControl] Section
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="[VolumeControl] Section">[VolumeControl] Section</a></h1>
+
+<ul>
+<li><a href="#SetSystemVolume">SetSystemVolume</a> 
+<li><a href="#SoundEffectsVolume">SoundEffectsVolume</a> 
+<li><a href="#SoundEffectsVolumeWhenPlaying">SoundEffectsVolumeWhenPlaying</a> 
+<li><a href="#Volume">Volume</a> 
+<li><a href="#VolumeIncrement">VolumeIncrement</a> 
+</ul>
+
+<p><br>
+<div class="al-api"><b>[VolumeControl] <a name="SetSystemVolume">SetSystemVolume</a></b></div><br>
+SetSystemVolume controls whether the jukebox volume control is
+controlling the volume for the entire system via the hardware mixer
+(True), or just controlling its own volume through software (False). The
+default is False. It is not always possible to access the hardware mixer
+on all sound cards; if you set this value to True and the volume does
+not change when a volume key is pressed, the hardware mixer is not
+accessible on your system.
+
+<p>
+<b>Default value:</b> False.
+
+
+<p><br>
+<div class="al-api"><b>[VolumeControl] <a name="SoundEffectsVolume">SoundEffectsVolume</a></b></div><br>
+SoundEffectsVolume sets the volume for sound effects, from 0 to 100.
+This value is interpreted as a percentage of the music volume.
+
+<p>
+<b>Default value:</b> 50.
+
+
+<p><br>
+<div class="al-api"><b>[VolumeControl] <a name="SoundEffectsVolumeWhenPlaying">SoundEffectsVolumeWhenPlaying</a></b></div><br>
+SoundEffectsVolumeWhenPlaying sets the volume for sound effects that
+start while a song is playing, from 0 to 100. This value is interpreted
+as a percentage of the music volume.
+
+<p>
+<b>Default value:</b> 0.
+
+
+<p><br>
+<div class="al-api"><b>[VolumeControl] <a name="Volume">Volume</a></b></div><br>
+Volume sets the initial music volume, from 0 to 100.  
+
+<p>
+<b>Default value:</b> 100.
+
+
+<p><br>
+<div class="al-api"><b>[VolumeControl] <a name="VolumeIncrement">VolumeIncrement</a></b></div><br>
+VolumeIncrement sets the amount the volume changes each time a 
+volume up/volume down key is pressed.  
+
+<p>
+<b>Default value:</b> 10.
+
+
+<p><br>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

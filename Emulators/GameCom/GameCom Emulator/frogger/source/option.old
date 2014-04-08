@@ -1,0 +1,3913 @@
+	title   Fighter Mega Mix Common Bank program/Entry Point
+	type    8521
+
+	include frogger.inc
+	include equate.inc
+	include ram.inc
+	include disp_ram.inc
+	include disp_equ.inc
+
+	global  Black_back
+	global  White_back
+	global  ply1_life
+	global  ply1_life1
+	global  ply2_life
+	global  ply2_life1
+	global  show_1P
+	global  show_2P
+	global  show_CPU
+	global  Bexit
+	global  Boption
+	global  SEL_fighter
+	global  show_RESULT
+	global  white_lineA
+	global  select_record
+	global  takeABx
+	global  takeAB0
+	global  takeA1
+	global  takeB1
+	global  takeA
+	global  Fi_graph3
+	global  Fi_graph4
+	global  Fi_graph5
+	global  graph1
+	global  graphT
+	global  DISPLAY_stage           ;show the stage in Cheat Code
+	global  HIDDEN_FIG
+	global  hidden_casex
+	global  hidden_case2x
+	global  MAIN_MENU_DESC
+	global  OPTION_MENU_DESC
+	global  RULES_MENU_DESC
+	global  display_menu
+	global  do_menu_key
+
+	program
+
+
+
+;============================================================================
+;
+;           Process Menus
+;
+;----------------------------------------------------------------------------
+
+Menus:      global  Menus
+
+            mov     r1,#44
+            mov     temp1,r1
+            mov     r1,#1
+            mov     temp2,r1
+
+MenusL1:
+            call    MainMenu
+            br      z,MenusOut
+
+            call    GameOptions
+            br      MenusL1
+
+MenusOut:
+            ret
+
+;============================================================================
+;
+;           Process Main Menu
+;
+;----------------------------------------------------------------------------
+
+MainMenu:
+            push    dmpl
+	mov     dmpl,#0e4h
+            mov     r0,#0e4h
+            mov     hold_byte1,r0
+
+            ; set initial cursor position
+
+            mov     r1,#160
+            mov     CursorY,r1
+            mov     r1,#3
+
+            ; Loop until done
+
+MainMenuL0:
+            mov     temp0,r1
+MainMenuL1:
+
+            ; draw the menu
+
+            call    delay20ms
+            call    DrawMain
+
+            ; loop immediately if no keypress
+
+            call    GetUser
+            cmp     r0,#0
+            br      eq,MainMenuL1
+
+            ; up arrow
+
+            cmp     r0,#83h
+            br      nz,MainMenu1
+            mov     r1,temp0
+            dec     r1
+            br      pl,MainMenuL0
+            mov     r1,#3
+            br      MainMenuL0
+MainMenu1:
+
+            ; down arrow
+
+            cmp     r0,#84h
+            br      nz,MainMenu2
+            mov     r1,temp0
+            inc     r1
+            cmp     r1,#4
+            br      ne,MainMenuL0
+            clr     r1
+            Br      MainMenuL0
+MainMenu2
+
+            ; selection keys
+
+            cmp     r0,#8bh
+            br      eq,MainMenuDone
+            cmp     r0,#8ch
+            br      eq,MainMenuDone
+            cmp     r0,#8dh
+            br      eq,MainMenuDone
+            cmp     r0,#8eh
+            br      eq,MainMenuDone
+
+            ; touching first Menu Item
+
+            cmp     r0,#3*13+3
+            br      ult,MainMenuL1
+            cmp     r0,#3*13+12
+            br      ult,MainMenuDo0
+
+            ; touching second Menu Item
+
+            cmp     r0,#4*13+3
+            br      ult,MainMenuL1
+            cmp     r0,#4*13+11
+            br      ult,MainMenuDo1
+
+            ; touching third Menu Item
+
+            cmp     r0,#5*13+3
+            br      ult,MainMenuL1
+            cmp     r0,#5*13+11
+            br      ult,MainMenuDo2
+
+            ; touching fourth Menu Item
+
+            cmp     r0,#7*13+3
+            br      ult,MainMenuL1
+            cmp     r0,#7*13+11
+            br      ult,MainMenuDo3
+
+            mov     r1,temp0
+MainMenuL00:
+            br      MainMenuL0
+
+            ; handle being done via button push
+
+MainMenuDone:
+            mov     r1,temp0
+            inc     r1
+            dec     r1
+            br      z,MainMenuDo0
+            dec     r1
+            br      z,MainMenuDo1
+            dec     r1
+            br      z,MainMenuDo2
+            br      MainMenuDo3
+
+            ; Style
+
+MainMenuDo0:
+            mov     r0,GameMode
+            sub     r0,#1
+            neg     r0
+            mov     GameMode,r0
+
+            mov     r1,#0
+            br      MainMenuL00
+
+            ; Number of players
+
+MainMenuDo1:
+            mov     r0,NumPlayers
+            inc     r0
+            cmp     r0,#5
+            br      ne,MainMenuDo1y
+            mov     r0,#1
+MainMenuDo1y:
+            mov     NumPlayers,r0
+
+            mov     r1,#1
+            br      MainMenuL00
+
+            ; Go Play Game
+
+MainMenuDo3:
+            cmp     r1,r1
+            br      MainMenuExit
+
+            ; Option Screen
+
+MainMenuDo2:
+            ; Alread non-zero
+
+            ; and bail out
+
+MainMenuExit:
+            pop     dmpl
+            ret
+
+;============================================================================
+;
+;           Draw Main Menu
+;
+;----------------------------------------------------------------------------
+
+DrawMain:
+            ; draw the legal screen frame
+
+            call    DrawFrame
+
+            ; draw the frogger logo
+
+            mov     r3,temp1
+            mov     r2,temp2
+            inc     r2
+            cmp     r2,#2
+            br      ne,DrawMenu2
+            clr     r2
+            dec     r3
+            br      nz,DrawMenu1
+            mov     r3,#44
+DrawMenu1:
+            mov     temp1,r3
+DrawMenu2:
+            mov     temp2,r2
+
+            call    DrawLogo
+
+            ; draw the heading
+
+            mov     r3,index3
+            inc     r3
+            cmp     r3,#24
+            br      ult,DrawMenuHead2
+            clr     r3
+DrawMenuHead2:
+            mov     index3,r3
+      
+            call    DrawMainHead
+
+            ; draw the cursor
+
+            call    DrawMainCurs
+
+            ; print the fixed text
+
+            movw    rr0,#DrawMain1
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawMain2
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawMain3
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawMain4
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; print the game style
+
+            movw    rr0,#DrawMain1c
+            mov     r2,GameMode
+            cmp     r2,#0
+            br      eq,DrawMains
+            movw    rr0,#DrawMain1u
+DrawMains:
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; print the number of Players
+
+            mov     r0,NumPlayers
+            or      r0,#'0'
+            clr     r1
+            movw    temp0w,rr0
+            movw    rr0,#DrawMain2p
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; show the page
+
+            call    Swap_page
+
+            ret
+
+DrawMainT1:
+            defm    'Style'
+            defb    0
+DrawMainT1c:
+            defm    'Classic'
+            defb    0
+DrawMainT1u:
+            defm    'Updated'
+            defb    0
+
+DrawMainT2:
+            defm    'Players'
+            defb    0
+
+DrawMainT3:
+            defm    'Game Options'
+            defb    0
+
+DrawMainT4:
+            defm    'Play Game'
+            defb    0
+
+DrawMain1:
+            defb    40,52
+            defw    DrawMainT1
+DrawMain1c:
+            defb    120,52
+            defw    DrawMainT1c
+DrawMain1u:
+            defb    120,52
+            defw    DrawMainT1u
+
+DrawMain2:
+            defb    40,68
+            defw    DrawMainT2
+DrawMain2p:
+            defb    144,68
+            defw    temp0w
+
+DrawMain3:
+            defb    40,84
+            defw    DrawMainT3
+DrawMain4:
+            defb    40,116
+            defw    DrawMainT4
+
+;============================================================================
+;
+;           Draw Frogger Logo
+;
+;----------------------------------------------------------------------------
+
+DrawLogo:
+            mov     r1,temp1
+            push    r1
+
+;Row 1
+
+            movw    rr0,#0
+            movw    temp0w,rr0
+            call    DrawLogo1
+
+            movw    rr0,#132
+            movw    temp0w,rr0
+            call    DrawLogo1
+
+;Row 2
+
+            mov     r1,temp1
+            add     r1,#44
+            mov     temp1,r1
+
+            movw    rr0,#0
+            movw    temp0w,rr0
+            call    DrawLogo1
+
+            movw    rr0,#0-132
+            movw    temp0w,rr0
+            call    DrawLogo1
+
+            movw    rr0,#132
+            movw    temp0w,rr0
+            call    DrawLogo1
+
+;Row 3
+
+            mov     r1,temp1
+            add     r1,#44
+            mov     temp1,r1
+
+            movw    rr0,#0
+            movw    temp0w,rr0
+            call    DrawLogo1
+
+            movw    rr0,#0-132
+            movw    temp0w,rr0
+            call    DrawLogo1
+
+            movw    rr0,#132
+            movw    temp0w,rr0
+            call    DrawLogo1
+
+;Row 4
+            mov     r1,temp1
+            add     r1,#44
+            mov     temp1,r1
+
+            movw    rr0,#0
+            movw    temp0w,rr0
+            call    DrawLogo1
+
+            movw    rr0,#0-132
+            movw    temp0w,rr0
+            call    DrawLogo1
+
+            pop     r1
+            mov     temp1,r1
+            ret
+
+DrawLogo1:
+
+            ; Left half
+
+            mov     r10,#201
+            mov     r11,#59
+            mov     r12,#55
+            mov     r13,#33
+            mov     r14,#bankno_front1
+
+            ; cut top if above
+
+            mov     r1,temp1
+            mov     r9,r1
+            clr     r8
+            subw    rr8,#32
+            br      c,DrawLogoLTBad
+            cmp     r9,#13
+            br      ugt,DrawLogoLTOK
+
+DrawLogoLTBad:
+
+            mov     r1,#13
+            sub     r1,r9
+            mov     r9,#13
+            add     r11,r1
+            sub     r13,r1
+
+            br      z,DrawLogoLSkip
+            br      mi,DrawLogoLSkip
+
+DrawLogoLTOK:
+
+            ; cut left if left
+
+            mov     r7,temp1
+            clr     r6
+            movw    rr0,#58
+            subw    rr0,temp0w
+            subw    rr6,rr0
+            br      mi,DrawLogoLLBad
+            cmp     r7,#13
+            br      ugt,DrawLogoLLOK
+
+DrawLogoLLBad:
+
+            mov     r1,#13
+            sub     r1,r7
+            mov     r7,#13
+            add     r10,r1
+            sub     r12,r1
+
+            br      z,DrawLogoLSkip
+            br      mi,DrawLogoLSkip
+
+DrawLogoLLOK:
+
+            mov     r8,r7
+
+            ; cut bottom if below
+
+            cmp     r9,#112             ;160-14-33 (height of left piece>
+            br      ult,DrawLogoLBOK
+
+            mov     r1,r9
+            sub     r1,#112
+            sub     r13,r1
+
+            br      z,DrawLogoLSkip
+            br      mi,DrawLogoLSkip
+
+DrawLogoLBOK:
+
+            ; cut right if right
+
+            cmp     r8,#131
+            br      ult,DrawLogoLROK
+
+            mov     r1,r8
+            sub     r1,#131
+            sub     r12,r1
+
+            br      z,DrawLogoLSkip
+            br      mi,DrawLogoLSkip
+
+DrawLogoLROK:
+
+            ; composite is ok for background.
+
+            mov     r15,#override
+            cmp     cur_page,#1
+            br      eq,DrawLogoL15
+            bset    r15,#1
+DrawLogoL15:
+
+            ; do Fi_graph
+
+            call    Fi_graph
+
+DrawLogoLSkip:
+
+            ; Right half
+
+            mov     r10,#160
+            mov     r11,#97
+            mov     r12,#77
+            mov     r13,#34
+            mov     r14,#bankno_front1
+
+            ; cut top if above
+
+            mov     r1,temp1
+            mov     r9,r1
+            clr     r8
+            subw    rr8,#42
+            br      c,DrawLogoRTBad
+            cmp     r9,#13
+            br      ugt,DrawLogoRTOK
+
+DrawLogoRTBad:
+
+            mov     r1,#13
+            sub     r1,r9
+            mov     r9,#13
+            add     r11,r1
+            sub     r13,r1
+
+            br      z,DrawLogoRSkip
+            br      mi,DrawLogoRSkip
+
+DrawLogoRTOK:
+
+            ; cut left if left
+
+            mov     r7,temp1
+            clr     r6
+            movw    rr0,#3
+            subw    rr0,temp0w
+            subw    rr6,rr0
+            br      mi,DrawLogoRLBad
+            cmp     r7,#13
+            br      ugt,DrawLogoRLOK
+
+DrawLogoRLBad:
+
+            movw    rr0,#13
+            subw    rr0,rr6
+            mov     r7,#13
+            add     r10,r1
+            sub     r12,r1
+
+            br      z,DrawLogoRSkip
+            br      mi,DrawLogoRSkip
+
+DrawLogoRLOK:
+
+            mov     r8,r7
+
+            ; cut bottom if below
+
+            cmp     r9,#111             ;160-14-34 (height of left piece>
+            br      ult,DrawLogoRBOK
+
+            mov     r1,r9
+            sub     r1,#111
+            sub     r13,r1
+
+            br      z,DrawLogoRSkip
+            br      mi,DrawLogoRSkip
+
+DrawLogoRBOK:
+
+            ; cut right if right
+
+            cmp     r8,#109
+            br      ult,DrawLogoRROK
+
+            mov     r1,r8
+            sub     r1,#109
+            sub     r12,r1
+
+            br      z,DrawLogoRSkip
+            br      mi,DrawLogoRSkip
+
+DrawLogoRROK:
+
+            ; composite is ok for background.
+
+            mov     r15,#override
+            cmp     cur_page,#1
+            br      eq,DrawLogoR15
+            bset    r15,#1
+DrawLogoR15:
+
+            ; do Fi_graph
+
+            call    Fi_graph
+
+DrawLogoRSkip:
+
+            ret
+
+;============================================================================
+;
+;           Draw Main menu head
+;
+;----------------------------------------------------------------------------
+
+DrawMainHead:
+
+            ; initialize all initial Fi_graph values
+
+            mov     r8,#47
+            mov     r9,#16
+            mov     r10,#1
+            srl     r3
+            srl     r3
+            sll     r3
+            sll     r3
+            sll     r3
+            sll     r3
+            mov     r11,r3
+            mov     r12,#106
+            mov     r13,#16
+            mov     r14,#bankno_front2
+
+            ; composite is ok for background.
+
+            mov     r15,#composite
+            cmp     cur_page,#1
+            br      eq,DrawMainHead21
+            bset    r15,#1
+DrawMainHead21
+
+            ; do Fi_graph
+
+            call    Fi_graph
+
+            ret
+
+;============================================================================
+;
+;           Draw Main menu cursor
+;
+;----------------------------------------------------------------------------
+
+DrawMainCurs:
+
+            ; initialize all initial Fi_graph values
+
+            mov     r8,#24
+            mov     r1,temp0
+            clr     r0
+            movw    rr2,#DrawMainCursTab
+            addw    rr2,rr0
+            mov     r1,@rr2
+            mov     r9,r1
+            mov     r10,#240
+            mov     r11,#0
+            mov     r12,#16
+            mov     r13,#16
+            mov     r14,#bankno_front1
+
+            ; composite is ok for background.
+
+            mov     r15,#composite
+            cmp     cur_page,#1
+            br      eq,DrawMainCurs21
+            bset    r15,#1
+DrawMainCurs21:
+
+            ; do Fi_graph
+
+            call    FixCursor
+            call    Fi_graph
+
+            ret
+
+DrawMainCursTab:
+            defb    48
+            defb    64
+            defb    80
+            defb    112
+
+;============================================================================
+;
+;           Process Game Options
+;
+;----------------------------------------------------------------------------
+
+GameOptions:
+            push    dmpl
+	mov     dmpl,#0e4h
+            mov     r0,#0e4h
+            mov     hold_byte1,r0
+
+            ; set initial cursor position
+
+            mov     r1,#160
+            mov     CursorY,r1
+            mov     r1,#4
+
+            ; Loop until done
+
+GameOptL0:
+            mov     temp0,r1
+GameOptL1:
+
+            ; draw the menu
+
+            call    delay20ms
+            call    DrawOpt
+
+            ; loop immediately if no keypress
+
+            call    GetUser
+            cmp     r0,#0
+            br      eq,GameOptL1
+
+            ; up arrow
+
+            cmp     r0,#83h
+            br      nz,GameOpt1
+            mov     r1,temp0
+            dec     r1
+            br      pl,GameOptL0
+            mov     r1,#4
+            br      GameOptL0
+GameOpt1:
+
+            ; down arrow
+
+            cmp     r0,#84h
+            br      nz,GameOpt2
+            mov     r1,temp0
+            inc     r1
+            cmp     r1,#5
+            br      ne,GameOptL0
+            clr     r1
+            Br      GameOptL0
+GameOpt2
+
+            ; selection keys
+
+            cmp     r0,#8bh
+            br      eq,GameOptDone
+            cmp     r0,#8ch
+            br      eq,GameOptDone
+            cmp     r0,#8dh
+            br      eq,GameOptDone
+            cmp     r0,#8eh
+            br      eq,GameOptDone
+
+            ; touching first Menu Item
+
+            cmp     r0,#3*13+3
+            br      ult,GameOptL1
+            cmp     r0,#3*13+11
+            br      ult,GameOptDo0
+
+            ; touching second Menu Item
+
+            cmp     r0,#4*13+3
+            br      ult,GameOptL1
+            cmp     r0,#4*13+11
+            br      ult,GameOptDo1
+
+            ; touching third Menu Item
+
+            cmp     r0,#5*13+3
+            br      ult,GameOptL1
+            cmp     r0,#5*13+11
+            br      ult,GameOptDo2
+
+            ; touching fourth Menu Item
+
+            cmp     r0,#6*13+3
+            br      ult,GameOptL1
+            cmp     r0,#6*13+11
+            br      ult,GameOptDo3
+
+            ; touching fifth Menu Item
+
+            cmp     r0,#7*13+3
+            br      ult,GameOptL1
+            cmp     r0,#7*13+11
+            br      ult,GameOptDo4
+
+            mov     r1,temp0
+GameOptL01:
+            br      GameOptL0
+
+            ; handle being done via button push
+
+GameOptDone:
+            mov     r1,temp0
+            inc     r1
+            dec     r1
+            br      z,GameOptDo0
+            dec     r1
+            br      z,GameOptDo1
+            dec     r1
+            br      z,GameOptDo2
+            dec     r1
+            br      z,GameOptDo3
+            br      GameOptDo4
+
+            ; Difficulty
+
+GameOptDo0:
+            mov     r0,Difficulty
+            sub     r0,#1
+            neg     r0
+            mov     Difficulty,r0
+
+            mov     r1,#0
+            br      GameOptL01
+
+            ; Lives
+
+GameOptDo1:
+            mov     r0,Lives
+            inc     r0
+            cmp     r0,#6
+            br      ne,GameOptDo1a
+            mov     r0,#3
+GameOptDo1a:
+            mov     Lives,r0
+
+            mov     r1,#1
+            br      GameOptL01
+
+            ; Continue type
+
+GameOptDo2:
+            mov     r0,Continue
+            sub     r0,#1
+            neg     r0
+            mov     Continue,r0
+
+            mov     r1,#2
+            br      GameOptL01
+
+            ; Start Level
+
+GameOptDo3:
+            mov     r0,StartLevel
+            inc     r0
+            cmp     r0,#6
+            br      ne,GameOptDo3a
+            mov     r0,#1
+GameOptDo3a:
+            mov     StartLevel,r0
+
+            mov     r1,#3
+            br      GameOptL01
+
+            ; Return to main menu
+
+GameOptDo4:
+            ; and bail out
+
+GameOptExit:
+            pop     dmpl
+            ret
+
+;============================================================================
+;
+;           Draw Options Menu
+;
+;----------------------------------------------------------------------------
+
+DrawOpt:
+            ; draw the legal screen frame
+
+            call    DrawFrame
+
+            ; draw the frogger logo
+
+            mov     r3,temp1
+            mov     r2,temp2
+            inc     r2
+            cmp     r2,#2
+            br      ne,DrawOptHead3
+            clr     r2
+            dec     r3
+            br      nz,DrawOptHead1
+            mov     r3,#44
+DrawOptHead1:
+            mov     temp1,r3
+DrawOptHead3:
+            mov     temp2,r2
+
+            call    DrawLogo
+
+            ; draw the heading
+
+            mov     r3,index3
+            inc     r3
+            cmp     r3,#24
+            br      ult,DrawOptHead2
+            clr     r3
+DrawOptHead2:
+            mov     index3,r3
+      
+            call    DrawOptHead
+
+            ; draw the cursor
+
+            call    DrawOptCurs
+
+            ; print the fixed text
+
+            movw    rr0,#DrawOpt1
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawOpt2
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawOpt3
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawOpt4
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawOpt5
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; print the difficulty level
+
+            movw    rr0,#DrawOpt1e
+            mov     r2,Difficulty
+            cmp     r2,#0
+            br      eq,DrawOptHeade
+            movw    rr0,#DrawOpt1h
+DrawOptHeade:
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; print the number of lives
+
+            mov     r0,Lives
+            or      r0,#'0'
+            clr     r1
+            movw    temp0w,rr0
+            movw    rr0,#DrawOpt2l
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; print the difficulty level
+
+            movw    rr0,#DrawOpt30
+            mov     r2,Continue
+            cmp     r2,#0
+            br      eq,DrawOptHeadx
+            movw    rr0,#DrawOpt31
+DrawOptHeadx:
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; print the start level
+
+            mov     r0,StartLevel
+            or      r0,#'0'
+            clr     r1
+            movw    temp0w,rr0
+            movw    rr0,#DrawOpt4s
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; show the page
+
+            call    Swap_page
+
+            ret
+
+DrawOptT1:
+            defm    'Difficulty'
+            defb    0
+DrawOptT1e:
+            defm    'Easy'
+            defb    0
+DrawOptT1h:
+            defm    'Hard'
+            defb    0
+
+DrawOptT2:
+            defm    'Lives'
+            defb    0
+
+DrawOptT3:
+            defm    'Continue'
+            defb    0
+DrawOptT30:
+            defm    'Off'
+            defb    0
+DrawOptT31:
+            defm    'On'
+            defb    0
+
+DrawOptT4:
+            defm    'Start Level'
+            defb    0
+
+DrawOptT5:
+            defm    'Go To Main Menu'
+            defb    0
+
+DrawOpt1:
+            defb    40,52
+            defw    DrawOptT1
+DrawOpt1e:
+            defb    144,52
+            defw    DrawOptT1e
+DrawOpt1h:
+            defb    144,52
+            defw    DrawOptT1h
+
+DrawOpt2:
+            defb    40,68
+            defw    DrawOptT2
+DrawOpt2l:
+            defb    144,68
+            defw    temp0w
+
+DrawOpt3:
+            defb    40,84
+            defw    DrawOptT3
+DrawOpt30:
+            defb    144,84
+            defw    DrawOptT30
+DrawOpt31:
+            defb    144,84
+            defw    DrawOptT31
+
+DrawOpt4:
+            defb    40,100
+            defw    DrawOptT4
+DrawOpt4s:
+            defb    144,100
+            defw    temp0w
+
+DrawOpt5:
+            defb    40,132
+            defw    DrawOptT5
+
+;============================================================================
+;
+;           Draw Options menu head
+;
+;----------------------------------------------------------------------------
+
+DrawOptHead:
+
+            ; initialize all initial Fi_graph values
+
+            mov     r8,#29
+            mov     r9,#16
+            mov     r10,#112
+            srl     r3
+            srl     r3
+            sll     r3
+            sll     r3
+            sll     r3
+            sll     r3
+            mov     r11,r3
+            mov     r12,#142
+            mov     r13,#16
+            mov     r14,#bankno_front2
+
+            ; composite is ok for background.
+
+            mov     r15,#composite
+            cmp     cur_page,#1
+            br      eq,DrawOptHead21
+            bset    r15,#1
+DrawOptHead21
+
+            ; do Fi_graph
+
+            call    Fi_graph
+
+            ret
+
+;============================================================================
+;
+;           Draw Options menu cursor
+;
+;----------------------------------------------------------------------------
+
+DrawOptCurs:
+
+            ; initialize all initial Fi_graph values
+
+            mov     r8,#24
+            mov     r1,temp0
+            clr     r0
+            movw    rr2,#DrawOptCursTab
+            addw    rr2,rr0
+            mov     r1,@rr2
+            mov     r9,r1
+            mov     r10,#240
+            mov     r11,#0
+            mov     r12,#16
+            mov     r13,#16
+            mov     r14,#bankno_front1
+
+            ; composite is ok for background.
+
+            mov     r15,#composite
+            cmp     cur_page,#1
+            br      eq,DrawOptCurs21
+            bset    r15,#1
+DrawOptCurs21:
+
+            ; do Fi_graph
+
+            call    FixCursor
+            call    Fi_graph
+
+            ret
+
+DrawOptCursTab:
+            defb    48
+            defb    64
+            defb    80
+            defb    96
+            defb    112
+
+;============================================================================
+;
+;           Process Pause Menu
+;
+;----------------------------------------------------------------------------
+
+PauseMenu:  global  PauseMenu
+            push    dmpl
+	mov     dmpl,#0e4h
+            mov     r0,#0e4h
+            mov     hold_byte1,r0
+
+PauseMenuL1:
+
+            ; draw the menu
+
+            call    delay20ms
+            call    DrawPause
+
+            ; loop immediately if no keypress
+
+            call    SCAN_KEY
+            cmp     r0,#8ah
+            br      ne,PauseMenuL1
+
+            pop     dmpl
+            ret
+
+;============================================================================
+;
+;           Draw Pause Menu
+;
+;----------------------------------------------------------------------------
+
+DrawPause:
+            ; draw the Pause frame
+
+            movw    rr0,#1*256+11
+            call    SmallFrame
+
+            ; print the fixed text
+
+            movw    rr0,#DrawPause1
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; show the page
+
+            call    Swap_page
+
+            ret
+
+DrawPauseT1:
+            defm    'Game Paused'
+            defb    0
+
+DrawPause1:
+            defb    56,68
+            defw    DrawPauseT1
+
+;============================================================================
+;
+;           Process Sound Menu
+;
+;----------------------------------------------------------------------------
+
+SoundMenu:  global  SoundMenu
+            push    dmpl
+	mov     dmpl,#0e4h
+            mov     r0,#0e4h
+            mov     hold_byte1,r0
+
+            ; set initial cursor position
+
+            mov     r1,#160
+            mov     CursorY,r1
+            mov     r1,#2
+
+            ; Loop until done
+
+SoundMenuL0:
+            mov     temp0,r1
+SoundMenuL1:
+
+            ; draw the menu
+
+            call    delay20ms
+            call    DrawSound
+
+            ; loop immediately if no keypress
+
+            call    SCAN_KEY
+            cmp     r0,#0
+            br      eq,SoundMenuL1
+
+            ; up arrow
+
+            cmp     r0,#83h
+            br      nz,SoundMenu1
+            mov     r1,temp0
+            dec     r1
+            br      pl,SoundMenuL0
+            mov     r1,#2
+            br      SoundMenuL0
+SoundMenu1:
+
+            ; down arrow
+
+            cmp     r0,#84h
+            br      nz,SoundMenu2
+            mov     r1,temp0
+            inc     r1
+            cmp     r1,#3
+            br      ne,SoundMenuL0
+            clr     r1
+            Br      SoundMenuL0
+SoundMenu2
+
+            ; selection keys
+
+            cmp     r0,#8bh
+            br      eq,SoundMenuDone
+            cmp     r0,#8ch
+            br      eq,SoundMenuDone
+            cmp     r0,#8dh
+            br      eq,SoundMenuDone
+            cmp     r0,#8eh
+            br      eq,SoundMenuDone
+
+            ; touching first Menu Item
+
+            cmp     r0,#4*13+4
+            br      ult,SoundMenuL1
+            cmp     r0,#4*13+11
+            br      ult,SoundMenuDo0
+
+            ; touching second Menu Item
+
+            cmp     r0,#5*13+4
+            br      ult,SoundMenuL1
+            cmp     r0,#5*13+11
+            br      ult,SoundMenuDo1
+
+            ; touching third Menu Item
+
+            cmp     r0,#6*13+4
+            br      ult,SoundMenuL1
+            cmp     r0,#6*13+7
+            br      ult,SoundMenuDo2
+
+            mov     r1,temp0
+SoundMenuL01:
+            br      SoundMenuL0
+
+            ; handle being done via button push
+
+SoundMenuDone:
+            mov     r1,temp0
+            inc     r1
+            dec     r1
+            br      z,SoundMenuDo0
+            dec     r1
+            br      z,SoundMenuDo1
+            dec     r1
+            br      SoundMenuDo2
+
+            ; Music
+
+SoundMenuDo0:
+            mov     r0,MusicOn
+            sub     r0,#1
+            neg     r0
+            mov     MusicOn,r0
+
+            mov     r1,#0
+            br      SoundMenuL01
+
+            ; Effects
+
+SoundMenuDo1:
+            mov     r0,SfxOn
+            sub     r0,#1
+            neg     r0
+            mov     SfxOn,r0
+
+            mov     r1,#1
+            br      SoundMenuL01
+
+            ; Exit menu
+
+SoundMenuDo2:
+            ; and bail out
+
+SoundMenuExit:
+            pop     dmpl
+            ret
+
+;============================================================================
+;
+;           Draw Sound Menu
+;
+;----------------------------------------------------------------------------
+
+DrawSound:
+            ; draw the Sound frame
+
+            movw    rr0,#4*256+14
+            call    SmallFrame
+
+            ; draw the cursor
+
+            call    DrawSoundCurs
+
+            ; print the fixed text
+
+            movw    rr0,#DrawSound1
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawSound2
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawSound3
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawSound4
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; print the music state
+
+            movw    rr0,#DrawSound20
+            mov     r2,MusicOn
+            cmp     r2,#0
+            br      eq,DrawSoundm
+            movw    rr0,#DrawSound21
+DrawSoundm:
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; print the effects state
+
+            movw    rr0,#DrawSound30
+            mov     r2,SfxOn
+            cmp     r2,#0
+            br      eq,DrawSounde
+            movw    rr0,#DrawSound31
+DrawSounde:
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; show the page
+
+            call    Swap_page
+
+            ret
+
+DrawSoundT1:
+            defm    'Sound Option'
+            defb    0
+
+DrawSoundT2:
+            defm    'Music'
+            defb    0
+DrawSoundT21:
+DrawSoundT31:
+            defm    'On'
+            defb    0
+DrawSoundT20:
+DrawSoundT30:
+            defm    'Off'
+            defb    0
+
+DrawSoundT3:
+            defm    'Effects'
+            defb    0
+
+DrawSoundT4:
+            defm    'Exit'
+            defb    0
+
+DrawSound1:
+            defb    52,52
+            defw    DrawSoundT1
+
+DrawSound2:
+            defb    60,68
+            defw    DrawSoundT2
+DrawSound21:
+            defb    136,68
+            defw    DrawSoundT21
+DrawSound20:
+            defb    128,68
+            defw    DrawSoundT20
+
+DrawSound3:
+            defb    60,84
+            defw    DrawSoundT3
+DrawSound31:
+            defb    136,84
+            defw    DrawSoundT31
+DrawSound30:
+            defb    128,84
+            defw    DrawSoundT30
+
+DrawSound4:
+            defb    60,100
+            defw    DrawSoundT4
+
+;============================================================================
+;
+;           Draw Sound cursor
+;
+;----------------------------------------------------------------------------
+
+DrawSoundCurs:
+
+            ; initialize all initial Fi_graph values
+
+            mov     r8,#44
+            mov     r1,temp0
+            clr     r0
+            movw    rr2,#DrawSoundCursTab
+            addw    rr2,rr0
+            mov     r1,@rr2
+            mov     r9,r1
+            mov     r10,#240
+            mov     r11,#0
+            mov     r12,#16
+            mov     r13,#16
+            mov     r14,#bankno_front1
+
+            ; composite is ok for background.
+
+            mov     r15,#composite
+            cmp     cur_page,#1
+            br      eq,DrawSoundCurs21
+            bset    r15,#1
+DrawSoundCurs21:
+
+            ; do Fi_graph
+
+            call    FixCursor
+            call    Fi_graph
+
+            ret
+
+DrawSoundCursTab:
+            defb    64
+            defb    80
+            defb    96
+
+;============================================================================
+;
+;           Process Exit Menu
+;
+;----------------------------------------------------------------------------
+
+ExitMenu:   global  ExitMenu
+            push    dmpl
+	mov     dmpl,#0e4h
+            mov     r0,#0e4h
+            mov     hold_byte1,r0
+
+            ; set initial cursor position
+
+            mov     r1,#160
+            mov     CursorY,r1
+            mov     r1,#1
+
+            ; Loop until done
+
+ExitMenuL0:
+            mov     temp0,r1
+ExitMenuL1:
+
+            ; draw the menu
+
+            call    delay20ms
+            call    DrawExit
+
+            ; loop immediately if no keypress
+
+            call    SCAN_KEY
+            cmp     r0,#0
+            br      eq,ExitMenuL1
+
+            ; up arrow
+
+            cmp     r0,#83h
+            br      nz,ExitMenu1
+            mov     r1,temp0
+            dec     r1
+            br      pl,ExitMenuL0
+            mov     r1,#1
+            br      ExitMenuL0
+ExitMenu1:
+
+            ; down arrow
+
+            cmp     r0,#84h
+            br      nz,ExitMenu2
+            mov     r1,temp0
+            inc     r1
+            cmp     r1,#2
+            br      ne,ExitMenuL0
+            clr     r1
+            Br      ExitMenuL0
+ExitMenu2
+
+            ; selection keys
+
+            cmp     r0,#8bh
+            br      eq,ExitMenuDone
+            cmp     r0,#8ch
+            br      eq,ExitMenuDone
+            cmp     r0,#8dh
+            br      eq,ExitMenuDone
+            cmp     r0,#8eh
+            br      eq,ExitMenuDone
+
+            ; touching first Menu Item
+
+            cmp     r0,#4*13+4
+            br      ult,ExitMenuL1
+            cmp     r0,#4*13+11
+            br      ult,ExitMenuDo0
+
+            ; touching second Menu Item
+
+            cmp     r0,#5*13+4
+            br      ult,ExitMenuL1
+            cmp     r0,#5*13+11
+            br      ult,ExitMenuDo1
+
+            mov     r1,temp0
+ExitMenuL01:
+            br      ExitMenuL0
+
+            ; handle being done via button push
+
+ExitMenuDone:
+            mov     r1,temp0
+            inc     r1
+            dec     r1
+            br      z,ExitMenuDo0
+            dec     r1
+            br      ExitMenuDo1
+
+            ; Exit Game
+
+ExitMenuDo0:
+            jmp     Game_Die
+
+            ; Cancel Menu
+
+ExitMenuDo1:
+            ; and bail out
+
+ExitMenuExit:
+            pop     dmpl
+            ret
+
+;============================================================================
+;
+;           Draw Exit Menu
+;
+;----------------------------------------------------------------------------
+
+DrawExit:
+            ; draw the Exit frame
+
+            movw    rr0,#2*256+11
+            call    SmallFrame
+
+            ; draw the cursor
+
+            call    DrawExitCurs
+
+            ; print the fixed text
+
+            movw    rr0,#DrawExit1
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawExit2
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; show the page
+
+            call    Swap_page
+
+            ret
+
+DrawExitT1:
+            defm    'Exit Game'
+            defb    0
+
+DrawExitT2:
+            defm    'Cancel'
+            defb    0
+
+DrawExit1:
+            defb    72,68
+            defw    DrawExitT1
+
+DrawExit2:
+            defb    72,84
+            defw    DrawExitT2
+
+;============================================================================
+;
+;           Draw Exit cursor
+;
+;----------------------------------------------------------------------------
+
+DrawExitCurs:
+
+            ; initialize all initial Fi_graph values
+
+            mov     r8,#56
+            mov     r1,temp0
+            clr     r0
+            movw    rr2,#DrawExitCursTab
+            addw    rr2,rr0
+            mov     r1,@rr2
+            mov     r9,r1
+            mov     r10,#240
+            mov     r11,#0
+            mov     r12,#16
+            mov     r13,#16
+            mov     r14,#bankno_front1
+
+            ; composite is ok for background.
+
+            mov     r15,#composite
+            cmp     cur_page,#1
+            br      eq,DrawExitCurs21
+            bset    r15,#1
+DrawExitCurs21:
+
+            ; do Fi_graph
+
+            call    FixCursor
+            call    Fi_graph
+
+            ret
+
+DrawExitCursTab:
+            defb    64
+            defb    80
+
+;============================================================================
+;
+;           Process Restart Menu
+;
+;----------------------------------------------------------------------------
+
+RestartMenu:   global  RestartMenu
+            push    dmpl
+	mov     dmpl,#0e4h
+            mov     r0,#0e4h
+            mov     hold_byte1,r0
+
+            ; set initial cursor position
+
+            mov     r1,#160
+            mov     CursorY,r1
+            mov     r1,#3
+
+            ; Loop until done
+
+RestartMenuL0:
+            mov     temp0,r1
+RestartMenuL1:
+
+            ; draw the menu
+
+            call    delay20ms
+            call    DrawRestart
+
+            ; loop immediately if no keypress
+
+            call    SCAN_KEY
+            cmp     r0,#0
+            br      eq,RestartMenuL1
+
+            ; up arrow
+
+            cmp     r0,#83h
+            br      nz,RestartMenu1
+            mov     r1,temp0
+            dec     r1
+            br      pl,RestartMenuL0
+            mov     r1,#3
+            br      RestartMenuL0
+RestartMenu1:
+
+            ; down arrow
+
+            cmp     r0,#84h
+            br      nz,RestartMenu2
+            mov     r1,temp0
+            inc     r1
+            cmp     r1,#4
+            br      ne,RestartMenuL0
+            clr     r1
+            Br      RestartMenuL0
+RestartMenu2
+
+            ; selection keys
+
+            cmp     r0,#8bh
+            br      eq,RestartMenuDone
+            cmp     r0,#8ch
+            br      eq,RestartMenuDone
+            cmp     r0,#8dh
+            br      eq,RestartMenuDone
+            cmp     r0,#8eh
+            br      eq,RestartMenuDone
+
+            ; touching first Menu Item
+
+            cmp     r0,#3*13+4
+            br      ult,RestartMenuL1
+            cmp     r0,#3*13+11
+            br      ult,RestartMenuDo0
+
+            ; touching second Menu Item
+
+            cmp     r0,#4*13+4
+            br      ult,RestartMenuL1
+            cmp     r0,#4*13+11
+            br      ult,RestartMenuDo1
+
+            ; touching third Menu Item
+
+            cmp     r0,#5*13+4
+            br      ult,RestartMenuL1
+            cmp     r0,#5*13+11
+            br      ult,RestartMenuDo2
+
+            ; touching fourth Menu Item
+
+            cmp     r0,#6*13+4
+            br      ult,RestartMenuL1
+            cmp     r0,#6*13+11
+            br      ult,RestartMenuDo3
+
+            mov     r1,temp0
+RestartMenuL01:
+            br      RestartMenuL0
+
+            ; handle being done via button push
+
+RestartMenuDone:
+            mov     r1,temp0
+            inc     r1
+            dec     r1
+            br      z,RestartMenuDo0
+            dec     r1
+            br      z,RestartMenuDo1
+            dec     r1
+            br      z,RestartMenuDo2
+            br      RestartMenuDo3
+
+            ; Restart Game
+
+RestartMenuDo0:
+            mov     r1,#1
+            mov     temp1,r1
+            call    WarnMenu
+            br      RestartMenuExit
+
+            ; Main Menu
+
+RestartMenuDo1:
+            mov     r1,#2
+            mov     temp1,r1
+            call    WarnMenu
+            br      RestartMenuExit
+
+            ; exit game
+
+RestartMenuDo2:
+            mov     r1,#3
+            mov     temp1,r1
+            call    WarnMenu
+            br      RestartMenuExit
+
+            ; Cancel
+
+RestartMenuDo3:
+
+            ; and bail out
+
+RestartMenuExit:
+            pop     dmpl
+            ret
+
+;============================================================================
+;
+;           Draw Restart Menu
+;
+;----------------------------------------------------------------------------
+
+DrawRestart:
+            ; draw the Restart frame
+
+            movw    rr0,#4*256+14
+            call    SmallFrame
+
+            ; draw the cursor
+
+            call    DrawRestartCurs
+
+            ; print the fixed text
+
+            movw    rr0,#DrawRestart1
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawRestart2
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawRestart3
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawRestart4
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; show the page
+
+            call    Swap_page
+
+            ret
+
+DrawRestartT1:
+            defm    'Restart Game'
+            defb    0
+
+DrawRestartT2:
+            defm    'Main Menu'
+            defb    0
+
+DrawRestartT3:
+            defm    'Exit Game'
+            defb    0
+
+DrawRestartT4:
+            defm    'Cancel'
+            defb    0
+
+DrawRestart1:
+            defb    60,52
+            defw    DrawRestartT1
+
+DrawRestart2:
+            defb    60,68
+            defw    DrawRestartT2
+
+DrawRestart3:
+            defb    60,84
+            defw    DrawRestartT3
+
+DrawRestart4:
+            defb    60,100
+            defw    DrawRestartT4
+
+;============================================================================
+;
+;           Draw Restart cursor
+;
+;----------------------------------------------------------------------------
+
+DrawRestartCurs:
+
+            ; initialize all initial Fi_graph values
+
+            mov     r8,#44
+            mov     r1,temp0
+            clr     r0
+            movw    rr2,#DrawRestartCursTab
+            addw    rr2,rr0
+            mov     r1,@rr2
+            mov     r9,r1
+            mov     r10,#240
+            mov     r11,#0
+            mov     r12,#16
+            mov     r13,#16
+            mov     r14,#bankno_front1
+
+            ; composite is ok for background.
+
+            mov     r15,#composite
+            cmp     cur_page,#1
+            br      eq,DrawRestartCurs21
+            bset    r15,#1
+DrawRestartCurs21:
+
+            ; do Fi_graph
+
+            call    FixCursor
+            call    Fi_graph
+
+            ret
+
+DrawRestartCursTab:
+            defb    48
+            defb    64
+            defb    80
+            defb    96
+
+;============================================================================
+;
+;           Process Warn Menu
+;
+;----------------------------------------------------------------------------
+
+WarnMenu:   global  WarnMenu
+            push    dmpl
+	mov     dmpl,#0e4h
+            mov     r0,#0e4h
+            mov     hold_byte1,r0
+
+            ; set initial cursor position
+
+            mov     r1,#160
+            mov     CursorY,r1
+            mov     r1,#1
+
+            ; Loop until done
+
+WarnMenuL0:
+            mov     temp0,r1
+WarnMenuL1:
+
+            ; draw the menu
+
+            call    delay20ms
+            call    DrawWarn
+
+            ; loop immediately if no keypress
+
+            call    SCAN_KEY
+            cmp     r0,#0
+            br      eq,WarnMenuL1
+
+            ; up arrow
+
+            cmp     r0,#83h
+            br      nz,WarnMenu1
+            mov     r1,temp0
+            dec     r1
+            br      pl,WarnMenuL0
+            mov     r1,#1
+            br      WarnMenuL0
+WarnMenu1:
+
+            ; down arrow
+
+            cmp     r0,#84h
+            br      nz,WarnMenu2
+            mov     r1,temp0
+            inc     r1
+            cmp     r1,#2
+            br      ne,WarnMenuL0
+            clr     r1
+            Br      WarnMenuL0
+WarnMenu2
+
+            ; selection keys
+
+            cmp     r0,#8bh
+            br      eq,WarnMenuDone
+            cmp     r0,#8ch
+            br      eq,WarnMenuDone
+            cmp     r0,#8dh
+            br      eq,WarnMenuDone
+            cmp     r0,#8eh
+            br      eq,WarnMenuDone
+
+            ; touching first Menu Item
+
+            cmp     r0,#5*13+4
+            br      ult,WarnMenuL1
+            cmp     r0,#5*13+11
+            br      ult,WarnMenuDo0
+
+            ; touching second Menu Item
+
+            cmp     r0,#6*13+4
+            br      ult,WarnMenuL1
+            cmp     r0,#6*13+11
+            br      ult,WarnMenuDo1
+
+            mov     r1,temp0
+WarnMenuL01:
+            br      WarnMenuL0
+
+            ; handle being done via button push
+
+WarnMenuDone:
+            mov     r1,temp0
+            inc     r1
+            dec     r1
+            br      z,WarnMenuDo0
+            br      WarnMenuDo1
+
+            ; Warn Do It
+
+WarnMenuDo0:
+            mov     r1,temp1
+            dec     r1
+            br      z,WarnMenuDo01
+            dec     r1
+            br      z,WarnMenuDo02
+            br      WarnMenuDo03
+
+WarnMenuDo01
+
+            jmp     ResetGame
+
+WarnMenuDo02:
+            jmp     FromMainMenu
+
+WarnMenuDo03:
+            jmp     Game_Die
+
+            ; Cancel
+
+WarnMenuDo1:
+
+            ; and bail out
+
+WarnMenuExit:
+            pop     dmpl
+            ret
+
+;============================================================================
+;
+;           Draw Warn Menu
+;
+;----------------------------------------------------------------------------
+
+DrawWarn:
+            ; draw the Warn frame
+
+            movw    rr0,#4*256+16
+            call    SmallFrame
+
+            ; draw the cursor
+
+            call    DrawWarnCurs
+
+            ; print the fixed text
+
+            movw    rr0,#DrawWarn1
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawWarn2
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawWarn3
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawWarn41
+            mov     r2,temp1
+            dec     r2
+            br      z,DrawWarnw
+            movw    rr0,#DrawWarn42
+            dec     r2
+            br      z,DrawWarnw
+            movw    rr0,#DrawWarn43
+
+DrawWarnw:
+            movw    page_ptr1,rr0
+            call    print_string
+
+            movw    rr0,#DrawWarn5
+            movw    page_ptr1,rr0
+            call    print_string
+
+            ; show the page
+
+            call    Swap_page
+
+            ret
+
+DrawWarnT1:
+            defm    'Are You Sure?'
+            defb    0
+
+DrawWarnT2:
+            defm    'The Top Choice'
+            defb    0
+
+DrawWarnT3:
+            defm    'Will Kill Game'
+            defb    0
+
+DrawWarnT5:
+            defm    'Continue Game'
+            defb    0
+
+DrawWarn1:
+            defb    44,52
+            defw    DrawWarnT1
+
+DrawWarn2:
+            defb    44,60
+            defw    DrawWarnT2
+
+DrawWarn3:
+            defb    44,68
+            defw    DrawWarnT3
+
+DrawWarn41:
+            defb    52,84
+            defw    DrawRestartT1
+DrawWarn42:
+            defb    52,84
+            defw    DrawRestartT2
+DrawWarn43:
+            defb    52,84
+            defw    DrawRestartT3
+
+DrawWarn5:
+            defb    52,100
+            defw    DrawWarnT5
+
+;============================================================================
+;
+;           Draw Warn cursor
+;
+;----------------------------------------------------------------------------
+
+DrawWarnCurs:
+
+            ; initialize all initial Fi_graph values
+
+            mov     r8,#36
+            mov     r1,temp0
+            clr     r0
+            movw    rr2,#DrawWarnCursTab
+            addw    rr2,rr0
+            mov     r1,@rr2
+            mov     r9,r1
+            mov     r10,#240
+            mov     r11,#0
+            mov     r12,#16
+            mov     r13,#16
+            mov     r14,#bankno_front1
+
+            ; composite is ok for background.
+
+            mov     r15,#composite
+            cmp     cur_page,#1
+            br      eq,DrawWarnCurs21
+            bset    r15,#1
+DrawWarnCurs21:
+
+            ; do Fi_graph
+
+            call    FixCursor
+            call    Fi_graph
+
+            ret
+
+DrawWarnCursTab:
+            defb    80
+            defb    96
+
+;============================================================================
+;
+;           Make Cursor move through space
+;
+;----------------------------------------------------------------------------
+
+FixCursor:
+            mov     r1,CursorY
+            cmp     r1,#160
+            br      eq,FixCursorInit
+
+            cmp     r9,r1
+            br      eq,FixCursorX
+            br      ult,FixCursorUp
+
+            ; move cursor down
+
+            mov     r10,#208
+            inc     r1
+            inc     r1
+            mov     r9,r1
+            mov     CursorY,r1
+            br      FixCursorX
+
+            ; move cursor up
+
+FixCursorUp:
+            mov     r10,#208
+            dec     r1
+            dec     r1
+            mov     r9,r1
+            mov     CursorY,r1
+
+            ; test x position of cursor
+
+FixCursorX:
+            mov     r1,CursorX
+            cmp     r8,r1
+            br      eq,FixCursorExit
+            br      ult,FixCursorLeft
+
+            ; move cursor right
+
+            mov     r10,#208
+            inc     r1
+            inc     r1
+            mov     r8,r1
+            mov     CursorX,r1
+            br      FixCursorExit
+
+            ; move cursor left
+
+FixCursorLeft:
+            mov     r10,#208
+            dec     r1
+            dec     r1
+            mov     r8,r1
+            mov     CursorY,r1
+
+            ; bail
+
+FixCursorExit:
+            ret
+
+FixCursorInit:
+            mov     CursorX,r8
+            mov     CursorY,r9
+            ret
+
+;============================================================================
+;
+;           Draw a Small Frame
+;
+;----------------------------------------------------------------------------
+
+SmallFrame:
+
+            pushw   rr0
+
+            ; set up destination as top band
+
+            sll     r1
+            sll     r1
+            mov     r8,#100-12
+            sub     r8,r1
+
+            mov     r9,#80-16
+            btst    r0,#1
+            br      nz,SmallFrame4
+            mov     r9,#80-8
+SmallFrame4
+            sll     r0
+            sll     r0
+            sll     r0
+            sub     r9,r0
+
+            mov     r10,#4
+            mov     r11,#20
+
+            sll     r1
+            mov     r12,#16
+            add     r12,r1
+
+            mov     r13,#8
+
+            mov     r14,#bankno_front1
+
+            mov     r15,#override
+            cmp     cur_page,#1
+            br      eq,SmallFrame3
+            bset    r15,#1
+SmallFrame3
+
+            ; draw top frame
+
+            call    SmallFrame2
+
+            ; draw middle frames
+
+            mov     r11,#28
+            popw    rr0
+            sll     r0
+SmallFrameL1:
+            call    SmallFrame2
+            dec     r0
+            br      nz,SmallFrameL1
+
+            ; draw bottom frame
+
+            mov     r11,#83
+
+            ; subroutine to draw a band
+
+SmallFrame2:
+
+            pushw   rr0
+            pushw   rr8
+            pushw   rr10
+            pushw   rr12
+            pushw   rr14
+
+            ; do Fi_graph
+
+            call    Fi_graph
+
+            popw    rr14
+            popw    rr12
+            popw    rr10
+            popw    rr8
+            pushw   rr8
+            pushw   rr10
+            pushw   rr12
+            pushw   rr14
+
+            add     r8,r12
+            mov     r10,#188
+            mov     r12,#8
+
+            call    Fi_graph
+
+            ; move destination y value down a band and loop
+
+            popw    rr14
+            popw    rr12
+            popw    rr10
+            popw    rr8
+            popw    rr0
+
+            add     r9,#8
+
+            ret
+
+;============================================================================
+;
+;           Left Over Stuff
+;
+;----------------------------------------------------------------------------
+
+;ASB            clr     r0
+;ASB            mov     oquit_flag,r0
+;ASB
+;ASBmainOPT_loop:
+;ASB	call    Mode_SEL
+;ASB
+;ASB	mov     r0,VSM_ram
+;ASB	bbc     r0,#7,stopQ
+;ASB	call    Swap_page
+;ASB	mov     r0,VSM_ram
+;ASB	bclr    r0,#7
+;ASB	mov     VSM_ram,r0
+;ASB
+;ASBstopQ:  mov     r0,oquit_flag
+;ASB        or      r0,r0
+;ASB        br      z,mainOPT_loop
+;ASB
+;ASB        ret
+;ASB
+;ASB
+;ASB
+;ASB
+;ASB
+;ASB
+;ASBMode_SEL:
+;ASB	call    GetUser
+;ASB	cmp     r0,#0
+;ASB	br      ne,Mode_SEL_A
+;ASB
+;ASB	call    set_no_key
+;ASB        br      take_end
+;ASB
+;ASBMode_SEL_A:
+;ASB	call    do_menu_key
+;ASB
+;ASB	call    Black_back
+;ASB        movw    rr2,pres_menu_desc
+;ASB        mov     r0,menu_selection
+;ASB        call    display_menu
+;ASB
+;ASB	clr     r0
+;ASB	mov     OPT_ramA,r0             ;Reset the Option Select
+;ASB
+;ASB	call    set_2page
+;ASB
+;ASBtake_end:
+;ASB	ret
+;ASB
+;ASB
+;ASB
+;ASBset_no_key:
+;ASB	mov     r0,control_ram
+;ASB	bset    r0,#4
+;ASB	mov     control_ram,r0
+;ASB	clr     r0
+;ASB	ret
+;ASB
+;ASBset_2page: global set_2page
+;ASB	mov     r0,VSM_ram
+;ASB	bset    r0,#7
+;ASB	mov     VSM_ram,r0
+;ASB	ret
+;ASB
+;ASBreset_2page:
+;ASB	mov     r0,VSM_ram
+;ASB	bclr    r0,#7
+;ASB	mov     VSM_ram,r0
+;ASB	ret
+;ASB
+;ASB
+;ASB
+;ASB
+;ASB;*************DISPLAY WORD CALL ROUTINE***************************
+;ASB;DIS_word       - input         r8 : x coordinate
+;ASB;                               r9 : y coordinate
+;ASB;                              rr6 : word by dm forms
+;ASB
+;ASBDIS_word: global  DIS_word                              ;display the words routine
+;ASB	movw    wordram,rr6
+;ASBDIS_word1:
+;ASB	movw    rr6,wordram
+;ASB	mov     r1,(rr6)+
+;ASB
+;ASB	cmp     r1,#0
+;ASB	br      eq,dis_end
+;ASB
+;ASB	movw    wordram,rr6
+;ASB
+;ASB	cmp     r1,#20h
+;ASB	br      eq,make_space
+;ASB	cmp     r1,#5bh                 ;use the first ASCII to set [ = FB
+;ASB	br      eq,set_FB
+;ASB	cmp     r1,#5dh                 ;use the first ASCII to set ] = FC
+;ASB	br      eq,set_FC
+;ASB
+;ASB	pushw   rr8
+;ASB	call    Find_letter
+;ASB	popw    rr8
+;ASB	add     r8,r12
+;ASB	add     r8,#1
+;ASB	br      DIS_word1
+;ASB
+;ASBdis_end:
+;ASB	mov     r2,graph_flag
+;ASB	bclr    r2,#6
+;ASB	bclr    r2,#7
+;ASB	mov     graph_flag,r2
+;ASB	ret
+;ASB
+;ASBmake_space:
+;ASB	add     r8,#6
+;ASB	br      DIS_word1
+;ASB
+;ASBset_FB: mov     r2,graph_flag
+;ASB	bset    r2,#6
+;ASB	mov     graph_flag,r2
+;ASB	br      DIS_word1
+;ASB
+;ASBset_FC: mov     r2,graph_flag
+;ASB	bset    r2,#7
+;ASB	mov     graph_flag,r2
+;ASB	br      DIS_word1
+;ASB
+;ASBFind_letter:                            ;write develop (28/11/1997)
+;ASB	cmp     r1,#39h
+;ASB	br      ule,BLKA_NUM1
+;ASB	cmp     r1,#5ah
+;ASB	br      ule,BLKA_BMP1
+;ASB	cmp     r1,#7ah
+;ASB	br      ule,BLKB_BMP1
+;ASB
+;ASBBLKA_BMP1:
+;ASB	movw    rr6,#BLKA_BMP
+;ASBBLKA_BMP2:
+;ASB	mov     r0,(rr6)+
+;ASB	movw    rr4,(rr6)+
+;ASB	cmp     r0,r1
+;ASB	br      ne,BLKA_BMP2
+;ASBBLK_BMP3:
+;ASB	movw    rr0,rr4
+;ASB	call    graph1
+;ASB	mov     r15,#3
+;ASB	bbc     cur_page,#0,BLK_BMP31
+;ASB	mov     r15,#1
+;ASBBLK_BMP31:
+;ASB	mov     r0,graph_flag
+;ASB	bbs     r0,#0,BLKA_BMP4
+;ASB	bbs     r0,#1,BLKA_BMP5         ;3/2/1998 (for stage cheat code)
+;ASBBLKA_BMP3A:
+;ASB	call    Fi_graphx
+;ASB	ret
+;ASB
+;ASBBLKA_BMP4:
+;ASB	inc     r14
+;ASB	call    Fi_graph5
+;ASB	ret
+;ASB
+;ASBBLKA_BMP5:
+;ASB;        bbc     cur_page,#0,BLKA_BMP5b
+;ASB;        bclr    r15,#1
+;ASBBLKA_BMP5b:
+;ASB	mov     r0,ram_BG
+;ASB	cmp     r0,#18
+;ASB	br      eq,BLKA_BMP3A
+;ASB	inc     r14
+;ASB	call    Fi_graph
+;ASB	ret
+;ASB
+;ASB
+;ASBBLKB_BMP1:
+;ASB	movw    rr6,#BLKB_BMP
+;ASB	call    BLKA_BMP2
+;ASB	ret
+;ASB
+;ASBBLKA_NUM1:
+;ASB	movw    rr6,#BLKA_NUM
+;ASBBLKA_NUM2
+;ASB	mov     r0,(rr6)+
+;ASB	cmp     r0,r1
+;ASB	br      ne,BLKA_NUM3
+;ASB	mov     r2,graph_flag
+;ASB	bbs     r2,#6,pt_FB
+;ASB	bbs     r2,#7,pt_FC
+;ASB	br      pt_FA
+;ASB
+;ASBBLKA_NUM3:
+;ASB	addw    rr6,#6
+;ASB	br      BLKA_NUM2
+;ASB
+;ASBpt_FA:  movw    rr4,(rr6)+
+;ASB	call    BLK_BMP3
+;ASB	ret
+;ASB
+;ASBpt_FB:  addw    rr6,#2
+;ASB	call    pt_FA
+;ASB	ret
+;ASB
+;ASBpt_FC:  addw    rr6,#4
+;ASB	call    pt_FA
+;ASB	ret
+
+;;%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+;*********************Change bitmap's color************************
+
+Fi_graph3:                              ;Change the 'grey 2' color to 'white'
+;ASB	bclr    dmpl,#5
+;ASB	call    Fi_graph
+;ASB	bset    dmpl,#5
+	ret
+
+Fi_graph4:                              ;Change the 'white' color to 'grey 2'
+;ASB	bset    dmpl,#1
+;ASB	call    Fi_graph
+;ASB	bclr    dmpl,#1
+	ret
+
+Fi_graph5:                              ;Change the 'black' color to 'grey 1'
+;ASB	bclr    dmpl,#6                 ;change on 1/12/1997 (#7)**
+;ASB	call    Fi_graph                ;change on 23/1/1998 (#6)
+;ASB	bset    dmpl,#6
+	ret
+
+;********************************************************;
+;Fi_graph5:                              ;Change the 'black' color to 'grey 1'
+;        bclr    dmpl,#7                 ;change on 1/12/1997 (#7)**
+;        call    Fi_graph                ;change on 23/1/1998 (#6)
+;        bset    dmpl,#7
+;        ret
+
+graphT: call    graph1
+;ASB	call    takeA
+	ret
+
+takeA:  mov     r15,#1
+;ASB	call    Fi_graph
+	ret
+
+takeB1: mov     r15,#2
+;ASB	call    Fi_graph
+	ret
+
+
+graph1: movw    rr12,(rr0)+
+;ASB	movw    rr10,(rr0)+
+;ASB	movw    rr14,@rr0
+	ret
+
+takeABx:
+;ASB	mov     r15,#3
+;ASB	bbc     cur_page,#0,takeABy
+;ASB	mov     r15,#1
+takeABy:
+;ASB	call    Fi_graphx
+	ret
+
+takeAB0:
+;ASB	mov     r15,#2
+;ASB	bbc     cur_page,#0,takeAB1
+takeA1:
+;ASB	clr     r15
+takeAB1:
+;ASB	call    Fi_graph
+	ret
+
+
+Black_back:                             ;black background
+;ASB;        call    clear_B
+;ASB	movw    rr8,#0
+;ASB	mov     r10,#200
+;ASB	mov     r11,#160
+;ASB	mov     r12,#13h
+;ASB	bbc     cur_page,#0,blackB
+;ASB	mov     r12,#3
+;ASBblackB:
+;ASB	call    Fill_blk_colr
+	ret
+
+White_back:                             ;black background
+;ASB;        call    clear_B
+;ASB	movw    rr8,#0
+;ASB	mov     r10,#200
+;ASB	mov     r11,#160
+;ASB	mov     r12,#10h
+;ASB	bbc     cur_page,#0,whiteb_cont
+;ASB	mov     r12,#0
+;ASBwhiteb_cont:
+;ASB	call    Fill_blk_colr
+	ret
+
+
+ply1_life:
+ply2_life:
+ply1_life1:
+ply2_life1:
+hidden_casex:
+show_1P:
+show_2P:
+show_1pa:
+show_CPU:
+Bexit:                                  ;display - PRESS B TO EXIT
+Boption:                                ;display - PRESS B TO EXIT
+SEL_fighter:
+show_RESULT:
+	ret
+
+
+
+white_lineA:                             ;White line (28/11/1997)
+;ASB	mov     r8,#0
+;ASB	mov     r9,#22
+;ASB	mov     r10,#200
+;ASB	mov     r11,#0
+;ASB	mov     r12,#2
+;ASB	mov     r13,#1
+;ASB	bbc     cur_page,#0,whiteB
+;ASB	clr     r13
+;ASBwhiteB:
+;ASB	call    Draw_line_h
+;ASBstop02:
+	ret
+
+
+select_record:                          ;9/3/1998
+DISPLAY_stage:
+	ret
+
+
+HIDDEN_FIG:
+hidden_case2x:
+	ret
+
+
+
+
+
+CK_page:cmp     cur_page,#1
+	br      eq,stop1Z
+	bset    r15,#1
+stop1Z:
+	ret
+
+
+
+f_back2main4:
+;ASB	movw    rr2,#MAIN_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB	mov     r2,#4
+;ASB	mov     menu_selection,r2
+	ret
+
+f_back2main5:
+;ASB	movw    rr2,#MAIN_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB	mov     r2,#5
+;ASB	mov     menu_selection,r2
+	ret
+
+f_back2main6:
+;ASB	movw    rr2,#MAIN_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB	mov     r2,#6
+;ASB	mov     menu_selection,r2
+	ret
+
+
+f_down2options:
+;ASB	movw    rr2,#OPTION_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB	clr     r2
+;ASB	mov     menu_selection,r2
+	ret
+
+f_down2rules:
+;ASB	movw    rr2,#RULES_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB	clr     r2
+;ASB	mov     menu_selection,r2
+	ret
+
+f_down2roster:
+;ASB	movw    rr2,#ROSTER_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB	clr     r2
+;ASB	mov     menu_selection,r2
+	ret
+
+f_down2trade:
+;ASB	movw    rr2,#TRADE_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB	clr     r2
+;ASB	mov     menu_selection,r2
+;ASB	mov     trade_index0,r2
+;ASB	mov     trade_index1,r2
+;ASB	mov     trade_index2,r2
+;ASB        mov     trade_base,r2
+;ASB        clr     r3
+;ASB        movw    trading_slot,rr2
+	ret
+
+
+f_down2reorder:
+;ASB	movw    rr2,#REORDER_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB	clr     r2
+;ASB	mov     menu_selection,r2
+;ASB	mov     trade_index0,r2
+;ASB	mov     trade_index1,r2
+;ASB	mov     trade_index2,r2
+;ASB        mov     trade_base,r2
+;ASB        clr     r3
+;ASB        movw    trading_slot,rr2
+	ret
+
+f_down2create:
+;ASB        movw    rr0,#0
+;ASB        call    get_player_info
+;ASB	movw    rr2,#CREATE1_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB	clr     r2
+;ASB	mov     menu_selection,r2
+	ret
+
+f_down2delete:
+;ASB	movw    rr2,#DELETE_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB	clr     r2
+;ASB	mov     menu_selection,r2
+	ret
+
+f_back2roster0:
+;ASB	clr     r2
+;ASB        br      back2roster_all
+f_back2roster1:
+;ASB	mov     r2,#01
+;ASB        br      back2roster_all
+f_back2roster2:
+;ASB	mov     r2,#02
+;ASB        br      back2roster_all
+f_back2roster3:
+;ASB        mov     r2,#03
+;ASB        br      back2roster_all
+f_back2roster4:
+;ASB        mov     r2,#04
+
+back2roster_all:
+;ASB        mov     menu_selection,r2
+;ASB	movw    rr2,#ROSTER_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+	ret
+
+
+f_null_function:
+	ret
+
+
+f_dec_select:
+;ASB	movw    rr2,pres_menu_desc
+;ASB	addw    rr2,#4
+;ASB	mov     r1,@rr2
+;ASB	dec     r1
+;ASB	mov     r0,menu_selection
+;ASB	cmp     r0,#0
+;ASB	br      eq,f_dec_cont0
+;ASB	dec     r0
+;ASB	br      f_dec_cont1
+;ASBf_dec_cont0:
+;ASB	mov     r0,r1
+;ASBf_dec_cont1:
+;ASB	mov     menu_selection,r0
+	ret
+
+f_inc_select:
+;ASB	movw    rr2,pres_menu_desc
+;ASB	addw    rr2,#4
+;ASB	mov     r1,@rr2
+;ASB	dec     r1
+;ASB	mov     r0,menu_selection
+;ASB	cmp     r0,r1
+;ASB	br      uge,f_inc_cont0
+;ASB	inc     r0
+;ASB	br      f_inc_cont1
+;ASBf_inc_cont0:
+;ASB	mov     r0,#0
+;ASBf_inc_cont1:
+;ASB	mov     menu_selection,r0
+	ret
+
+
+f_dec_value:
+;ASB	movw    rr2,pres_menu_desc
+;ASB	addw    rr2,#7
+;ASB	mov     r1,menu_selection
+;ASB	clr     r0
+;ASB	sll     r1
+;ASB	addw    rr2,rr0
+;ASB	movw    rr2,@rr2
+;ASB
+;ASB	mov     r0,(rr2)+ ;option count
+;ASB	dec     r0
+;ASB	movw    rr4,@rr2  ;ram value
+;ASB	mov     r1,@rr4
+;ASB	cmp     r1,#0
+;ASB	br      ne,fdecv_cont0
+;ASB	mov     r1,r0
+;ASB	br      fdecv_cont1
+;ASBfdecv_cont0:
+;ASB	dec     r1
+;ASBfdecv_cont1:
+;ASB	mov     @rr4,r1
+	ret
+
+
+f_inc_value:
+;ASB	movw    rr2,pres_menu_desc
+;ASB	addw    rr2,#7
+;ASB	mov     r1,menu_selection
+;ASB	clr     r0
+;ASB	sll     r1
+;ASB	addw    rr2,rr0
+;ASB	movw    rr2,@rr2
+;ASB
+;ASB	mov     r0,(rr2)+ ;option count
+;ASB	dec     r0
+;ASB	movw    rr4,@rr2  ;ram value
+;ASB	mov     r1,@rr4
+;ASB	cmp     r1,r0
+;ASB	br      ult,fincv_cont0
+;ASB	mov     r1,#0
+;ASB	br      fincv_cont1
+;ASBfincv_cont0:
+;ASB	inc     r1
+;ASBfincv_cont1:
+;ASB	mov     @rr4,r1
+	ret
+
+f_dec_teamx:
+;ASB        movw    rr0,trading_slot
+;ASB        cmpw    rr0,#0
+;ASB        br      ne,f_dec_exit1
+;ASB
+f_dec_team:
+;ASB        mov     r0,trade_index0
+;ASB        cmp     r0,#0
+;ASB        br      eq,f_dec_cont
+;ASB        dec     r0
+;ASB        br      f_dec_exit
+;ASBf_dec_cont:
+;ASB        mov     r0,#28
+;ASBf_dec_exit:
+;ASB        mov     trade_index0,r0
+;ASB
+;ASB        movw     rr0,trading_slot
+;ASB        cmpw     rr0,#0
+;ASB        br       eq,f_dec_exit1
+;ASB        call     get_player_info
+;ASB        movw     rr2,#player_array
+;ASB        mov      r0,PLAYER_team(rr2)
+;ASB        sub      r0,#1h
+;ASB        mov      r1,trade_index0
+;ASB        cmp      r0,r1
+;ASB        br       eq,f_dec_team
+;ASB
+;ASBf_dec_exit1:
+        ret
+
+
+f_inc_teamx:
+;ASB        movw    rr0,trading_slot
+;ASB        cmpw    rr0,#0
+;ASB        br      ne,f_inc_exit1
+;ASB
+f_inc_team:
+;ASB        mov     r0,trade_index0
+;ASB        cmp     r0,#28
+;ASB        br      eq,f_inc_cont
+;ASB        inc     r0
+;ASB        br      f_inc_exit0
+;ASBf_inc_cont:
+;ASB        mov     r0,#0
+;ASBf_inc_exit0:
+;ASB        mov     trade_index0,r0
+;ASB
+;ASB        movw     rr0,trading_slot
+;ASB        cmpw     rr0,#0
+;ASB        br       eq,f_inc_exit1
+;ASB        call     get_player_info
+;ASB        movw     rr2,#player_array
+;ASB        mov      r0,PLAYER_team(rr2)
+;ASB        sub      r0,#1h
+;ASB        mov      r1,trade_index0
+;ASB        cmp      r0,r1
+;ASB        br       eq,f_inc_team
+;ASB
+;ASBf_inc_exit1:
+        ret
+
+
+
+f_dec_statloc:
+;ASB        mov     r0,trade_index1
+;ASB        cmp     r0,#0
+;ASB        br      eq,f_decst_cont
+;ASB        dec     r0
+;ASB        br      f_decst_exit
+;ASBf_decst_cont:
+;ASB        mov     r0,#21
+;ASBf_decst_exit:
+;ASB        mov     trade_index1,r0
+        ret
+
+
+f_inc_statloc:
+;ASB        mov     r0,trade_index1
+;ASB        cmp     r0,#21
+;ASB        br      eq,f_incst_cont
+;ASB        inc     r0
+;ASB        br      f_incst_exit
+;ASBf_incst_cont:
+;ASB        mov     r0,#0
+;ASBf_incst_exit:
+;ASB        mov     trade_index1,r0
+        ret
+
+
+f_dec_player:
+;ASB        mov     r0,trade_index2
+;ASB        cmp     r0,#0
+;ASB        br      eq,f_decp_exit
+;ASB
+;ASB        cmp     r0,trade_base
+;ASB        br      gt,f_decp_cont
+;ASB        mov     r1,trade_base
+;ASB        sub     r1,#1
+;ASB        mov     trade_base,r1
+;ASB
+;ASBf_decp_cont:
+;ASB        sub     r0,#1
+;ASB        mov     trade_index2,r0
+;ASB
+;ASBf_decp_exit:
+        ret
+
+
+
+f_inc_player:
+;ASB        mov    r0,trade_index2
+;ASB        cmp    r0,#0fh
+;ASB        br     eq,f_incp_exit
+;ASB
+;ASB        mov    r1,trade_base
+;ASB        sub    r0,r1
+;ASB        cmp    r0,#4
+;ASB        br     lt,f_incp_cont
+;ASB        mov    r1,trade_base
+;ASB        add    r1,#1
+;ASB        mov    trade_base,r1
+;ASB
+;ASBf_incp_cont:
+;ASB        mov    r0,trade_index2
+;ASB        add    r0,#1
+;ASB        mov    trade_index2,r0
+;ASB
+;ASBf_incp_exit:
+        ret
+
+
+;UDLR ABCD
+
+NULL_FUNCTION      equ       00h
+INC_SELECT         equ       01h
+DEC_SELECT         equ       02h
+INC_VALUE          equ       03h
+DEC_VALUE          equ       04h
+BACK_TO_MAIN4      equ       05h
+BACK_TO_MAIN5      equ       06h
+BACK_TO_MAIN6      equ       07h
+DOWN_TO_OPTIONS    equ       08h
+DOWN_TO_RULES      equ       09h
+DOWN_TO_ROSTER     equ       0ah
+DOWN_TO_TRADE      equ       0bh
+BACK_TO_ROSTER0    equ       0ch
+BACK_TO_ROSTER1    equ       0dh
+BACK_TO_ROSTER2    equ       0eh
+BACK_TO_ROSTER3    equ       0fh
+BACK_TO_ROSTER4    equ       10h
+DEC_TEAM           equ       11h
+INC_TEAM           equ       12h
+DEC_STATLOC        equ       13h
+INC_STATLOC        equ       14h
+DEC_PLAYER         equ       15h
+INC_PLAYER         equ       16h
+SELECT_4TRADE      equ       17h
+DOWN_TO_REORDER    equ       18h
+SELECT_4REORDER    equ       19h
+DEC_TEAMX          equ       1ah
+INC_TEAMX          equ       1bh
+DOWN_TO_CREATE     equ       1ch
+DEC_LETTER         equ       1dh
+INC_LETTER         equ       1eh
+DEC_LETTER10       equ       1fh
+INC_LETTER10       equ       20h
+DELETE_LETTER      equ       21h
+ENTER_LETTER       equ       22h
+BACK_TO_CREATE1    equ       23h
+BACK_TO_CREATE2    equ       24h
+END_CREATE         equ       25h
+DOWN_TO_CREATE4    equ       26h
+BACK_TO_CREATE3    equ       27h
+DEC_SVALUE         equ       28h
+INC_SVALUE         equ       29h
+DEC_PNUM           equ       2ah
+INC_PNUM           equ       2bh
+DEC_PHEIGHT        equ       2ch
+INC_PHEIGHT        equ       2dh
+DEC_PWEIGHT        equ       2eh
+INC_PWEIGHT        equ       2fh
+DEC_POSITION       equ       30h
+INC_POSITION       equ       31h
+DEC_PDELETE        equ       32h
+INC_PDELETE        equ       33h
+DOWN_TO_DELETE     equ       34h
+QUIT_OPTIONS       equ       35h
+
+
+menu_func_table:
+	defw     f_null_function
+	defw     f_inc_select
+	defw     f_dec_select
+	defw     f_inc_value
+	defw     f_dec_value
+	defw     f_back2main4
+	defw     f_back2main5
+	defw     f_back2main6
+	defw     f_down2options
+	defw     f_down2rules
+	defw     f_down2roster
+	defw     f_down2trade
+	defw     f_back2roster0
+	defw     f_back2roster1
+	defw     f_back2roster2
+	defw     f_back2roster3
+	defw     f_back2roster4
+        defw     f_dec_team
+        defw     f_inc_team
+        defw     f_dec_statloc
+        defw     f_inc_statloc
+        defw     f_dec_player
+        defw     f_inc_player
+        defw     f_select_4trade
+        defw     f_down2reorder
+        defw     f_select_4reorder
+        defw     f_dec_teamx
+        defw     f_inc_teamx
+        defw     f_down2create
+        defw     f_dec_letter
+        defw     f_inc_letter
+        defw     f_dec_letter10
+        defw     f_inc_letter10
+        defw     f_delete_letter
+        defw     f_enter_letter
+        defw     f_back2create1
+        defw     f_back2create2
+        defw     f_end_create
+        defw     f_down2create4
+        defw     f_back2create3
+        defw     f_dec_svalue
+        defw     f_inc_svalue
+        defw     f_dec_pnum
+        defw     f_inc_pnum
+        defw     f_dec_pheight
+        defw     f_inc_pheight
+        defw     f_dec_pweight
+        defw     f_inc_pweight
+        defw     f_dec_position
+        defw     f_inc_position
+        defw     f_dec_pdelete
+        defw     f_inc_pdelete
+        defw     f_down2delete
+        defw     f_quit_options
+
+
+f_quit_options:
+;ASB        mov      r1,#1
+;ASB        mov      oquit_flag,r1
+        ret
+
+f_dec_pdelete:
+;ASB        mov      r0,trade_index1
+;ASB        cmp      r0,#0
+;ASB        br       ne,no_dec_pdel0
+;ASB
+;ASB        movw     rr0,trade_base
+;ASB        cmpw     rr0,#0
+;ASB        br       eq,no_dec_pdel1
+;ASB        subw     rr0,#1
+;ASB        movw     trade_base,rr0
+;ASB        br       no_dec_pdel1
+;ASB
+;ASBno_dec_pdel0:
+;ASB        sub      r0,#1
+;ASB        mov      trade_index1,r0
+;ASB
+;ASBno_dec_pdel1:
+        ret
+
+
+
+MAX_PLAYERS      equ      110h
+
+f_inc_pdelete:
+;ASB        movw     rr0,trade_base
+;ASB        cmpw     rr0,#MAX_PLAYERS
+;ASB        br       eq,no_inc_pdel1
+;ASB        mov      r0,trade_index1
+;ASB        cmp      r0,#6
+;ASB        br       ne,no_inc_pdel0
+;ASB
+;ASB        movw     rr0,trade_base
+;ASB        addw     rr0,#1
+;ASB        movw     trade_base,rr0
+;ASB        br       no_inc_pdel1
+;ASB
+;ASBno_inc_pdel0:
+;ASB        add      r0,#1
+;ASB        mov      trade_index1,r0
+;ASB
+;ASBno_inc_pdel1:
+        ret
+
+
+
+f_dec_svalue:
+f_inc_svalue:
+        ret
+
+
+f_dec_position:
+;ASB        movw    rr0,#player_array+PLAYER_position
+;ASB        mov     r2,@rr0
+;ASB        sub     r2,#1
+;ASB        cmp     r2,#0ffh
+;ASB        br      ne,dec_pos_cont0
+;ASB        clr     r2
+;ASBdec_pos_cont0:
+;ASB        mov     @rr0,r2
+        ret
+
+
+f_inc_position:
+;ASB        movw    rr0,#player_array+PLAYER_position
+;ASB        mov     r2,@rr0
+;ASB        add     r2,#1
+;ASB        cmp     r2,#5
+;ASB        br      ne,inc_pos_cont0
+;ASB        clr     r2
+;ASBinc_pos_cont0:
+;ASB        mov     @rr0,r2
+        ret
+
+
+
+f_dec_pnum:
+;ASB        movw    rr0,#player_array+PLAYER_number
+;ASB        mov     r2,@rr0
+;ASB        sub     r2,#1
+;ASB        cmp     r2,#0ffh
+;ASB        br      ne,dec_pnum_cont0
+;ASB        mov     r2,#100
+;ASBdec_pnum_cont0:
+;ASB        mov     @rr0,r2
+        ret
+
+
+f_inc_pnum:
+;ASB        movw    rr0,#player_array+PLAYER_number
+;ASB        mov     r2,@rr0
+;ASB        add     r2,#1
+;ASB        cmp     r2,#101
+;ASB        br      ne,inc_pnum_cont0
+;ASB        clr     r2
+;ASBinc_pnum_cont0:
+;ASB        mov     @rr0,r2
+        ret
+
+
+
+f_dec_pheight:
+;ASB        movw    rr0,#player_array+PLAYER_height
+;ASB        mov     r2,@rr0
+;ASB        sub     r2,#1
+;ASB        cmp     r2,#63
+;ASB        br      ne,dec_pheight_cont0
+;ASB        mov     r2,#93
+;ASBdec_pheight_cont0:
+;ASB        mov     @rr0,r2
+        ret
+
+
+f_inc_pheight:
+;ASB        movw    rr0,#player_array+PLAYER_height
+;ASB        mov     r2,@rr0
+;ASB        add     r2,#1
+;ASB        cmp     r2,#94
+;ASB        br      ne,inc_pheight_cont0
+;ASB        mov     r2,#63
+;ASBinc_pheight_cont0:
+;ASB        mov     @rr0,r2
+        ret
+
+
+f_dec_pweight:
+;ASB        movw    rr0,#player_array+PLAYER_weight
+;ASB        movw    rr2,@rr0
+;ASB        subw    rr2,#1
+;ASB        cmpw    rr2,#129
+;ASB        br      ne,dec_pweight_cont0
+;ASB        movw    rr2,#355
+;ASBdec_pweight_cont0:
+;ASB        movw    @rr0,rr2
+        ret
+
+
+f_inc_pweight:
+;ASB        movw    rr0,#player_array+PLAYER_weight
+;ASB        movw    rr2,@rr0
+;ASB        addw    rr2,#1
+;ASB        cmpw    rr2,#356
+;ASB        br      ne,inc_pweight_cont0
+;ASB        movw    rr2,#130
+;ASBinc_pweight_cont0:
+;ASB        movw    @rr0,rr2
+        ret
+
+
+
+
+
+f_end_create:
+;ASB	mov     r2,#03
+;ASB	mov     menu_selection,r2
+;ASB	movw    rr2,#ROSTER_MENU_DESC
+;ASB	movw    pres_menu_desc,rr2
+;ASB        clr     r0
+;ASB
+        ret
+
+f_dec_letter:
+;ASB        mov      r0,trade_index0
+;ASB        cmp      r0,#0
+;ASB        br       eq,dec_letter_cont0
+;ASB        sub      r0,#1
+;ASB        br       dec_letter_cont1
+;ASBdec_letter_cont0:
+;ASB        mov      r0,#29
+;ASBdec_letter_cont1:
+;ASB        mov      trade_index0,r0
+        ret
+
+f_inc_letter:
+;ASB        mov      r0,trade_index0
+;ASB        cmp      r0,#29
+;ASB        br       eq,inc_letter_cont0
+;ASB        add      r0,#1
+;ASB        br       inc_letter_cont1
+;ASBinc_letter_cont0:
+;ASB        mov      r0,#0
+;ASBinc_letter_cont1:
+;ASB        mov      trade_index0,r0
+        ret
+
+
+f_dec_letter10:
+;ASB        mov      r0,trade_index0
+;ASB        sub      r0,#10
+;ASB        cmp      r0,#0
+;ASB        br       ge,dec_letter10_cont0
+;ASB        add      r0,#30
+;ASBdec_letter10_cont0:
+;ASB        mov      trade_index0,r0
+        ret
+
+
+f_inc_letter10:
+;ASB        mov      r0,trade_index0
+;ASB        add      r0,#10
+;ASB        cmp      r0,#29
+;ASB        br       le,inc_letter10_cont0
+;ASB        sub      r0,#30
+;ASBinc_letter10_cont0:
+;ASB        mov      trade_index0,r0
+        ret
+
+f_delete_letter:
+;ASB        mov     r1,trade_index1
+;ASB        cmp     r1,#0
+;ASB        br      eq,fdel_letter_exit
+;ASB        sub     r1,#01h
+;ASB        mov     trade_index1,r1
+;ASB        clr     r0
+;ASB        addw    rr0,#RAM_string0
+;ASB        clr     r2
+;ASB        mov     (rr0)+,r2
+;ASB
+;ASBfdel_letter_exit:
+        ret
+
+
+
+copy_with_pad:
+;ASBcopypad_loop:
+;ASB        or       r4,r4
+;ASB        br       z,copypad_exit
+;ASB
+;ASB        mov      r5,(rr0)+
+;ASB        or       r5,r5
+;ASB        br       z,copypad_cont
+;ASB        mov      (rr2)+,r5
+;ASB        sub      r4,#1
+;ASB        br       copypad_loop
+;ASB
+;ASBcopypad_cont:
+;ASB        or       r4,r4
+;ASB        br       z,copypad_exit
+;ASB
+;ASB        clr      r0
+;ASB        mov      (rr2)+,r0
+;ASB        sub      r4,#1
+;ASB        br       copypad_cont
+;ASBcopypad_exit:
+        ret
+
+
+
+show_delete_info:
+;ASB        clr      r1
+;ASB        mov      index3,r1
+;ASBsdelete_loop:
+;ASB        mov      r1,index3
+;ASB        cmp      r1,#7
+;ASB        br       eq,sdelete_exit
+;ASB
+;ASB        clr      r0
+;ASB        movw     rr2,trade_base
+;ASB        addw     rr0,rr2
+;ASB        call     get_player_info
+;ASB        call     build_pstring0
+;ASB        clr      r6
+;ASB        mov      (rr0)+,r6
+;ASB
+;ASB        mov      r0,index3
+;ASB        sll      r0
+;ASB        sll      r0
+;ASB        sll      r0
+;ASB        sll      r0
+;ASB        add      r0,#20
+;ASB        mov      index2,r0
+;ASB        mov      r0,#010h
+;ASB        mov      index1,r0
+;ASB        movw     rr2,#RAM_string0
+;ASB        movw     page_ptr1,rr2
+;ASB
+;ASB        mov      r0,#03h
+;ASB        mov      r1,index3
+;ASB        cmp      r1,trade_index1
+;ASB        br       ne,not_this_pdel
+;ASB        mov      r0,#0fch
+;ASBnot_this_pdel:
+;ASB        mov      hold_byte1,r0
+;ASB
+;ASB        call     pstring_loop
+;ASB
+;ASB        mov      r1,index3
+;ASB        add      r1,#1
+;ASB        mov      index3,r1
+;ASB        br       sdelete_loop
+;ASB
+;ASBsdelete_exit:
+        ret
+
+
+
+f_back2create1:
+;ASB        movw     rr0,#CREATE1_MENU_DESC
+;ASB        movw     pres_menu_desc,rr0
+;ASB        clr      r0
+;ASB        mov      trade_index0,r0
+;ASB        mov      trade_index1,r0
+;ASB	mov      menu_selection,r0
+;ASB        mov      RAM_string0,r0
+;ASB
+        ret
+
+f_back2create2:
+;ASB        movw     rr0,#CREATE2_MENU_DESC
+;ASB        movw     pres_menu_desc,rr0
+;ASB        clr      r0
+;ASB        mov      trade_index0,r0
+;ASB        mov      trade_index1,r0
+;ASB	mov      menu_selection,r0
+;ASB        mov      RAM_string0,r0
+;ASB
+        ret
+
+f_down2create4:
+;ASB        movw     rr0,#CREATE4_MENU_DESC
+;ASB        movw     pres_menu_desc,rr0
+;ASB        clr      r0
+;ASB        mov      trade_index0,r0
+;ASB        mov      trade_index1,r0
+;ASB	mov      menu_selection,r0
+;ASB
+        ret
+
+
+f_back2create3:
+;ASB        movw     rr0,#CREATE3_MENU_DESC
+;ASB        movw     pres_menu_desc,rr0
+;ASB        clr      r0
+;ASB        mov      trade_index0,r0
+;ASB        mov      trade_index1,r0
+;ASB	mov      menu_selection,r0
+;ASB
+        ret
+
+
+advance_create:
+;ASB        movw     rr0,pres_menu_desc
+;ASB        cmpw     rr0,#CREATE1_MENU_DESC
+;ASB        br       ne,not_lastname
+;ASB        movw     rr0,#CREATE2_MENU_DESC
+;ASB        movw     pres_menu_desc,rr0
+;ASB        movw     rr0,#RAM_string0
+;ASB        movw     rr2,#player_array+PLAYER_Lname
+;ASB        mov      r4,#0eh
+;ASB        call     copy_with_pad
+;ASB        clr      r0
+;ASB        mov      trade_index0,r0
+;ASB        mov      trade_index1,r0
+;ASB        mov      RAM_string0,r0
+;ASB	mov      menu_selection,r0
+;ASB        br       advance_cexit
+;ASB
+;ASBnot_lastname:
+;ASB        movw     rr0,pres_menu_desc
+;ASB        cmpw     rr0,#CREATE2_MENU_DESC
+;ASB        br       ne,not_firstname
+;ASB        movw     rr0,#CREATE3_MENU_DESC
+;ASB        movw     pres_menu_desc,rr0
+;ASB        movw     rr0,#RAM_string0
+;ASB        movw     rr2,#player_array+PLAYER_Fname
+;ASB        mov      r4,#0ah
+;ASB        call     copy_with_pad
+;ASB        clr      r0
+;ASB        mov      trade_index0,r0
+;ASB        mov      trade_index1,r0
+;ASB	mov      menu_selection,r0
+;ASB        mov      RAM_string0,r0
+;ASBnot_firstname:
+;ASB
+;ASBadvance_cexit:
+        ret
+
+
+get_str_maxlen:
+;ASB        mov     r2,#0ah
+;ASB        movw    rr0,pres_menu_desc
+;ASB        cmpw    rr0,#CREATE1_MENU_DESC
+;ASB        br      eq,get_strmax_exit
+;ASB        mov     r2,#0eh
+;ASB        movw    rr0,pres_menu_desc
+;ASB        cmpw    rr0,#CREATE2_MENU_DESC
+;ASB        br      eq,get_strmax_exit
+;ASB
+;ASBget_strmax_exit:
+        ret
+
+
+
+f_enter_letter:
+;ASB        mov      r3,trade_index1
+;ASB        call     get_str_maxlen
+;ASB        cmp      r3,r2
+;ASB        br       ge,fenter_letter_exit
+;ASB        clr      r2
+;ASB        addw     rr2,#RAM_string0
+;ASB
+;ASB        mov      r1,trade_index0
+;ASB        cmp      r1,#29
+;ASB        br       ne,not_enter_done
+;ASB
+;ASB        call     advance_create
+;ASB        br       fenter_letter_exit
+;ASB
+;ASBnot_enter_done:
+;ASB        clr      r0
+;ASB        addw     rr0,#keyboard_table
+;ASB        mov      r0,@rr0
+;ASB
+;ASB        mov      (rr2)+,r0
+;ASB        clr      r0
+;ASB        mov      (rr2)+,r0
+;ASB        mov      r0,trade_index1
+;ASB        add      r0,#01h
+;ASB        mov      trade_index1,r0
+;ASB
+;ASBfenter_letter_exit:
+        ret
+
+
+position_str00:
+        defm     'CENTER'
+        defb     0
+position_str01:
+        defm     'P FORWARD'
+        defb     0
+position_str02:
+        defm     'S FORWARD'
+        defb     0
+position_str03:
+        defm     'P GUARD'
+        defb     0
+position_str04:
+        defm     'S GUARD'
+        defb     0
+
+position_table:
+        defw     position_str00
+        defw     position_str01
+        defw     position_str02
+        defw     position_str03
+        defw     position_str04
+
+show_create3_info:
+;ASB        mov      r0,#040h
+;ASB        mov      index1,r0
+;ASB        mov      r0,#020h
+;ASB        mov      index2,r0
+;ASB        movw     rr2,#player_array+PLAYER_Fname
+;ASB        movw     page_ptr1,rr2
+;ASB        mov      r1,#03h
+;ASB        mov      r0,menu_selection
+;ASB        cmp      r0,#0
+;ASB        br       ne,show_c3cont0
+;ASB        mov      r1,#0fch
+;ASBshow_c3cont0:
+;ASB        mov      hold_byte1,r1
+;ASB        call     pstring_loop
+;ASB
+;ASB        mov      r0,index1
+;ASB        add      r0,#08h
+;ASB        mov      index1,r0
+;ASB        movw     rr2,#player_array+PLAYER_Lname
+;ASB        movw     page_ptr1,rr2
+;ASB        mov      r1,#03h
+;ASB        mov      r0,menu_selection
+;ASB        cmp      r0,#1
+;ASB        br       ne,show_c3cont1
+;ASB        mov      r1,#0fch
+;ASBshow_c3cont1:
+;ASB        mov      hold_byte1,r1
+;ASB        call     pstring_loop
+;ASB
+;ASB        movw     rr0,#RAM_string0
+;ASB        movw     rr2,#player_array
+;ASB        call     pstat_pnum
+;ASB        mov      r0,#40h
+;ASB        mov      index1,r0
+;ASB        mov      r0,#44h
+;ASB        mov      index2,r0
+;ASB        movw     rr2,#RAM_string0
+;ASB        movw     page_ptr1,rr2
+;ASB        mov      r1,#03h
+;ASB        mov      r0,menu_selection
+;ASB        cmp      r0,#3
+;ASB        br       ne,show_c3cont3
+;ASB        mov      r1,#0fch
+;ASBshow_c3cont3:
+;ASB        mov      hold_byte1,r1
+;ASB        call     pstring_loop
+;ASB
+;ASB        movw     rr0,#RAM_string0
+;ASB        movw     rr2,#player_array
+;ASB        call     pstat_height
+;ASB        mov      r0,#6ch
+;ASB        mov      index1,r0
+;ASB        mov      r0,#50h
+;ASB        mov      index2,r0
+;ASB        movw     rr2,#RAM_string0
+;ASB        movw     page_ptr1,rr2
+;ASB        mov      r1,#03h
+;ASB        mov      hold_byte1,r1
+;ASB        call     pstring_loop
+;ASB
+;ASB        movw     rr0,#RAM_string0
+;ASB        movw     rr2,#player_array
+;ASB        call     pstat_weight
+;ASB        subw     rr0,#1
+;ASB        mov      r2,#' '
+;ASB        mov      (rr0)+,r2
+;ASB        mov      r2,#'L'
+;ASB        mov      (rr0)+,r2
+;ASB        mov      r2,#'B'
+;ASB        mov      (rr0)+,r2
+;ASB        mov      r2,#'S'
+;ASB        mov      (rr0)+,r2
+;ASB        mov      r2,#0
+;ASB        mov      (rr0)+,r2
+;ASB        mov      r0,#6ch
+;ASB        mov      index1,r0
+;ASB        mov      r0,#5ch
+;ASB        mov      index2,r0
+;ASB        movw     rr2,#RAM_string0
+;ASB        movw     page_ptr1,rr2
+;ASB        mov      r1,#03h
+;ASB        mov      hold_byte1,r1
+;ASB        call     pstring_loop
+;ASB
+;ASB
+;ASB        movw     rr0,#player_array+PLAYER_position
+;ASB        mov      r1,@rr0
+;ASB        clr      r0
+;ASB        sll      r1
+;ASB        addw     rr0,#position_table
+;ASB        movw     rr0,@rr0
+;ASB        movw     page_ptr1,rr0
+;ASB        mov      r0,#6ch
+;ASB        mov      index1,r0
+;ASB        mov      r0,#116
+;ASB        mov      index2,r0
+;ASB        mov      r1,#03h
+;ASB        mov      hold_byte1,r1
+;ASB        call     pstring_loop
+;ASB
+;ASB
+;ASB        ret
+;ASB
+;ASBshow_create4_info:
+        ret
+
+
+
+keyboard_table:
+        defm     'ABCDEFGHIJKLMNOPQRSTUVWXYZ-'
+        defb     027h,02eh,06bh
+show_keyboard_info:
+;ASB        clr      r0
+;ASB        mov      index0,r0
+;ASB
+;ASB        mov      r0,#50h
+;ASB        mov      index1,r0
+;ASBshow_keyb_loop1:
+;ASB        mov      r0,index1
+;ASB        cmp      r0,#80h
+;ASB        br       uge,show_keyb_exit1
+;ASB
+;ASB        mov      r0,#20h
+;ASB        mov      index2,r0
+;ASBshow_keyb_loop2:
+;ASB        mov      r0,index2
+;ASB        cmp      r0,#0c0h
+;ASB        br       uge,show_keyb_exit2
+;ASB
+;ASB        mov      r1,index0
+;ASB        clr      r0
+;ASB        addw     rr0,#keyboard_table
+;ASB        mov      r0,@rr0
+;ASB        call     get_font_info
+;ASB        mov      r0,index1
+;ASB        mov      r9,r0          ;yloc
+;ASB        mov      r0,index2
+;ASB        mov      r8,r0          ;xloc
+;ASB        mov      r15,#00        ;1=trans/0=rep
+;ASB        call     CK_page
+;ASB        mov      r1,#03h
+;ASB        mov      r0,index0
+;ASB        cmp      r0,trade_index0
+;ASB        br       ne,show_keyb_cont
+;ASB        mov      r1,#0fch
+;ASBshow_keyb_cont:
+;ASB        mov      dmpl,r1
+;ASB        call     Fi_graph
+;ASB
+;ASB
+;ASB        mov      r0,index0
+;ASB        add      r0,#1
+;ASB        mov      index0,r0
+;ASB
+;ASB        mov      r0,index2
+;ASB        add      r0,#10h
+;ASB        mov      index2,r0
+;ASB        br       show_keyb_loop2
+;ASBshow_keyb_exit2:
+;ASB
+;ASB        mov      r0,index1
+;ASB        add      r0,#10h
+;ASB        mov      index1,r0
+;ASB        br       show_keyb_loop1
+;ASBshow_keyb_exit1:
+;ASB
+;ASB       mov      r0,#064h
+;ASB       mov      index1,r0
+;ASB       mov      r0,#040h
+;ASB       mov      index2,r0
+;ASB       movw     rr2,#RAM_string0
+;ASB       movw     page_ptr1,rr2
+;ASB       call     center_align
+;ASB       mov      r1,#03h
+;ASB       mov      dmpl,r1
+;ASB       call     pstring_loop
+;ASB
+        ret
+
+
+do_menu_key:
+;ASB	mov      r1,#0
+;ASB	cmp      r0,#83h   ;up
+;ASB	jmp      eq,do_mkey_cont
+;ASB
+;ASB	mov      r1,#1
+;ASB	cmp      r0,#84h   ;down
+;ASB	jmp      eq,do_mkey_cont
+;ASB
+;ASB	mov      r1,#2
+;ASB	cmp      r0,#85h   ;left
+;ASB	jmp      eq,do_mkey_cont
+;ASB
+;ASB	mov      r1,#3
+;ASB	cmp      r0,#86h   ;right
+;ASB	jmp      eq,do_mkey_cont
+;ASB
+;ASB	mov      r1,#4
+;ASB	cmp      r0,#8bh   ;keyA
+;ASB	jmp      eq,do_mkey_cont
+;ASB
+;ASB	mov      r1,#5
+;ASB	cmp      r0,#8ch   ;keyB
+;ASB	jmp      eq,do_mkey_cont
+;ASB
+;ASB	mov      r1,#6
+;ASB	cmp      r0,#8dh   ;keyC
+;ASB	jmp      eq,do_mkey_cont
+;ASB
+;ASB	mov      r1,#7
+;ASB	cmp      r0,#8eh   ;keyD
+;ASB	jmp      eq,do_mkey_cont
+;ASB
+;ASB	ret
+;ASBdo_mkey_cont:
+;ASB	clr      r0
+;ASB	mov      r3,menu_selection
+;ASB	sll      r3
+;ASB	clr      r2
+;ASB	movw     rr4,pres_menu_desc
+;ASB	addw     rr2,rr4
+;ASB	addw     rr2,#7
+;ASB	movw     rr2,@rr2
+;ASB	mov      r0,@rr2      ;option count (word addr)
+;ASB	sll      r0
+;ASB	add      r1,r0
+;ASB	clr      r0
+;ASB	movw     rr4,1(rr2)   ;ram variable addr
+;ASB	mov      r4,@rr4      ;selected option
+;ASB	sll      r4
+;ASB	sll      r4
+;ASB	sll      r4
+;ASB	add      r1,r4
+;ASB	addw     rr0,rr2
+;ASB	addw     rr0,#5       ;skip header info
+;ASB	mov      r1,@rr0
+;ASB	sll      r1
+;ASB	clr      r0
+;ASB	addw     rr0,#menu_func_table
+;ASB	movw     rr0,@rr0
+;ASB	call     @rr0
+	ret
+
+
+        include  menutxt.asm
+        include  option2.asm
+       
+       end
+

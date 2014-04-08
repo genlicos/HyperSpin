@@ -1,0 +1,255 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: [Display] Section (JUKEBOX.INI)
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="[Display] Section (JUKEBOX.INI)">[Display] Section (JUKEBOX.INI)</a></h1>
+
+<ul>
+<li><a href="#AnimationAcceleration">AnimationAcceleration</a> &mdash; Sets the rate of page change animation acceleration.
+<li><a href="#AnimationSpeed">AnimationSpeed</a> &mdash; Sets the speed of page change animations.
+<li><a href="#ColorDepth">ColorDepth</a> &mdash; Requests a particular color depth
+<li><a href="#FixedDimension">FixedDimension</a> &mdash; Sets clipping or letterboxing.
+<li><a href="#FontSmoothing">FontSmoothing</a> &mdash; Sets whether fonts are anti-aliased for smoother display.
+<li><a href="#Height">Height</a> &mdash; Sets the screen resolution.
+<li><a href="#IconFocusBoxThickness">IconFocusBoxThickness</a> &mdash; Sets the thickness of focus line around icons
+<li><a href="#InsertCoinMsg1">InsertCoinMsg1</a> &mdash; Sets the message that appears when a selection is attempted with no credits available.
+<li><a href="#InsertCoinMsg2">InsertCoinMsg2</a> &mdash; Sets the message that appears when a selection is attempted with no credits available.
+<li><a href="#MonitorAspectRatio">MonitorAspectRatio</a> 
+<li><a href="#MousePointer">MousePointer</a> &mdash; Sets the file containing the mouse pointers.
+<li><a href="#RefreshRate">RefreshRate</a> &mdash; Requests a specific monitor refresh rate.
+<li><a href="#Rotation">Rotation</a> &mdash; Sets the rotation of the jukebox display.
+<li><a href="#Skin">Skin</a> &mdash; Defines the look and control scheme of the jukebox.
+<li><a href="#TrackFocusBoxThickness">TrackFocusBoxThickness</a> &mdash; Sets the thickness of focus line around track titles
+<li><a href="#Width">Width</a> &mdash; Sets the screen resolution.
+</ul>
+
+<p><br>
+<div class="al-api"><b>[Display] <a name="AnimationSpeed">AnimationSpeed</a></b></div><br>
+AnimationSpeed sets the speed of the page change  animations.  This value
+can range from 2 to 100. Since this value represents milliseconds between 
+frames, lower numbers are faster.  Setting the speed to 0 or Disabled 
+disables page change animations.
+
+<p>
+<b>Default value:</b> 20
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked021.html#Animation" title="">Animation</a>.</blockquote>
+<div class="al-api"><b>[Display] <a name="AnimationAcceleration">AnimationAcceleration</a></b></div><br>
+
+<p>
+AnimationAcceleration sets the rate at which the page change animation 
+accelerates.  It accepts values from 1 to 100, with 100 being fastest.
+Acceleration only starts to kick in on the third page change, and once 
+the page change button is released for more than a second or two the 
+acceleration resets.  A value of 0 or Disabled turns off acceleration.
+
+<p>
+<b>Default value:</b> 20
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked021.html#Animation" title="">Animation</a>.</blockquote>
+<div class="al-api"><b>[Display] <a name="ColorDepth">ColorDepth</a></b></div><br>
+When DWJukebox starts up, it will cycle through color depths until it 
+finds one that is supported at the requested resolution.  By default, it
+tries 16 bits per pixel first, then 15, then 24, then 32.  This may cause 
+some undesired flashing on startup, or the selection of an undesired 
+color depth.  Setting ColorDepth to either 15, 16, 24, or 32 will cause 
+the jukebox to try that color depth first.  Setting ColorDepth to
+Auto will go in the order listed above in DOS; in Windows, the Auto 
+setting will try to use the existing desktop color depth before trying 
+the others in the order listed above.
+
+
+<p><br>
+Note that selecting an unsupported color depth may cause the jukebox to 
+open in a window in Windows.
+
+
+<p><br>
+<b>Default value:</b> Auto
+
+
+<p><br>
+<div class="al-api"><b>[Display] <a name="FixedDimension">FixedDimension</a></b></div><br>
+If a skin does not perfectly match the rotation, either the height or the
+with must be either clipped or letterboxed to make the display fit.  
+FixedDimension = Height uses the full height of the skin; FixedDimension
+Width uses the full width of the skin. FixedDimension = Auto uses width 
+for horizontal orientations and height for vertical orientations.
+
+<p>
+<b>Default value:</b> Auto
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#Rotation" title="Sets the rotation of the jukebox display.">Rotation</a>.</blockquote>
+<div class="al-api"><b>[Display] <a name="IconFocusBoxThickness">IconFocusBoxThickness</a></b></div><br>
+<div class="al-api"><b>[Display] <a name="TrackFocusBoxThickness">TrackFocusBoxThickness</a></b></div><br>
+IconFocusBoxThickness sets, in pixels,  the thickness of the dotted 
+focus line around highlighted icons; TrackFocusBoxThickness sets the 
+thickness of the line around track titles. If set to AUTO, the 
+thickness will depend on the screen resolution; if it is set to 0 or 
+DISABLED, the focus line won't appear at all.  
+
+<p>
+<b>Default value:</b> Auto
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked021.html#FontFocusColor" title="">FontFocusColor</a>,
+<a class="xref" href="juked016.html#FocusColor" title="">FocusColor</a>.</blockquote>
+<div class="al-api"><b>[Display] <a name="FontSmoothing">FontSmoothing</a></b></div><br>
+FontSmoothing sets whether TrueType fonts used by the jukebox are 
+anti-aliased (smoothed).  Disabling font smoothing may increase 
+performance on slow machines. FontSmoothing has been tested to work at 
+full speed on at least a Pentium 166 at 800x600 resolution.
+
+<p>
+<b>Default value:</b> Enabled
+
+
+<p><br>
+<div class="al-api"><b>[Display] <a name="InsertCoinMsg1">InsertCoinMsg1</a></b></div><br>
+<div class="al-api"><b>[Display] <a name="InsertCoinMsg2">InsertCoinMsg2</a></b></div><br>
+InsertCoinMsg1 and InsertCoinMsg2 set the message that appears when a 
+selection is attempted with no credits available.  
+If the jukebox is set to use credits and a selection button is pressed 
+with no credits available, the message specified in InsertCoinMsg1 and 
+InsertCoinMsg2 will be shown on the Upcoming Songs display.  If the 
+Upcoming Songs display is set to only display one line, only 
+InsertCoinMsg1 will be shown.
+
+<p>
+<b>Default value:</b> NO SELECTIONS REMAINING for line 1, INSERT COIN for line 2
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked010.html#RequireCredits" title="">RequireCredits</a>.</blockquote>
+<div class="al-api"><b>[Display] <a name="MonitorAspectRatio">MonitorAspectRatio</a></b></div><br>
+
+<p>
+The MonitorAspectRatio sets the physical aspect ratio of the monitor,
+NOT the aspect ratio of the screen resolution. A particular monitor
+always has the same aspect ratio no matter what resolution it's running
+in. The aspect ratio needs to be set for the monitor in its "natural"
+configuration, not accounting for the Rotation setting in the jukebox.
+If the display is rotated in hardware by the video card, it needs to be
+inverted.
+
+<p>
+Aspect ratios can be specified as an actual ratio (4:3 or 16:9, for 
+example) or as a decimal number representing the ratio (for example, 
+the standard 4:3 aspect ratio can be expressed as 1.33334, 
+which is roughly 4 divided by 3).  You should only need to 
+change this if you have a widescreen  monitor.  Most widescreen
+monitors use a 16:10 aspect ratio, or 1.6; widescreen TV's or
+monitors with TV-style 720 or 1080 vertical resolutions are usually
+16:9, or 1.77778.  
+
+<p>
+If MonitorAspectRatio is set to STRETCH, the full height and width of 
+the skin will fill the height and width of the monitor and the
+FixedDimension attribute will be ignored.
+
+<p>
+<b>Default value:</b> 4:3
+
+<p><br>
+<div class="al-api"><b>[Display] <a name="MousePointer">MousePointer</a></b></div><br>
+MousePointer points to the file containing a set of Allegro bitmaps 
+representing the mouse pointers. Right now, changing this is only 
+useful if all of the pointers have their hotspot in the same spots as
+the default pointer file, as the hotspots are currently hardcoded.
+
+<p>
+<b>Default value:</b> jbdefptr.ptr
+
+<p><br>
+<div class="al-api"><b>[Display] <a name="RefreshRate">RefreshRate</a></b></div><br>
+RefreshRate requests a specific monitor refresh rate.  Be careful with 
+this value!  Most monitors will not accept an out of range refresh rate,
+but some older monitors could theoretically be damaged.  If in doubt, 
+do not set a refresh rate and the monitor's default will be used.
+
+<p>
+<b>Default value:</b> Monitor default
+
+<p><br>
+<div class="al-api"><b>[Display] <a name="Rotation">Rotation</a></b></div><br>
+Rotation sets the rotation of the display.  This value can be specified 
+three different ways; use the one that makes most sense to you.
+
+<p>
+First, Rotation may be specified in 90 degree clockwise increments. Thus,
+Rotation = 0 is horizontal, Rotation = 1 is vertical rotated to the 
+right, Rotation = 2 is upside down, and Rotation = 3 is vertical rotated 
+to the left.
+
+<p>
+Second, Rotation may be specified in degrees, with 0, 90, 180, and 270 
+being the only supported values.
+
+<p>
+Finally, rotation may be specified as HORIZONTAL, VERTICAL (or 
+VERTICAL RIGHT), UPSIDE DOWN, or VERTICAL LEFT.
+
+<p>
+<b>Default value:</b> 0
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#FixedDimension" title="Sets clipping or letterboxing.">FixedDimension</a>.</blockquote>
+<div class="al-api"><b>[Display] <a name="Skin">Skin</a></b></div><br>
+Skin sets the default definition file.  It can be either the name of a 
+specific .skn file in the Skins folder, or the name of a folder in the 
+Skins folder containing a .skn file by the same name.  It is not 
+necessary to specify the .skn extension.
+
+<p>
+Multiple skins can be specified as Skin1, Skin2, etc.  When multiple 
+skins are used, the BTN_SKIN_NEXT and BTN_SKIN_PREV keys can be used 
+to cycle between them, or buttons BTN_SKIN_1 through BTN_SKIN_10 can
+be used to switch directly to a particular skin.
+
+<p>
+<b>Default value:</b> Default.skn
+
+<p><br>
+<div class="al-api"><b>[Display] <a name="Width">Width</a></b></div><br>
+<div class="al-api-cont"><b>[Display] <a name="Height">Height</a></b></div><br>
+Width and Height set the screen resolution.  The skin will be scaled to 
+fit this resolution, adjusted by the aspect ratio of the monitor. 
+Because of these automatic adjustments, any skin can be used in any
+resolution and any rotation.
+
+<p>
+Although any skin can be used at any resolution, use skins especially 
+designed for low resolutions for best results below 640x480.
+
+<p>
+Note that the Width and Height are for the monitor in its normal 
+horizontal configuration. Thus, even if using a rotated display set the
+Width and Height appropriately for a non-rotated horizontal display.
+
+<p>
+If Width or Height is set to Auto, the jukebox will use the existing 
+desktop resolution in Windows, or 1024x768 in DOS.  
+
+<p>
+<b>Default value:</b> Width=Auto, Height=Auto
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="#FixedDimension" title="Sets clipping or letterboxing.">FixedDimension</a>.</blockquote>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

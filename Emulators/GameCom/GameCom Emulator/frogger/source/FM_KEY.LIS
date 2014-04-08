@@ -1,0 +1,1843 @@
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page    1
+
+
+      1                 ;;;;;;;;;***;;;***;;;FIGHTERS MEGAMIX;;;***;;;***;;;;;;;;;;;;
+      2                 	title	Fighter Mega Mix Common Bank program/Entry Point
+      3                 	type	8521
+      4                 
+      5                 	include frogger.tmp
+      5+                             data
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game Equates
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     0008       MaxPlayers	equ	8
+      5+     000C       MaxLevels	equ	12
+      5+     0009       NumBands	equ	9
+      5+     0004       NumStrips	equ	4
+      5+     0008       NumAnims	equ	8
+      5+     0012       NumSAnims	equ	NumBands*2
+      5+     0013       NumSounds	equ	19
+      5+                
+      5+     4E00       TimerFull	equ	04e00h	;78*256 is full time per level
+      5+     0007       TimerDec	equ	7	;timer decrease per loop
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game Equates: Game.Com Control
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     0000       ini_game        EQU     0   ; INITIAL
+      5+     0001       exe_game        EQU     1   ; EXECUTE
+      5+     0002       close_game      EQU     2   ; CLOSE GAME
+      5+     0003       reset_game      EQU     3   ; RESET
+      5+     0426       frogger_id      equ     0426h
+      5+                
+      5+     0000       override        equ     00h
+      5+     0001       composite       equ     01h
+      5+     0040       left_right      equ     40h
+      5+     0080       up_down         equ     80h
+      5+     00C0       lr_up           equ     0c0h
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game Equates: Scoring
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     000A       SCORE_forward equ	10
+      5+     0032       SCORE_home	equ	50
+      5+     03E8       SCORE_five	equ	1000
+      5+     00C8       SCORE_lady	equ	200
+      5+     00C8       SCORE_fly	equ	200
+      5+     000A       SCORE_time	equ	10
+      5+                
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page    2
+
+
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game Equates: Home Bases
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     000C       HomeBase1	equ	12
+      5+     0034       HomeBase2	equ	52
+      5+     005C       HomeBase3	equ	92
+      5+     0084       HomeBase4	equ	132
+      5+     00AC       HomeBase5	equ	172
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game Structures
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+                ; ROM
+      5+                
+      5+                	; Game Data
+      5+                                         ;                 struct      
+      5+     0000       GameLevel        equ 0   ;GameLevel        word    1   
+      5+     0002       GameMult         equ 2   ;GameMult         byte    1   
+      5+     0003       GameDiv          equ 3   ;GameDiv          byte    1   
+      5+     0004       GameFrogX        equ 4   ;GameFrogX        byte    1   
+      5+     0005       GameFrogY        equ 5   ;GameFrogY        byte    1   
+      5+     0006       GameSize         equ 6   ;GameSize         size        
+      5+                
+      5+                	; Level Data
+      5+                                         ;                 struct      
+      5+     0000       LevelFlags       equ 0   ;LevelFlags       byte    1   
+      5+                ;                equ 1   ;;                byte    1   
+      5+     0002       LevelBaseU       equ 2   ;LevelBaseU       byte    1   
+      5+     0003       LevelBaseF       equ 3   ;LevelBaseF       byte    1   
+      5+     0004       LevelIncM        equ 4   ;LevelIncM        byte    1   
+      5+     0005       LevelIncD        equ 5   ;LevelIncD        byte    1   
+      5+     0006       LevelDecM        equ 6   ;LevelDecM        byte    1   
+      5+     0007       LevelDecD        equ 7   ;LevelDecD        byte    1   
+      5+     0008       LevelStrips      equ 8   ;LevelStrips      byte    4   ;NumStrips
+      5+     000C       LevelSize        equ 12  ;LevelSize        size        
+      5+                
+      5+                	;Level Data: strip byte values
+      5+                
+      5+     0000       StripStill	equ	0	;Frog doesn't move and is safe
+      5+     0001       StripMove	equ	1	;Frog is moving and is safe
+      5+     0002       StripHome	equ	2	;Frog has reached home
+      5+     0003       StripWall	equ	3	;Frog can't go here: wall
+      5+     0004       StripWDead	equ	4	;Frog dies in water
+      5+     0005       StripXDead	equ	5	;Frog Dies not in water
+      5+     000A       StripBDead	equ	10	;Frog can't move here, trying dies
+      5+                
+      5+                	; Anim Data
+      5+                                         ;                 struct      
+      5+     0000       AnimStrip        equ 0   ;AnimStrip        byte    1   ;the art strip holding the anim
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page    3
+
+
+      5+     0001       AnimWidth        equ 1   ;AnimWidth        byte    1   ;width of anim in 8 pixel pieces
+      5+     0002       AnimNum          equ 2   ;AnimNum          byte    1   ;Number of frames in animation
+      5+     0003       AnimPal          equ 3   ;AnimPal          byte    1   ;Palette
+      5+     0004       AnimStripX       equ 4   ;AnimStripX       byte    1   ;Number of 8 bit pixels into strip
+      5+     0005       AnimMove         equ 5   ;AnimMove         byte    1   ;Number of pixels movement each frame
+      5+     0006       AnimSize         equ 6   ;AnimSize         size        ;size of header
+      5+     0006       AnimTicks        equ 6   ;AnimTicks        byte    1   ;start of frame tickers
+      5+                
+      5+                	; Strip Animation
+      5+                                         ;                 struct      
+      5+     0000       SAnimNum         equ 0   ;SAnimNum         byte    1   ;number of frames in the animation
+      5+     0001       SAnimTick        equ 1   ;SAnimTick        byte    1   ;Number of ticks between frames
+      5+     0002       SAnimStrips      equ 2   ;SAnimStrips      byte    1   ;The first strip in the list of animating strips
+      5+                
+      5+                ; RAM
+      5+                	; Player Data
+      5+                                         ;                 struct      
+      5+     0000       PlayerScore      equ 0   ;PlayerScore      word    1   
+      5+     0002       PlayerLevel      equ 2   ;PlayerLevel      byte    1   
+      5+     0003       PlayerLives      equ 3   ;PlayerLives      byte    1   
+      5+     0004       PlayerHomeF      equ 4   ;PlayerHomeF      byte    1   
+      5+     0005       PlayerUnused     equ 5   ;PlayerUnused     byte    1   
+      5+     0006       PlayerVSize      equ 6   ;PlayerVSize      size        
+      5+                
+      5+                	; Level Data
+      5+                                         ;                 struct      
+      5+     0000       LevelSpeedU      equ 0   ;LevelSpeedU      byte    1   ;composite (current) speed
+      5+     0001       LevelSpeedF      equ 1   ;LevelSpeedF      byte    1   ;
+      5+     0002       LevelVFlags      equ 2   ;LevelVFlags      byte    1   
+      5+     0003       LevelOffset      equ 3   ;LevelOffset      byte    1   ;offset (LevelStrips - +3) to left strip number
+      5+     0004       LevelPageA       equ 4   ;LevelPageA       byte    1   ;Art page
+      5+     0005       LevelYoffA       equ 5   ;LevelYoffA       byte    1   ;Art yoffset
+      5+     0006       LevelAddr1       equ 6   ;LevelAddr1       word    1   ;Left Strip table address
+      5+     0008       LevelAddr2       equ 8   ;LevelAddr2       word    1   ;Right strip table address
+      5+     000A       LevelPage1       equ 10  ;LevelPage1       byte    1   ;Left or unmoving art page
+      5+     000B       LevelPage2       equ 11  ;LevelPage2       byte    1   ;Right or unused art page
+      5+     000C       LevelYoff1       equ 12  ;LevelYoff1       byte    1   ;Left or unmoving art offset
+      5+     000D       LevelYoff2       equ 13  ;LevelYoff2       byte    1   ;Right or unused art offset
+      5+     000E       LevelXoff1       equ 14  ;LevelXoff1       byte    1   ;Left X offset for art (pixels)
+      5+     000F       LevelXofff       equ 15  ;LevelXofff       byte    1   ;Left X offset fraction (pixels)
+      5+     0010       LevelVSize       equ 16  ;LevelVSize       size        
+      5+                
+      5+                	; Animation Data
+      5+                                         ;                 struct      
+      5+     0000       AnimBand         equ 0   ;AnimBand         word    1   ;Band animation is on
+      5+     0002       AnimAnim         equ 2   ;AnimAnim         word    1   ;which animation am I controlling
+      5+     0004       AnimXOff         equ 4   ;AnimXOff         word    1   ;offset from left edge of screen (+100h)
+      5+     0006       AnimXOffH        equ 6   ;AnimXOffH        byte    1   ;X offset high value
+      5+     0007       AnimFNum         equ 7   ;AnimFNum         byte    1   ;the frame number currently diplayed
+      5+     0008       AnimFTick        equ 8   ;AnimFTick        byte    1   ;how many ticks left till anim changes
+      5+     0009       AnimRange        equ 9   ;AnimRange        byte    1   ;width of animation area in pixels
+      5+     000A       AnimVFlags       equ 10  ;AnimVFlags       byte    1   ;flags
+      5+     000B       AnimXRel         equ 11  ;AnimXRel         word    1   ;relative position in area U.F
+      5+     000D       AnimYOff         equ 13  ;AnimYOff         byte    1   ;offset from top of screen
+      5+     000E       AnimCall         equ 14  ;AnimCall         byte    1   ;routine to call (1 to ...)
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page    4
+
+
+      5+     000F       AnimVSize        equ 15  ;AnimVSize        size        
+      5+                
+      5+                	;Strip Animation
+      5+                                         ;                 struct      
+      5+     0000       SAnimTime        equ 0   ;SAnimTime        byte    1   ;Time left before change
+      5+     0001       SAnimCur         equ 1   ;SAnimCur         byte    1   ;current strip in animation
+      5+     0002       SAnimVSize       equ 2   ;SAnimVSize       size        
+      5+                
+      5+                ; these two flags are also copied to LevelVFlag
+      5+     0001       LevelFlagS	equ	01h  	;Art does not move
+      5+     0002       LevelFlagH	equ	02h	;Art doesn't h-flip on direction change
+      5+                
+      5+     0080       LevelVFlagD	equ	80h	;80h= left to right
+      5+     0040       LevelVFlagH	equ	40h	;last byte processed was anim header
+      5+     0020       LevelVFlagT	equ	20h	;last byte processed was anim non-header
+      5+                
+      5+     0080       AnimVFlagD	equ	80h	;anim moving left to right
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Game States
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     0000       Game_Open	equ	0
+      5+     0001       Game_Menus	equ	1
+      5+     0002       Game_Init	equ	2
+      5+     0003       Game_Next	equ	3	;go to next (or first, or only)
+      5+     0004       Game_Play	equ	4
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Zero Page Ram (0beh-0ffh)
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+00BE                         org     0beh
+      5+00BE            HoldSP      defs    2                   ;hold the game SP
+      5+00C0            CursorX     defs    1                   ;Cursor X,Y
+      5+00C1            CursorY     defs    1                   ;
+      5+00C2            GameState   defs    1                   ;game state
+      5+00C3            NumPlayers  defs    1                   ;1-MaxPlayers
+      5+00C4            GameMode    defs    1                   ;0=Arcade, 1=Tiger
+      5+00C5            Difficulty  defs    1                   ;0=Easy, 1=Arcade
+      5+00C6            Lives       defs    1                   ;3-5
+      5+00C7            Continue    defs    1                   ;0=Off, 1=On
+      5+00C8            StartLevel  defs    1                   ;1-5
+      5+00C9            Paused      defs    1                   ;1=game paused
+      5+00CA            SfxOn       defs    1                   ;1=Sound Effects on
+      5+00CB            MusicOn     defs    1                   ;1=Music On
+      5+00CC            DemoMode    defs    1                   ;1=Demo, 0=regular
+      5+00CD            sound_flag	defs	1
+      5+00CE            Timer	defs	2	;Time on level remaining (4E00h=full time)
+      5+                
+      5+00D0            temp0w      defs    2                   ;work areas word
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page    5
+
+
+      5+00D2            temp1w      defs    2                   ;work areas word
+      5+00D4            temp0       defs    1                   ;work areas
+      5+00D5            temp1       defs    1                   ;work areas
+      5+00D6            temp2       defs    1                   ;work areas
+      5+                
+      5+                	; Game Data
+      5+                
+      5+00D7            NextPlayer	defs	1
+      5+00D8            PlayerVAddr	defs	2
+      5+00DA            LevelAddr	defs	2
+      5+                
+      5+                	; Frog animation controls
+      5+                
+      5+00DC            FrogX	defs	2	;Current screen X
+      5+00DE            FrogY	defs	1	;Current screen Y
+      5+00DF            FrogMinY	defs	1	;Current minimum Y for scoring
+      5+00E0            FrogTick	defs	1	;Ticks till next move
+      5+00E1            FrogDir	defs	1	;1=S, 2=N, 3=E, 4=W, 0=sitting
+      5+00E2            FrogCnt	defs	1	;Count of remaining animations
+      5+00E3            FrogFlags	defs	1	;Frog Flags
+      5+00E4            FrogPage	defs	1	;page of frog art
+      5+00E5            FrogArtX	defs	1	;x of frog art
+      5+00E6            FrogArtY	defs	1	;y of frog art
+      5+00E7            FrogRest	defs	1	;resting animation
+      5+                
+      5+00E8            TargetX	defs	1	;Where Frog will be for texting
+      5+00E9            TargetY	defs	1	;
+      5+                
+      5+00EA            LastKey	defs	1	;Last Key entered
+      5+                
+      5+00EB            hold_byte1	defs	1
+      5+                
+      5+     0080       FrogFlagM	equ	80h	;on if moving with strip
+      5+                
+      5+     0001       FrogDirS	equ	1	;moving south
+      5+     0002       FrogDirN	equ	2	;moving north
+      5+     0003       FrogDirE	equ	3	;moving east
+      5+     0004       FrogDirW	equ	4	;moving west
+      5+     0005       FrogDirXW	equ	5	;dying waterdeath
+      5+     0006       FrogDirXL	equ	6	;dying landdeath
+      5+                
+      5+     0002       FrogSpeed	equ	2	;Number of ticks per move
+      5+     0004       FrogMoves	equ	4	;Number of movement pixels
+      5+     0004       FrogFrames	equ	4	;Number of frames
+      5+                
+      5+00EC            ZZZ	defs	10
+      5+                
+      5+00F6            testff:
+      5+                            if      testff .gt. 0ffh
+      5+                            error 	Too much data in zero page ram
+      5+                            endif
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Non-Zero page Ram (208h-37fh)
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page    6
+
+
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+0208             	org	208h
+      5+0208            PlayerData	defs	MaxPlayers*PlayerVSize
+      5+0238            LevelData	defs	NumBands*LevelVSize
+      5+02C8            AnimData	defs	NumAnims*AnimVSize
+      5+0340            SAnimData	defs	NumSAnims*SAnimVSize
+      5+                
+      5+0364            new_melody_ptr defs 1
+      5+0365            DemoPtr	defs	2
+      5+0367            DemoCnt	defs	1
+      5+                
+      5+0368            page_ptr1	defs	2
+      5+036A            index0	defs	1
+      5+036B            index1	defs	1
+      5+036C            index2	defs	1
+      5+036D            index3	defs	1
+      5+                
+      5+036E            test37f:
+      5+                	if	test37f .gt. 37fh
+      5+                	error	Too much data in non-zero page ram
+      5+                	endif
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; User input equates
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+                ;	001-013	 ;row 0 of screen, column 0 to 12
+      5+                ;	...	 ;...
+      5+                ;	118-082h ;row 9 of screen, column 0 to 12
+      5+                ;
+      5+                ;	spot on screen = row*13+column+1
+      5+                
+      5+     0082       UserScreen	equ	082h	;highest screen press
+      5+                
+      5+     0083       UserUp	equ	083h	;joypad up
+      5+     0084       UserDown	equ	084h	;joypad down
+      5+     0085       UserLeft	equ	085h	;joypad left
+      5+     0086       UserRight	equ	086h	;joypad right
+      5+                
+      5+     0087       UserMenu	equ	087h	;Menu button
+      5+     0089       UserSound	equ	089h	;Sound button
+      5+     008A       UserPause	equ	08ah	;Pause button
+      5+                
+      5+     008B       UserA	equ	08bh	;A button
+      5+     008C       UserB	equ	08ch	;B button
+      5+     008D       UserC	equ	08dh	;C button
+      5+     008E       UserD	equ	08eh	;D button
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Bank definitions
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page    7
+
+
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+     0020       program_bank1   equ     020h
+      5+     0021       program_bank2   equ     021h
+      5+     0023       program_bank3   equ     023h
+      5+     0024       program_bank4   equ     024h
+      5+     0025       program_bank5   equ     025h
+      5+     0026       program_bank6   equ     026h
+      5+                
+      5+     0020       bankno_front0 equ   20h
+      5+     0021       bankno_front1 equ   21h
+      5+     0022       bankno_front2 equ   22h
+      5+     0023       bankno_sprite equ   23h
+      5+     0024       bankno_strip  equ   24h
+      5+     0072       bankno_winpic10 equ 72h ;    bankno_winpic9+2
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; Macros
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+                ;	; long conditional branches
+      5+                ;
+      5+                ;breq:	macro	?dest
+      5+                ;	br	ne,cont???
+      5+                ;	jmp	eq,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+      5+                ;brne:	macro	?dest
+      5+                ;	br	eq,cont???
+      5+                ;	jmp	ne,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+      5+                ;brnz:	macro	?dest
+      5+                ;	br	z,cont???
+      5+                ;	jmp	nz,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+      5+                ;bruge:	macro	?dest
+      5+                ;	br	ult,cont???
+      5+                ;	jmp	uge,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+      5+                ;brugt:	macro	?dest
+      5+                ;	br	ule,cont???
+      5+                ;	jmp	ugt,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page    8
+
+
+      5+                ;brule:	macro	?dest
+      5+                ;	br	ugt,cont???
+      5+                ;	jmp	ule,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                ;
+      5+                ;brz:	macro	?dest
+      5+                ;	br	nz,cont???
+      5+                ;	jmp	z,?dest
+      5+                ;cont???:
+      5+                ;	endm
+      5+                
+      5+                ;============================================================================
+      5+                ;
+      5+                ; The old stuff here
+      5+                ;
+      5+                ;----------------------------------------------------------------------------
+      5+                
+      5+                ;ASB	include oldstuff.inc
+      5+                
+      5+                            program
+      6                 	include equate.inc
+      6+     0000       DEMO_ROM	equ	0
+      6+                ;------------------------------------------
+      6+                ;	test program
+      6+                ;------------------------------------------
+      6+     0000       KEYTEST		equ	0
+      6+     0000       QWSOUND_TEST	equ	0
+      6+     0001       NEW_GRAPHIC1	equ	1
+      6+     0000       HALTTEST	equ	0
+      6+     0000       SOUND_TEST	EQU	0
+      6+     0001       CURSOR_ENABLE	EQU	1
+      6+     0000       FAST_OPEN	EQU	0
+      6+     0001       NEW_SPEECH	EQU	1		;IMPROVED SPEECH SPEED
+      6+     0000       MANUEL_TEST	EQU	0
+      6+                					;ENABLE BANK SWITCH FOR ISR
+      6+     0050       STARTYR		equ	80		;1994 starting year
+      6+     0120       SKRAM		equ	120h		;start of the kernel RAM
+      6+     0005       TBase		equ	5		;about 5ms timebase of Timer #1
+      6+     0008       MAX_UT		equ	8
+      6+                ;--- Scan key equate -------;
+      6+     0010       MAXKEY		equ	16
+      6+     000A       REPEATTM	equ	10		;500ms
+      6+     0004       SCANFREQ	equ	20/5		;10ms
+      6+     0010       DEBOU_TM	equ	16
+      6+     00A4       ALARM_ALERT_KEY	equ	0a4h
+      6+     00A5       COMM_ERROR	equ	0a5h
+      6+     00A8       WARN_BEEP	equ	0a8h
+      6+     000A       UT_CLK_		equ	50/5	;49.152 ms per count
+      6+                
+      6+     0001       PHONEBOOK_APPL	EQU	1
+      6+     0002       CALENDAR_APPL	EQU	2
+      6+     0003       CALCULATOR_APPL	EQU	3
+      6+     0004       CART_APPL	EQU	4
+      6+     0005       DLO_APPL	EQU	5
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page    9
+
+
+      6+     0006       SOLITAIRE_APPL	EQU	6
+      6+     0007       HISCR_APPL	EQU	7
+      6+                
+      6+     00FF       ENDKEY		EQU	0FFH
+      6+     0088       KEY_ONOFF	EQU	88H
+      6+     0089       KEY_MUTE	EQU	89H
+      6+     0087       KEY_MENU	EQU	87H
+      6+     008A       KEY_PAUSE	EQU	8AH
+      6+     00A0       SPEECH_END	EQU	0A0H
+      6+                
+      6+     0005       MainDataBank	equ	5
+      6+     000C       DSPBANK0	EQU	0ch
+      6+     000D       DSPBANK1	EQU	0dh
+      6+     0005       MainProgBank	equ	5
+      6+     0002       KernelBank	equ	2
+      6+     0003       MainProgBank2	equ	3
+      6+                
+      6+     FC60       START_HISCR	equ	0fc60h
+      6+     FEE0       END_HISCR	equ	0fEE0h
+      6+     0020       LEN_HISCR	equ	32		;32 bytes per hi score record
+      6+     0040       NEW_LEN_HISCR	equ	64		;32 bytes per hi score record
+      6+     0003       DATA_OFFSET	equ	3		;4th position from the record head
+      6+     0001       SEP_CHAR	equ	01h
+      6+                
+      6+     0008       SYS_TX_QSIZE	equ	8
+      6+     0008       SYS_RX_QSIZE	equ	8
+      6+     0000       UT_STOP		equ	00h
+      6+     0001       UT_RUN		equ	01h
+      6+     0002       UT_PAUSE	equ	02h
+      6+                
+      6+                IF DEMO_ROM
+      6+                START_STACK	equ	3ffh
+      6+                ELSE
+      6+     03C0       START_STACK	equ	3c0h
+      6+                ENDIF
+      6+                
+      6+                ;===============================;
+      6+                ;	RP pre-defined value
+      6+                ;===============================;
+      6+     0000       KERNEL_RP	equ	00h
+      6+     0008       DISPLAY_RP	equ	08h
+      6+     0018       CLOCKISR_RP	equ	18h
+      6+     0028       UARTISR_RP	equ	28h
+      6+     0038       SP_TIMER1ISR_RP	equ	38h
+      6+     0048       N_TIMER1ISR_RP	equ	48h
+      6+     0058       SYSTEM_RP	equ	58h
+      6+                
+      7                 	include ram.inc
+      7+     00A0       RX_head		equ	0a0h
+      7+     00A2       RX_tail		equ	0a2h
+      7+     00A4       STPID		equ	0a4h		
+      7+                IF .NOT. NEW_SPEECH
+      7+                sp_end_bank	equ	0a5h
+      7+                sp_end_address	equ	0a6h
+      7+                ELSE
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   10
+
+
+      7+     00A5       UART_new_ibank	equ	0a5h
+      7+     00A6       TMR1_new_ibank	equ	0a6h
+      7+     00A7       PIO_new_ibank	equ	0a7h
+      7+                ENDIF
+      7+     00A8       sp_control	equ	0a8h		;--------------------------
+      7+                					;bit 0 : 0 - stop
+      7+                					;        1 - start
+      7+                					;bit 1 : 0 - PCM
+      7+                					;        1 - ADPCM
+      7+                					;bit 2 : 0 - low nibble
+      7+                					;	 1 - high nibble
+      7+                					;bit 3 : 0 - pause disable
+      7+                					;	 1 - pause enable
+      7+                					;bit 4 : 0 - play mode
+      7+                					;        1 - pause mode
+      7+                					;bit 5 : 0 - enable time out
+      7+                					;        1 - disable time out
+      7+                					;bit 6 : 0 - main menu spinning mode
+      7+                					;        1 - main menu cursor mode
+      7+                					;bit 7 : 0 - normal
+      7+                					;        1 - sound selection screen 
+      7+                					;            entered
+      7+                					;--------------------------
+      7+                IF .NOT. NEW_SPEECH
+      7+                sp_bank		equ	0a9h		;speech data bank
+      7+                sp_address	equ	0aah		;speech data address
+      7+                ELSE
+      7+     00A9       TMR0_new_ibank	equ	0a9h
+      7+     00AA       CLK_new_ibank	equ	0aah
+      7+     00AB       INT_new_ibank	equ	0abh
+      7+                ENDIF
+      7+     00AC       SP_CTR1		equ	0ach		;speech timer
+      7+     00AD       SP_CTR2		equ	0adh		;
+      7+     00AE       TX_head		equ	0aeh		;head pointer of tx queue
+      7+                ;TX_tail		equ	0ach		;tail pointer of tx queue
+      7+     00B0       PVOICE		equ	0b0h
+      7+     00B1       UART_control	equ	0b1h		;-------------------------
+      7+                					;bit 0 : 0 - TX disable
+      7+                					;        1 - TX enable
+      7+                					;bit 1 : 0 - RX disable
+      7+                					;        1 - RX enable
+      7+                					;bit 2 : 0 - system UART isr
+      7+                					;        1 - application defined isr
+      7+                					;bit 3 : 0 - system TX queue
+      7+                					;        1 - appl. TX defined queue
+      7+                					;bit 4 : 0 - system RX queue
+      7+                					;        1 - appl. RX defined queue
+      7+                					;------------------------------------
+      7+                ;kstemp0		equ	0b2h		;kernel use temp 0
+      7+                IF NEW_SPEECH
+      7+     00B2       WDT_new_ibank	equ	0b2h
+      7+     00B3       NMI_new_ibank	equ	0b3h
+      7+                ENDIF
+      7+     00B4       UT_clk		equ	0b4h		;User timer clock
+      7+     00B5       ScanTMR		equ	0b5h		;Key scan timer
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   11
+
+
+      7+     00B6       RepeatRate	equ	0b6h		;repeat rate counter
+      7+     00B7       Oldkey		equ	0b7h		;key history
+      7+     00B8       KEYHEAD		equ	0b8h		;head pointer of key buffer
+      7+     00BA       KEYTAIL 	equ	0bah		;tail pointer of key buffer
+      7+     00BC       SYSFLAG		equ	0bch		;--------------------------
+      7+                					;bit 0 : 1 - initialize from power on
+      7+                					;        0 - no data destroy
+      7+                					;bit 1 : 0 - not turn on unit
+      7+                					;        1 - turn on unit
+      7+                					;bit 2 : 0 - 3 minute time out
+      7+                					;        1 - 5 minute time out
+      7+                					;bit 3 : 0 - even second
+      7+                					;        1 - odd second
+      7+                					;bit 4 : 0 - none
+      7+                					;        1 - warning beep in progress
+      7+                					;bit 5 : 0 - normal sound output
+      7+                					;        1 - no sound output (MUTE)
+      7+                					;bit 6 : 0 - normal timer (4.9152ms)
+      7+                					;	 1 - Speech processing (41.6us)
+      7+                					;bit 7 : 0 - ---
+      7+                					;        1 - quit box asking screen
+      7+                					;--------------------------
+      7+                					
+      7+     00BD       KBDFLAG		equ	0bdh		;--------------------------
+      7+                					;bit 0 : 0 - scan membrane
+      7+                					;        1 - not to scan membrane
+      7+                					;bit 1 : 0 - scan keypad
+      7+                					;        1 - not to scan keypad
+      7+                					;bit 2 : 0 - sleep if no event
+      7+                					;        1 - no sleep if no event
+      7+                					;bit 3 : 0 - scan cycle
+      7+                					;        1 - not a scan cycle
+      7+                					;bit 4 : 0 - repeat key is not allowed
+      7+                					;        1 - repeat key is allowed
+      7+                					;bit 5 : 0 - 
+      7+                					;	 1 - Delay of repeat key
+      7+                					;bit 6 : 0 -
+      7+                					;	 1 - debounce of the key
+      7+                					;bit 7 : 0 -
+      7+                					;        1 - key is held down
+      7+                					;-------------------------
+      7+                ;**************************************************
+      7+                ;
+      7+                ;	User defined vector table
+      7+                ;
+      7+                ;**************************************************
+      7+     0100       UART_new_isr	equ	100h
+      7+     0102       TMR1_new_isr	equ	102h
+      7+     0104       PIO_new_isr	equ	104h
+      7+     0106       TMR0_new_isr	equ	106h
+      7+     0108       CLK_new_isr	equ	108h
+      7+     010A       INT_new_isr	equ	10ah
+      7+     010C       NMI_new_isr	equ	10ch
+      7+     010E       WDT_new_isr	equ	10eh
+      7+     0110       PRN_PORT	equ	110h	;image of the printer port address
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   12
+
+
+      7+                				;default = 0fff0h
+      7+     0112       DMG_timer	equ	112h
+      7+                ;Attack_Buffer	equ	112h
+      7+                ;Defense_Buffer	equ	114h
+      7+                ;Max_attack	equ	116h
+      7+                ;Max_defense	equ	117h
+      7+                ;hit_infoa	equ	118h
+      7+                ;hit_infod	equ	11ah
+      7+     011C       cursor_pos	equ	11ch
+      7+     011D       cursor_tmr	equ	11dh
+      7+     011E       TX_tail		equ	11eh
+      7+     0120       SIGN		equ	SKRAM
+      7+     0124       Year		equ	SIGN+4
+      7+     0125       Month		equ	Year+1
+      7+     0126       Day		equ	Month+1
+      7+     0127       Hour		equ	Day+1
+      7+     0128       Minute		equ	Hour+1
+      7+     0129       Second		equ	Minute+1
+      7+     012A       AYear		equ	Second+1
+      7+     012B       AMonth		equ	AYear+1
+      7+     012C       ADay		equ	AMonth+1
+      7+     012D       AHour		equ	ADay+1
+      7+     012E       AMinute		equ	AHour+1
+      7+     012F       ASecond		equ	AMinute+1
+      7+     0130       KBuff		equ	ASecond+1
+      7+                ;=================================;
+      7+     012A       Call_dest	equ	AYear
+      7+     012D       Cart_Prog_Bank	equ	AHour
+      7+                ;----------------------------------;
+      7+                ;	Main/Kernel
+      7+                ;----------------------------------;
+      7+     0150       UTimer1C	equ	150h		;-------------------------
+      7+                					;User timer 1 control
+      7+                					; 00 - Idle
+      7+                					; 01 - Run
+      7+                					; 02 - Pause
+      7+                					;-------------------------
+      7+     0151       UTimer1H	equ	151h
+      7+     0152       UTimer1L	equ	152h
+      7+     0168       appl_no		equ	168h
+      7+     0169       Melody_Register	equ	169h		;-------------------------
+      7+                					;bit 0 : channel 0 enable
+      7+                					;bit 1-2 : channel 0 instrument
+      7+                					;          00 : piano
+      7+                					;          01 : organ
+      7+                					;          10 : -----
+      7+                					;          11 : -----
+      7+                					;bit 3 : channel 0 output enable
+      7+                					;bit 4 : channel 1 enable
+      7+                					;bit 5,6 : channel 1 instrument
+      7+                					;          00 : piano
+      7+                					;          01 : organ
+      7+                					;          10 : -----
+      7+                					;          11 : -----
+      7+                					;bit 7 : channel 1 output enable
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   13
+
+
+      7+                					;-------------------------
+      7+     016A       Mel_address0	equ	16ah
+      7+     016C       Mel_address1	equ	16ch
+      7+     016E       Mel_bank0	equ	16eh
+      7+     016F       Mel_bank1	equ	16fh
+      7+     0170       ADSR_register	equ	170h		;-------------------------
+      7+                					;bit 0 - Channel 0 attack
+      7+                					;bit 1 - channel 0 decay
+      7+                					;bit 2 - channel 0 sustain
+      7+                					;bit 3 - channel 0 release
+      7+                					;bit 4 - channel 1 attack
+      7+                					;bit 5 - channel 1 decay
+      7+                					;bit 6 - channel 1 sustain
+      7+                					;bit 7 - channel 1 release
+      7+                					;-------------------------
+      7+     0171       Tone0content	equ	171h		;amplitdue control for channel 0
+      7+     0172       Tone1content	equ	172h		;amplitude control for channel 1
+      7+     0173       ToneLength0	equ	173h		;length of the tone in channel 0
+      7+     0174       ToneLength1	equ	174h		;length of the tone in channel 1
+      7+     0175       no_of_voice	equ	175h
+      7+     0176       Melody_timer	equ	176h		;count = 10 --> 49ms per unit
+      7+     0177       Tone0Holdtimer	equ	177h
+      7+     0178       Tone1Holdtimer	equ	178h
+      7+     0179       menu_mode	equ	179h		;--------------------
+      7+                				; MAIN MENU SPINNING MODE :
+      7+                					;bit 0 - bit 2 : Timer ID
+      7+                					;bit 3-6 : starting speech progress
+      7+                					;  0 : starting speech
+      7+                					;  1 : screen #1	(00001XXX)
+      7+                					;  2 : screen #2	(00010XXX)
+      7+                					;  3 : screen #3	(00011XXX)
+      7+                					;  4 : screen #4	(00100XXX)
+      7+                					;  5 : screen #5	(00101XXX)
+      7+                					;  6 : screen #6	(00110XXX)
+      7+                					;  7 : screen #7	(00111XXX)
+      7+                					;  8 : screen #6	(01000XXX)
+      7+                					;  9 : screen #5	(01001XXX)
+      7+                					;  a : screen #4	(01010XXX)
+      7+                					;  b : screen #3	(01011XXX)
+      7+                					;  c : screen #2	(01100XXX)
+      7+                					;  10h : icon pressed	(10000XXX)
+      7+                				; MAIN MENU CURSOR MODE
+      7+                					;---------------------
+      7+     017A       Cart_dest	equ	17ah		;Cart jump address
+      7+     017C       Cart_mode	equ	17ch		;-------------------------
+      7+                					;bit 0 - 0 no cart in slot #1
+      7+                					;	 1 cartridge existed in #1
+      7+                					;bit 1 - 0 no cart in slot #2
+      7+                					;	 1 cartridge existed in #2
+      7+                					;bit 2 - 0 current cartridge is #1
+      7+                					;	 1 current cartridge is #2
+      7+                					;bit 3 - 0 cart 1 contains program
+      7+                					;        1 cart 1 contains data only
+      7+                					;bit 4 - 0 cart 2 contains program
+      7+                					;        1 cart 2 contains data only
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   14
+
+
+      7+                					;-------------------------
+      7+     017D       Cart_bank1	equ	17dh		;0 - no cart, non-zero, header bank #
+      7+     017E       Cart_bank2	equ	17eh		;0 - no cart, non-zero, header bank #
+      7+     017F       KBDTMR		equ	17fh		;keyboard use timer
+      7+     0180       Sys_TX_queue	equ	180h
+      7+     0188       Sys_RX_queue	equ	188h
+      7+     0190       User_TX_qq	equ	190h		;tx queue from user
+      7+     0192       User_RX_qq	equ	192h		;rx queue from user
+      7+     0194       User_TX_qsize	equ	194h		;tx queue size from  user
+      7+     0196       User_RX_qsize	equ	196h		;rx queue size from  user
+      7+                
+      8                 	include disp_ram.inc
+      8+                ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      8+                ;               WORKING RAMs
+      8+                ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      8+                ;;  00 -  7F : RP = 3, Display
+      8+                ;;  80 -  9F : Display Working RAM (32 bytes)
+      8+                ;; 1A0 - 1BF : Display (32 bytes)
+      8+                
+      8+     0080       cur_pos_x       equ     80h
+      8+     0081       cur_pos_y       equ     cur_pos_x+1
+      8+     0082       win_left_x      equ     cur_pos_y+1
+      8+     0083       win_left_y      equ     win_left_x+1
+      8+     0084       win_width       equ     win_left_y+1
+      8+     0085       win_height      equ     win_width+1
+      8+     0086       RP_image        equ     win_height+1            ;??
+      8+     0087       font_x          equ     RP_image+1
+      8+     0088       font_y          equ     font_x+1      ;font_no??
+      8+     0089       font_bank       equ     font_y+1      ;reserved space for user defined fonts??
+      8+     008A       font_offset     equ     font_bank+1
+      8+                
+      8+                ;font_table_hi   equ     font_offset+1             ;??
+      8+                ;font_table_lo   equ     font_table_hi+1         ;??
+      8+                ;text_no_x       equ     font_table_lo+1
+      8+                ;text_no_y       equ     text_no_x+1
+      8+                
+      8+     008B       temp_left_x     equ     font_offset+1
+      8+     008C       temp_left_y     equ     temp_left_x+1
+      8+     008D       temp_width      equ     temp_left_y+1
+      8+     008E       temp_height     equ     temp_width+1
+      8+     008F       temp_pos_x      equ     temp_height+1
+      8+     0090       temp_pos_y      equ     temp_pos_x+1
+      8+     0091       work_ram1       equ     temp_pos_y+1
+      8+     0092       work_ram2       equ     work_ram1+1
+      8+     0093       dmc_image       equ     work_ram2+1
+      8+     0094       cur_page        equ     dmc_image+1     ;!! for page swapping & block clear
+      8+     0095       local_global    equ     cur_page+1
+      8+     0096       local_global_1  equ     local_global+1
+      8+     0097       local_global_2  equ     local_global_1+1
+      8+     0098       local_global_3  equ     local_global_2+1
+      8+     0099       local_global_4  equ     local_global_3+1
+      8+     009A       temp_1          equ     local_global_4+1
+      8+     009B       temp_2          equ     temp_1+1
+      8+     009C       temp_3          equ     temp_2+1        ;!! text background color
+      8+     009D       cur_status      equ     temp_3+1        ;!! cursor status
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   15
+
+
+      8+     009E       font_id         equ     cur_status+1
+      8+     009F       font_num        equ     font_id+1
+      8+                
+      8+     01E8       font3a          equ     01e8h
+      8+     01E9       font3b          equ     font3a+1
+      8+     01EA       font3c          equ     font3b+1
+      8+     01EB       font4a          equ     font3c+1
+      8+     01EC       font4b          equ     font4a+1
+      8+     01ED       font4c          equ     font4b+1
+      8+     01EE       font5a          equ     font4c+1
+      8+     01EF       font5b          equ     font5a+1
+      8+     01F0       font5c          equ     font5b+1
+      8+     01F1       font6a          equ     font5c+1
+      8+     01F2       font6b          equ     font6a+1
+      8+     01F3       font6c          equ     font6b+1
+      8+     01F4       font7a          equ     font6c+1
+      8+     01F5       font7b          equ     font7a+1
+      8+     01F6       font7c          equ     font7b+1
+      8+     01F7       font8a          equ     font7c+1
+      8+     01F8       font8b          equ     font8a+1
+      8+     01F9       font8c          equ     font8b+1
+      8+     01FA       font9a          equ     font8c+1
+      8+     01FB       font9b          equ     font9a+1
+      8+     01FC       font9c          equ     font9b+1
+      8+     01FD       fontaa          equ     font9c+1
+      8+     01FE       fontab          equ     fontaa+1
+      8+     01FF       fontac          equ     fontab+1
+      8+     0200       font_start      equ     fontac+1
+      8+     0201       timer_ovr       equ     font_start+1
+      8+     0202       inverse         equ     timer_ovr+1
+      8+     0203       intnet          equ     inverse+1
+      8+     0204       scroll          equ     intnet+1
+      8+     0205       scroll1         equ     scroll+1
+      8+     0206       text_dest       equ     scroll1+1
+      8+     0207       cart_flag       equ     text_dest+1 ;0: cart1 ;1:cart2
+      8+                
+      8+     01A8       mel_counter     equ     01a8h
+      8+     01A9       mel_counter1    equ     mel_counter+1
+      8+     01AA       mel_flag        equ     mel_counter1+1
+      8+     01AB       mel_flag1       equ     mel_flag+1
+      8+                
+      8+                
+      9                 	include disp_equ.inc
+      9+                ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      9+                ;	       CONSTANT
+      9+                ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+      9+                ;MainProgBank  equ 5
+      9+     0000       a_2_a		equ	0
+      9+     0002       a_2_b		equ	2
+      9+     0003       b_2_b		equ	3
+      9+     0001       b_2_a		equ	1
+      9+                
+      9+     0007       CUR_SHAPE_BIT	EQU	7; 80H	   ;0 - BLOCK CURSOR, 1 - LINE CURSOR
+      9+     0080       CUR_SHAPE_LOC	EQU	80H
+      9+                
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   16
+
+
+      9+     0006       CUR_DISP_CYCLE	EQU	6; 40H	   ;0 - OFF, 1 - ON
+      9+     0040       CUR_DISP_LOC	EQU	40H
+      9+                
+      9+     0005       CUR_ON_BIT	EQU	5; 20H	   ;0 - OFF, 1 - ON
+      9+     0020       CUR_ON_BIT_LOC	EQU	20H
+      9+                
+      9+                
+      9+     00C8       MAX_WIDTH	EQU	200
+      9+     00A0       MAX_HEIGHT	EQU	160
+      9+                
+      9+                
+     10                 
+     11                 ;ASB	global	CHK_key
+     12                 ;ASB	global	interpreter
+     13                 ;ASB	global	act06
+     14                 ;ASB	global	act42
+     15                 ;ASB	global	act44
+     16                 ;ASB
+     17                 ;ASBENTRY_BANK	equ	20h
+     18                 ;ASBCART_ID 	equ	0a31h
+     19                 ;ASBbankno_l11ao7r6 equ	54h
+     20                 ;ASB
+     21                 ;ASB;;;;;;;;;;;;;;;;;;;;;;;;Game Action;;;;;;;;;;;;;;;;;;;;;;;;;;
+     22                 ;ASB
+     23                 ;ASBCHK_key:			;key2 is the output keycode
+     24                 ;ASB	mov	r0,#0
+     25                 ;ASB	mov	r1,#20h 	;bit 7--Up
+     26                 ;ASB	call	Output_scan	;bit 6--Down
+     27                 ;ASB	call	Return_line	;bit 5--Left
+     28                 ;ASB	mov	key1,r0 	;bit 4--Right
+     29                 ;ASB	mov	key2,r1
+     30                 ;ASB	movw	rr0,#40h	;bit 3--A
+     31                 ;ASB	call	Output_scan	;bit 2--D
+     32                 ;ASB	call	Return_line	;bit 1--C
+     33                 ;ASB	bbs	r0,#1,DQ	;bit 0--B
+     34                 ;ASBq1:	bbs	key1,#7,AQ
+     35                 ;ASBq2:	bbs	key1,#0,upQ
+     36                 ;ASBq3:	bbs	key1,#2,leftQ
+     37                 ;ASBq4:	bbs	key1,#3,rightQ
+     38                 ;ASBq5:	bbs	key1,#1,downQ
+     39                 ;ASBq6:	ret
+     40                 ;ASB
+     41                 ;ASBDQ:	bset	key2,#2
+     42                 ;ASB	br	q1
+     43                 ;ASB
+     44                 ;ASBAQ:	bset	key2,#3
+     45                 ;ASB	br	q2
+     46                 ;ASB
+     47                 ;ASBupQ:	bset	key2,#7
+     48                 ;ASB	br	q3
+     49                 ;ASB
+     50                 ;ASBleftQ:	bset	key2,#5
+     51                 ;ASB	br	q4
+     52                 ;ASB
+     53                 ;ASBrightQ: bset	key2,#4
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   17
+
+
+     54                 ;ASB	br	q5
+     55                 ;ASB
+     56                 ;ASBdownQ:	bset	key2,#6
+     57                 ;ASB	ret
+     58                 ;ASB
+     59                 ;ASBPLY_info1:				;pointer of current player info1
+     60                 ;ASB	mov	r0,#plyr_info1
+     61                 ;ASB	add	r0,r15
+     62                 ;ASB	mov	r1,@r0
+     63                 ;ASB	ret
+     64                 ;ASB
+     65                 ;ASBPLY_info2:
+     66                 ;ASB	mov	r0,#plyr_info2
+     67                 ;ASB	add	r0,r15
+     68                 ;ASB	mov	r1,@r0
+     69                 ;ASB	ret
+     70                 ;ASB
+     71                 ;ASB;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+     72                 ;ASB;key history function
+     73                 ;ASB
+     74                 ;ASBCK_action:
+     75                 ;ASB	call	PLY_info1
+     76                 ;ASB	mov	r3,r1
+     77                 ;ASBck3:	bbs	key2,#3,SET_H1
+     78                 ;ASBck4:	bbc	key2,#3,RESET_H1
+     79                 ;ASBck5:	bbs	key2,#0,SET_H2
+     80                 ;ASBck6:	bbc	key2,#0,RESET_H2
+     81                 ;ASBck7:	bbs	key2,#2,SET_H3
+     82                 ;ASBck8:	bbc	key2,#2,RESET_H3
+     83                 ;ASBck9:	mov	@r0,r3
+     84                 ;ASB	ret
+     85                 ;ASB
+     86                 ;ASBSET_H1: bset	r3,#1
+     87                 ;ASB	br	ck4
+     88                 ;ASB
+     89                 ;ASBRESET_H1:
+     90                 ;ASB	bclr	r3,#1
+     91                 ;ASB	br	ck5
+     92                 ;ASB
+     93                 ;ASBSET_H2: bset	r3,#4
+     94                 ;ASB	br	ck6
+     95                 ;ASB
+     96                 ;ASBRESET_H2:
+     97                 ;ASB	bclr	r3,#4
+     98                 ;ASB	br	ck7
+     99                 ;ASB
+    100                 ;ASBSET_H3: bset	r3,#3
+    101                 ;ASB	br	ck8
+    102                 ;ASB
+    103                 ;ASBRESET_H3:
+    104                 ;ASB	bclr	r3,#3
+    105                 ;ASB	br	ck9
+    106                 ;ASB
+    107                 ;ASB;;;;;;;;;;;;;;;;;;;;;;Key Interpreter;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    108                 ;ASB
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   18
+
+
+    109                 ;ASBinterpreter:
+    110                 ;ASB	call	Cur_statusA
+    111                 ;ASB	call	Chk_jmp_kick
+    112                 ;ASB	call	Chk_SPAA
+    113                 ;ASB	call	Chk_run
+    114                 ;ASB	call	Direct_Set
+    115                 ;ASB	call	movement
+    116                 ;ASB	call	CK_action		;key history
+    117                 ;ASB	ret
+    118                 ;ASB
+    119                 ;ASBCur_statusA:				;Current player status
+    120                 ;ASB	mov	r0,#9
+    121                 ;ASB	add	r0,r15
+    122                 ;ASB	mov	r1,@r0
+    123                 ;ASB	mov	status1,r1
+    124                 ;ASB	ret
+    125                 ;ASB
+    126                 ;ASBChk_jmp_kick:
+    127                 ;ASB	cmp	status1,#22	;jump kick (up)
+    128                 ;ASB	br	eq,jmpkick1
+    129                 ;ASB	cmp	status1,#24	;jump kick (forward)
+    130                 ;ASB	br	eq,jmpkick2
+    131                 ;ASB	cmp	status1,#26	;jump kick (backward)
+    132                 ;ASB	br	eq,jmpkick3
+    133                 ;ASB	ret
+    134                 ;ASB
+    135                 ;ASBjmpkick1:
+    136                 ;ASB	cmp	key2,#1
+    137                 ;ASB	jmp	eq,act36
+    138                 ;ASB	cmp	key2,#81h
+    139                 ;ASB	jmp	eq,act36
+    140                 ;ASB	ret
+    141                 ;ASB
+    142                 ;ASBjmpkick2:
+    143                 ;ASB	bbs	key2,#0,pass_38
+    144                 ;ASB	ret
+    145                 ;ASB
+    146                 ;ASBpass_38:jmp	act38
+    147                 ;ASB
+    148                 ;ASBpass_40:jmp	act40
+    149                 ;ASB
+    150                 ;ASBjmpkick3:
+    151                 ;ASB	bbs	key2,#0,pass_40
+    152                 ;ASB	ret
+    153                 ;ASB
+    154                 ;ASB;\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    155                 ;ASB
+    156                 ;ASBChk_SPAA:
+    157                 ;ASB	mov	r1,#plyr_id		;23/12/97
+    158                 ;ASB	add	r1,r15			;the different kinds of key set
+    159                 ;ASB	mov	r2,@r1			;SPAA
+    160                 ;ASB	cmp	r2,#hornet_id		;
+    161                 ;ASB	br	eq,hornet_Q		;
+    162                 ;ASB	cmp	r2,#janet_id		;
+    163                 ;ASB	jmp	eq,janet_SPAA		;
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   19
+
+
+    164                 ;ASB	cmp	r2,#kids_id		;
+    165                 ;ASB	jmp	eq,kids_SPAA		;
+    166                 ;ASB	cmp	r2,#pai_id		;
+    167                 ;ASB	br	eq,pai_Q		;
+    168                 ;ASB	cmp	r2,#siba_id		;
+    169                 ;ASB	jmp	eq,siba_SPAA		;
+    170                 ;ASB	call	PLY_info2		;29/12/1997
+    171                 ;ASB	bclr	r1,#5
+    172                 ;ASB	bclr	r1,#6
+    173                 ;ASB	bclr	r1,#7			;reset the fighter isn't kids & siba
+    174                 ;ASB	mov	@r0,r1			;
+    175                 ;ASB
+    176                 ;ASBChk_SPAA1:
+    177                 ;ASB	call	PLY_info2		;the other fighters SPAA key B+PKG
+    178                 ;ASB	bbs	r1,#5,chk_sppa1
+    179                 ;ASB	bbs	r1,#3,spa_right
+    180                 ;ASB
+    181                 ;ASB;face left
+    182                 ;ASB	cmp	key2,#10h		;move right
+    183                 ;ASB	br	ne,spa_left2
+    184                 ;ASB	bset	r1,#2			;set backward flag
+    185                 ;ASB	mov	@r0,r1
+    186                 ;ASBspa_left2:
+    187                 ;ASB	bbs	key2,#4,chk_sppa
+    188                 ;ASBspa_left3:
+    189                 ;ASB	bclr	r1,#2			;reset backward flag
+    190                 ;ASB	mov	@r0,r1
+    191                 ;ASBclr_timer:
+    192                 ;ASB	bclr	r1,#4			;clear special move allow flag.
+    193                 ;ASB	mov	@r0,r1			;enable special move again.
+    194                 ;ASB	clr	r0
+    195                 ;ASB	cmp	r15,#decode_ptr1
+    196                 ;ASB	br	ne,clr_p2_count
+    197                 ;ASB	mov	p1_timerA,r0
+    198                 ;ASBhornet_Q:
+    199                 ;ASBpai_Q:
+    200                 ;ASBstopb:
+    201                 ;ASB	ret
+    202                 ;ASB
+    203                 ;ASBclr_p2_count:
+    204                 ;ASB	mov	p2_timerA,r0
+    205                 ;ASB	ret
+    206                 ;ASB
+    207                 ;ASBspa_right:
+    208                 ;ASB	cmp	key2,#20h		;move left
+    209                 ;ASB	br	ne,spa_right2
+    210                 ;ASB	bset	r1,#2			;set backward flag
+    211                 ;ASB	mov	@r0,r1
+    212                 ;ASBspa_right2:
+    213                 ;ASB	bbs	key2,#5,chk_sppa
+    214                 ;ASB	br	spa_left3
+    215                 ;ASB
+    216                 ;ASBchk_sppa:
+    217                 ;ASB	bbc	r1,#2,clr_timer 	;reset the timer of SPAA
+    218                 ;ASB	bbs	r1,#4,stopb		;special move allow or not?
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   20
+
+
+    219                 ;ASB	mov	r2,p1_timerA
+    220                 ;ASBchk_sppa1:
+    221                 ;ASB	cmp	r15,#decode_ptr1
+    222                 ;ASB	br	ne,count_p2
+    223                 ;ASB	add	r2,#1
+    224                 ;ASB	mov	p1_timerA,r2
+    225                 ;ASBcom_count:
+    226                 ;ASB	cmp	r2,#50		       ;value of backward loop counting
+    227                 ;ASB	br	ule,continue_chk	;29/12/1997
+    228                 ;ASB;	 br	 nc,continue_chk
+    229                 ;ASB	bclr	r1,#2
+    230                 ;ASB	bset	r1,#4
+    231                 ;ASB	bclr	r1,#5
+    232                 ;ASB	bclr	r1,#6
+    233                 ;ASB	mov	@r0,r1
+    234                 ;ASBstopa:
+    235                 ;ASB	ret
+    236                 ;ASB
+    237                 ;ASBcount_p2:
+    238                 ;ASB	mov	r2,p2_timerA
+    239                 ;ASB	add	r2,#1
+    240                 ;ASB	mov	p2_timerA,r2
+    241                 ;ASB	br	com_count
+    242                 ;ASB
+    243                 ;ASBcontinue_chk:
+    244                 ;ASB	call	PLY_info2		;29/12/1997
+    245                 ;ASB	bbs	r1,#5,janet_chk
+    246                 ;ASB	bbc	r1,#6,continue_chkA
+    247                 ;ASB	bset	r1,#5
+    248                 ;ASB	mov	@r0,r1
+    249                 ;ASBjanet_chk:
+    250                 ;ASB	bbc	r1,#0,stopa
+    251                 ;ASB
+    252                 ;ASBcontinue_chkA:
+    253                 ;ASB	mov	r0,r15
+    254                 ;ASB	add	r0,#plyr_y
+    255                 ;ASB	cmp	@r0,#init_y
+    256                 ;ASB	br	ult,stopa		;fighter not stand on the earth OUT
+    257                 ;ASB	mov	r0,r15
+    258                 ;ASB	add	r0,#plyr_status
+    259                 ;ASB	cmp	@r0,#st_add_attack
+    260                 ;ASB	br	uge,stopa
+    261                 ;ASB
+    262                 ;ASB	call	PLY_info2		;29/12/1997
+    263                 ;ASB	bbs	r1,#5,janet_fig 	;29/12/1997
+    264                 ;ASB	bbc	r1,#7,cont_chk1 	;the SPAA for KIDS & SIBA
+    265                 ;ASB
+    266                 ;ASB;	 bbc	 r1,#2,stopa		 ;30/12/1997
+    267                 ;ASB;	 cmp	 key2,#18h		 ;only (B+P+P)
+    268                 ;ASB;	 br	 eq,cont_chk2		 ;
+    269                 ;ASB;	 cmp	 key2,#28h		 ;
+    270                 ;ASB;	 br	 eq,cont_chk2		 ;
+    271                 ;ASB;	 ret				 ;
+    272                 ;ASB
+    273                 ;ASB	mov	r0,key2 		;29/12/1997
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   21
+
+
+    274                 ;ASB	and	r0,#08h 		;check the punch key
+    275                 ;ASB	cmp	r0,#08h 		;(B+P+P)(B+PK)(B+PKG)
+    276                 ;ASB	br	ne,stopa		;
+    277                 ;ASB	br	cont_chk2		;
+    278                 ;ASB
+    279                 ;ASBjanet_fig:
+    280                 ;ASB	mov	r0,key2 		;29/12/1997
+    281                 ;ASB	and	r0,#09h 		;check the punch & kick keys
+    282                 ;ASB	cmp	r0,#09h 		;
+    283                 ;ASB	br	ne,stopa		;
+    284                 ;ASB	call	PLY_info2
+    285                 ;ASB	bclr	r1,#2
+    286                 ;ASB	bset	r1,#4
+    287                 ;ASB	bclr	r1,#5
+    288                 ;ASB	bclr	r1,#6
+    289                 ;ASB	mov	@r0,r1
+    290                 ;ASB	br	cont_chk2		;
+    291                 ;ASB
+    292                 ;ASBcont_chk1:
+    293                 ;ASB	mov	r0,key2
+    294                 ;ASB	and	r0,#0bh
+    295                 ;ASB	cmp	r0,#0bh
+    296                 ;ASB	br	ne,stopa
+    297                 ;ASBcont_chk2:
+    298                 ;ASB	mov	r5,#44			;set the value of the status
+    299                 ;ASB	jmp	act44
+    300                 ;ASB
+    301                 ;ASBkids_SPAA:				;set the SPAA flag
+    302                 ;ASBsiba_SPAA:
+    303                 ;ASB	call	PLY_info2
+    304                 ;ASB	bset	r1,#7
+    305                 ;ASB	mov	@r0,r1
+    306                 ;ASB	jmp	Chk_SPAA1
+    307                 ;ASB
+    308                 ;ASBjanet_SPAA:
+    309                 ;ASB	call	PLY_info2
+    310                 ;ASB	bset	r1,#6
+    311                 ;ASB	mov	@r0,r1
+    312                 ;ASB	jmp	Chk_SPAA1
+    313                 ;ASB
+    314                 ;ASB;/////////////////////////////////////////////////////////////////
+    315                 ;ASB
+    316                 ;ASBDirect_Set:				;direction with player
+    317                 ;ASB	mov	r1,#11			;take current player direction
+    318                 ;ASB	add	r1,r15
+    319                 ;ASB	mov	r0,@r1
+    320                 ;ASB	bbs	r0,#3,face_right
+    321                 ;ASB	br	face_left
+    322                 ;ASB
+    323                 ;ASBface_right:
+    324                 ;ASB	cmp	key2,#10h
+    325                 ;ASB	jmp	eq,act02	;walk_F
+    326                 ;ASB	cmp	key2,#20h
+    327                 ;ASB	jmp	eq,act04	;walk_B
+    328                 ;ASB	cmp	key2,#50h
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   22
+
+
+    329                 ;ASB	jmp	eq,act16	;crouch_walk_F
+    330                 ;ASB	cmp	key2,#60h
+    331                 ;ASB	jmp	eq,act18	;crouch_walk_B
+    332                 ;ASB	cmp	key2,#90h
+    333                 ;ASB	jmp	eq,act24	;jump_F
+    334                 ;ASB	cmp	key2,#0a0h
+    335                 ;ASB	jmp	eq,act26	;jump_B
+    336                 ;ASB	ret
+    337                 ;ASB
+    338                 ;ASBface_left:
+    339                 ;ASB	cmp	key2,#20h
+    340                 ;ASB	jmp	eq,act02	;walk_F
+    341                 ;ASB	cmp	key2,#10h
+    342                 ;ASB	jmp	eq,act04	;walk_B
+    343                 ;ASB	cmp	key2,#60h
+    344                 ;ASB	jmp	eq,act16	;crouch_walk_F
+    345                 ;ASB	cmp	key2,#50h
+    346                 ;ASB	jmp	eq,act18	;crouch_walk_B
+    347                 ;ASB	cmp	key2,#0a0h
+    348                 ;ASB	jmp	eq,act24	;jump_F
+    349                 ;ASB	cmp	key2,#90h
+    350                 ;ASB	jmp	eq,act26	;jump_B
+    351                 ;ASB	ret
+    352                 ;ASB
+    353                 ;ASB;////////////////////////////////////////////////////////////////////
+    354                 ;ASB;Scankey of Running
+    355                 ;ASB
+    356                 ;ASBChk_run:			;take ram of current player
+    357                 ;ASB	mov	r2,#18
+    358                 ;ASB	add	r2,r15
+    359                 ;ASB	mov	r3,@r2		;plyr_ram
+    360                 ;ASB
+    361                 ;ASB	cmp	r3,#4
+    362                 ;ASB	jmp	ge,set_run5
+    363                 ;ASB	cmp	r3,#0
+    364                 ;ASB	br	eq,set_run1
+    365                 ;ASB	cmp	r3,#1
+    366                 ;ASB	br	eq,set_run2
+    367                 ;ASB	call	Chk_Timer
+    368                 ;ASB	cmp	r3,#2
+    369                 ;ASB	br	eq,set_run3
+    370                 ;ASB	cmp	r3,#3
+    371                 ;ASB	br	eq,set_run4
+    372                 ;ASB	ret
+    373                 ;ASB
+    374                 ;ASBpass_run:
+    375                 ;ASB	add	r3,#1
+    376                 ;ASB	mov	@r2,r3
+    377                 ;ASB	ret
+    378                 ;ASB
+    379                 ;ASBreset_case:
+    380                 ;ASB	mov	r3,#0
+    381                 ;ASB	mov	@r2,r3
+    382                 ;ASB	ret
+    383                 ;ASB
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   23
+
+
+    384                 ;ASBset_run1:
+    385                 ;ASB	cmp	key2,#0
+    386                 ;ASB	br	ne,reset_case
+    387                 ;ASB	mov	r7,#0
+    388                 ;ASB	call	save_timerB
+    389                 ;ASB	br	pass_run
+    390                 ;ASB
+    391                 ;ASBset_run2:
+    392                 ;ASB	call	PLY_info2
+    393                 ;ASB	bbs	r1,#3,run2_left
+    394                 ;ASB	cmp	key2,#20h
+    395                 ;ASBrun2:	br	ne,run2a
+    396                 ;ASB	mov	r7,#0
+    397                 ;ASB	call	save_timerB
+    398                 ;ASB	br	pass_run
+    399                 ;ASBrun2a:
+    400                 ;ASB	call	Chk_Timer
+    401                 ;ASB	jmp	c,reset_case
+    402                 ;ASB	ret
+    403                 ;ASB
+    404                 ;ASBrun2_left:
+    405                 ;ASB	cmp	key2,#10h
+    406                 ;ASB	call	run2
+    407                 ;ASB	ret
+    408                 ;ASB
+    409                 ;ASBset_run3:
+    410                 ;ASB	cmp	key2,#0
+    411                 ;ASB	br	ne,run_3a
+    412                 ;ASB;	 call	 PLY_info2
+    413                 ;ASB;	 bset	 r1,#7
+    414                 ;ASB;	 mov	 @r0,r1
+    415                 ;ASB	br	pass_run
+    416                 ;ASBrun_3a:
+    417                 ;ASB	call	load_timerB
+    418                 ;ASB	cmp	r7,#200
+    419                 ;ASB	jmp	ugt,reset_case
+    420                 ;ASB	ret
+    421                 ;ASB
+    422                 ;ASBset_run4:
+    423                 ;ASB	call	PLY_info2
+    424                 ;ASB	bbs	r1,#3,run4_left
+    425                 ;ASB	cmp	key2,#20h
+    426                 ;ASBrun4:	jmp	eq,pass06
+    427                 ;ASB	call	load_timerB
+    428                 ;ASB	cmp	r7,#200
+    429                 ;ASB	jmp	ugt,reset_case
+    430                 ;ASB	ret
+    431                 ;ASB
+    432                 ;ASBrun4_left:
+    433                 ;ASB	cmp	key2,#10h
+    434                 ;ASB	call	run4
+    435                 ;ASB	ret
+    436                 ;ASB
+    437                 ;ASBpass06: call	pass_run
+    438                 ;ASB;	 call	 PLY_info2
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   24
+
+
+    439                 ;ASB;	 bbc	 r1,#7,reset_case
+    440                 ;ASB	jmp	act06
+    441                 ;ASB
+    442                 ;ASBset_run5:
+    443                 ;ASB	call	PLY_info2
+    444                 ;ASB	bbs	r1,#3,run5_left
+    445                 ;ASB	call	hornet_SPAA
+    446                 ;ASB	call	pai_SPAA
+    447                 ;ASB	cmp	key2,#20h
+    448                 ;ASBrun5:	jmp	ne,reset_case
+    449                 ;ASB	jmp	act06
+    450                 ;ASB
+    451                 ;ASBrun5_left:
+    452                 ;ASB	call	hornet_SPAA
+    453                 ;ASB	call	pai_SPAA
+    454                 ;ASB	cmp	key2,#10h
+    455                 ;ASB	call	run5
+    456                 ;ASB	ret
+    457                 ;ASB
+    458                 ;ASBPLY_ID:
+    459                 ;ASB	mov	r5,#8			;plyr_id
+    460                 ;ASB	add	r5,r15
+    461                 ;ASB	mov	r4,@r5
+    462                 ;ASB	ret
+    463                 ;ASB
+    464                 ;ASBhornet_SPAA:				;29/12/1997
+    465                 ;ASB	call	PLY_ID
+    466                 ;ASB	cmp	r4,#6
+    467                 ;ASB	br	ne,quit1
+    468                 ;ASB	cmp	key2,#08h
+    469                 ;ASB	br	eq,SPAA_2
+    470                 ;ASB	cmp	key2,#18h
+    471                 ;ASB	br	eq,SPAA_2
+    472                 ;ASB	cmp	key2,#28h
+    473                 ;ASB	br	eq,SPAA_2
+    474                 ;ASB	ret
+    475                 ;ASB
+    476                 ;ASBpai_SPAA:				;29/12/1997
+    477                 ;ASB	call	PLY_ID
+    478                 ;ASB	cmp	r4,#1
+    479                 ;ASB	br	ne,quit1
+    480                 ;ASB	cmp	key2,#01h
+    481                 ;ASB	br	eq,SPAA_2
+    482                 ;ASB	cmp	key2,#11h
+    483                 ;ASB	br	eq,SPAA_2
+    484                 ;ASB	cmp	key2,#21h
+    485                 ;ASB	br	eq,SPAA_2
+    486                 ;ASB	ret
+    487                 ;ASB
+    488                 ;ASBSPAA_2:
+    489                 ;ASB	call	reset_case
+    490                 ;ASB	jmp	act44
+    491                 ;ASB
+    492                 ;ASB;\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    493                 ;ASB;load the counter value of player.
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   25
+
+
+    494                 ;ASB
+    495                 ;ASBload_timerB:
+    496                 ;ASB	mov	r7,p1_timerB
+    497                 ;ASB	cmp	r15,#decode_ptr1
+    498                 ;ASB	br	eq,quit1
+    499                 ;ASB	mov	r7,p2_timerB
+    500                 ;ASBquit1:	ret
+    501                 ;ASB
+    502                 ;ASBsave_timerB:
+    503                 ;ASB	cmp	r15,#decode_ptr1
+    504                 ;ASB	br	ne,save_p2_time
+    505                 ;ASB	mov	p1_timerB,r7
+    506                 ;ASB	ret
+    507                 ;ASB
+    508                 ;ASBsave_p2_time:
+    509                 ;ASB	mov	p2_timerA,r7
+    510                 ;ASB	ret
+    511                 ;ASB
+    512                 ;ASBChk_Timer:
+    513                 ;ASB	call	load_timerB
+    514                 ;ASB	inc	r7
+    515                 ;ASB	call	save_timerB
+    516                 ;ASB	ret
+    517                 ;ASB
+    518                 ;ASB;\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    519                 ;ASB
+    520                 ;ASBmovement:
+    521                 ;ASB	cmp	key2,#0
+    522                 ;ASB	jmp	eq,act00	;stance
+    523                 ;ASB;	 cmp	 key2,#
+    524                 ;ASB;	 jmp	 eq,act06	 ;run
+    525                 ;ASB	cmp	key2,#2
+    526                 ;ASB	jmp	eq,act08	;guard
+    527                 ;ASB	cmp	key2,#12h
+    528                 ;ASB	jmp	eq,act08	;guard (move right)
+    529                 ;ASB	cmp	key2,#22h
+    530                 ;ASB	jmp	eq,act08	;guard (move left)
+    531                 ;ASB	cmp	key2,#44h
+    532                 ;ASB	jmp	eq,act10	;in_turn
+    533                 ;ASB	cmp	key2,#4
+    534                 ;ASB	jmp	eq,act12	;out_turn
+    535                 ;ASB	cmp	key2,#40h
+    536                 ;ASB	jmp	eq,act14	;crouch
+    537                 ;ASB	cmp	key2,#42h
+    538                 ;ASB	jmp	eq,act20	;crouch_guard
+    539                 ;ASB	cmp	key2,#52h
+    540                 ;ASB	jmp	eq,act20	;crouch_guard (move right)
+    541                 ;ASB	cmp	key2,#62h
+    542                 ;ASB	jmp	eq,act20	;crouch_guard (move left)
+    543                 ;ASB	cmp	key2,#80h
+    544                 ;ASB	jmp	eq,act22	;jump_Up
+    545                 ;ASB	cmp	key2,#8
+    546                 ;ASB	jmp	eq,act28	;punch
+    547                 ;ASB	cmp	key2,#18h
+    548                 ;ASB	jmp	eq,act28	;punch (move right)
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   26
+
+
+    549                 ;ASB	cmp	key2,#28h
+    550                 ;ASB	jmp	eq,act28	;punch (move left)
+    551                 ;ASB	cmp	key2,#1
+    552                 ;ASB	jmp	eq,act30	;kick
+    553                 ;ASB	cmp	key2,#11h
+    554                 ;ASB	jmp	eq,act30	;kick  (move right)
+    555                 ;ASB	cmp	key2,#21h
+    556                 ;ASB	jmp	eq,act30	;kick  (move left)
+    557                 ;ASB	cmp	key2,#48h
+    558                 ;ASB	jmp	eq,act32	;crouch_punch
+    559                 ;ASB	cmp	key2,#58h
+    560                 ;ASB	jmp	eq,act32	;crouch_punch (move right)
+    561                 ;ASB	cmp	key2,#68h
+    562                 ;ASB	jmp	eq,act32	;crouch_punch (move left)
+    563                 ;ASB	cmp	key2,#41h
+    564                 ;ASB	jmp	eq,act34	;crouch_kick
+    565                 ;ASB	cmp	key2,#51h
+    566                 ;ASB	jmp	eq,act34	;crouch_kick (move right)
+    567                 ;ASB	cmp	key2,#61h
+    568                 ;ASB	jmp	eq,act34	;crouch_kick (move left)
+    569                 ;ASB;	 cmp	 key2,#
+    570                 ;ASB;	 jmp	 eq,act36	 ;jump_kick_Up
+    571                 ;ASB;	 cmp	 key2,#
+    572                 ;ASB;	 jmp	 eq,act38	 ;jump_kick_F
+    573                 ;ASB;	 cmp	 key2,#
+    574                 ;ASB;	 jmp	 eq,act40	 ;jump_kick_B
+    575                 ;ASB	cmp	key2,#88h
+    576                 ;ASB	jmp	eq,act42	;addition attack
+    577                 ;ASB;	 cmp	 key2,#
+    578                 ;ASB;	 jmp	 eq,act44	 ;SPAA
+    579                 ;ASB;	 cmp	 key2,#
+    580                 ;ASB;	 jmp	 eq,act46	 ;get_up
+    581                 ;ASB;	 cmp	 key2,#
+    582                 ;ASB;	 jmp	 eq,act48	 ;return
+    583                 ;ASB;	 cmp	 key2,#
+    584                 ;ASB;	 jmp	 eq,act50	 ;react1
+    585                 ;ASB;	 cmp	 key2,#
+    586                 ;ASB;	 jmp	 eq,act52	 ;react2
+    587                 ;ASB;	 cmp	 key2,#
+    588                 ;ASB;	 jmp	 eq,act54	 ;react3
+    589                 ;ASB;	 cmp	 key2,#
+    590                 ;ASB;	 jmp	 eq,act56	 ;react4
+    591                 ;ASB;	 cmp	 key2,#
+    592                 ;ASB;	 jmp	 eq,act58	 ;react5
+    593                 ;ASB;	 cmp	 key2,#
+    594                 ;ASB;	 jmp	 eq,act60	 ;react6
+    595                 ;ASB;	 cmp	 key2,#
+    596                 ;ASB;	 jmp	 eq,act62	 ;react7
+    597                 ;ASB	bbs	key2,#1,guardA
+    598                 ;ASB	ret
+    599                 ;ASB;
+    600                 ;ASBguardA: bbs	key2,#6,pass20
+    601                 ;ASB	jmp	act08
+    602                 ;ASB
+    603                 ;ASBpass20: jmp	act20
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   27
+
+
+    604                 ;ASB
+    605                 ;ASB
+    606                 ;ASB;*****************SET INTERPRETER FOR ACTIONS******************
+    607                 ;ASB
+    608                 ;ASBSET1:	cmp	status1,#0		;Stance
+    609                 ;ASB	jmp	eq,true
+    610                 ;ASB	ret
+    611                 ;ASB
+    612                 ;ASBSET2:	call	SET1			;Stance,Walk_2
+    613                 ;ASB	cmp	status1,#2
+    614                 ;ASB	jmp	eq,true
+    615                 ;ASB	cmp	status1,#4
+    616                 ;ASB	jmp	eq,true
+    617                 ;ASB	ret
+    618                 ;ASB
+    619                 ;ASBSET3:	call	SET1			;Stance,Crouch
+    620                 ;ASB	cmp	status1,#14
+    621                 ;ASB	jmp	eq,true
+    622                 ;ASB	ret
+    623                 ;ASB
+    624                 ;ASBSET4:	call	SET3			;Stance,Crouch,Crouch_walk2
+    625                 ;ASB	cmp	status1,#18
+    626                 ;ASB	jmp	eq,true
+    627                 ;ASB	cmp	status1,#16
+    628                 ;ASB	jmp	eq,true
+    629                 ;ASB	ret
+    630                 ;ASB
+    631                 ;ASB;SET5:	 cmp	 status1,#52		 ;react cases for lie down
+    632                 ;ASB;	 jmp	 eq,true
+    633                 ;ASB;	 cmp	 status1,#56
+    634                 ;ASB;	 jmp	 eq,true
+    635                 ;ASB;	 cmp	 status1,#58
+    636                 ;ASB;	 jmp	 eq,true
+    637                 ;ASB;	 cmp	 status1,#60
+    638                 ;ASB;	 jmp	 eq,true
+    639                 ;ASB;	 cmp	 status1,#62
+    640                 ;ASB;	 jmp	 eq,true
+    641                 ;ASB;	 ret
+    642                 ;ASB
+    643                 ;ASBSET6:	cmp	status1,#24
+    644                 ;ASB	jmp	eq,true
+    645                 ;ASB	ret
+    646                 ;ASB
+    647                 ;ASBSET7:	cmp	status1,#26
+    648                 ;ASB	jmp	eq,true
+    649                 ;ASB	ret
+    650                 ;ASB
+    651                 ;ASB;**************************************************************
+    652                 ;ASB
+    653                 ;ASBtrue:	mov	r0,#9		;Update the player status
+    654                 ;ASB	add	r0,r15
+    655                 ;ASB	mov	@r0,r5
+    656                 ;ASB
+    657                 ;ASB	mov	r1,#10		;Set player action init flag
+    658                 ;ASB	add	r1,r15
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   28
+
+
+    659                 ;ASB	mov	r0,@r1
+    660                 ;ASB	or	r0,#1
+    661                 ;ASB;	 bclr	 r0,#7
+    662                 ;ASB	mov	@r1,r0		;r1 point to plyr1_info1
+    663                 ;ASB	ret
+    664                 ;ASB
+    665                 ;ASBFmove:	mov	r3,#10		;Check player action init flag
+    666                 ;ASB	add	r3,r15
+    667                 ;ASB	mov	r2,@r3
+    668                 ;ASB	bbc	r2,#0,stop
+    669                 ;ASB	mov	r0,#11		;Forward movement
+    670                 ;ASB	add	r0,r15
+    671                 ;ASB	mov	r1,@r0
+    672                 ;ASB	bset	r1,#0
+    673                 ;ASB	mov	@r0,r1
+    674                 ;ASB	ret
+    675                 ;ASB
+    676                 ;ASBBmove:	mov	r3,#10		;Check player action init flag
+    677                 ;ASB	add	r3,r15
+    678                 ;ASB	mov	r2,@r3
+    679                 ;ASB	bbc	r2,#0,stop
+    680                 ;ASB	mov	r0,#11		;Backward movement
+    681                 ;ASB	add	r0,r15
+    682                 ;ASB	mov	r1,@r0
+    683                 ;ASB	bset	r1,#1
+    684                 ;ASB	mov	@r0,r1
+    685                 ;ASBstop:	ret
+    686                 ;ASB
+    687                 ;ASBact00:
+    688                 ;ASB;	 mov	 r5,#0		    ;stance @	    (@=operate anytime)
+    689                 ;ASB;	 call	 true
+    690                 ;ASB	mov	r0,r15
+    691                 ;ASB	add	r0,#10
+    692                 ;ASB	mov	r1,@r0
+    693                 ;ASB	bclr	r1,#7		;reset blackward flag.
+    694                 ;ASB	mov	@r0,r1
+    695                 ;ASB	ret
+    696                 ;ASB
+    697                 ;ASBact02:	mov	r5,#2		   ;walk_F
+    698                 ;ASB	call	SET1
+    699                 ;ASB	call	Fmove
+    700                 ;ASB	ret
+    701                 ;ASB
+    702                 ;ASBact04:
+    703                 ;ASB	mov	r5,#4		   ;walk_B
+    704                 ;ASB	call	SET1
+    705                 ;ASB	call	Bmove
+    706                 ;ASB	ret
+    707                 ;ASB
+    708                 ;ASBact06:	mov	r5,#6		   ;run
+    709                 ;ASB	call	SET2
+    710                 ;ASB	call	Fmove
+    711                 ;ASB	ret
+    712                 ;ASB
+    713                 ;ASBact08:	mov	r5,#8		   ;guard
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   29
+
+
+    714                 ;ASB	call	SET2
+    715                 ;ASB	ret
+    716                 ;ASB
+    717                 ;ASBact10:	mov	r5,#10		   ;in_turn
+    718                 ;ASB	call	PLY_info1
+    719                 ;ASB	bbs	r1,#3,act14	;stop
+    720                 ;ASB	call	SET2
+    721                 ;ASB	call	SET4
+    722                 ;ASB	ret
+    723                 ;ASB
+    724                 ;ASBact12:	mov	r5,#12		   ;out_turn
+    725                 ;ASB	call	PLY_info1
+    726                 ;ASB	bbs	r1,#3,stop
+    727                 ;ASB	call	SET2
+    728                 ;ASB	ret
+    729                 ;ASB
+    730                 ;ASBact14:	mov	r5,#14		   ;crouch
+    731                 ;ASB	call	SET2
+    732                 ;ASB	ret
+    733                 ;ASB
+    734                 ;ASBact16:	mov	r5,#16		   ;crouch_walk_F
+    735                 ;ASB	call	SET3
+    736                 ;ASB	call	Fmove
+    737                 ;ASB	ret
+    738                 ;ASB
+    739                 ;ASBact18:	mov	r5,#18		   ;crouch_walk_B
+    740                 ;ASB	call	SET3
+    741                 ;ASB	call	Bmove
+    742                 ;ASB	ret
+    743                 ;ASB
+    744                 ;ASBact20:	mov	r5,#20		   ;crouch_guard
+    745                 ;ASB	call	SET4
+    746                 ;ASB	ret
+    747                 ;ASB
+    748                 ;ASBact22:	mov	r5,#22		   ;jump_Up
+    749                 ;ASB	call	SET2
+    750                 ;ASB	ret
+    751                 ;ASB
+    752                 ;ASBact24:	mov	r5,#24		   ;jump_F
+    753                 ;ASB	call	SET2
+    754                 ;ASB	call	Fmove
+    755                 ;ASB	ret
+    756                 ;ASB
+    757                 ;ASBact26:	mov	r5,#26		   ;jump_B
+    758                 ;ASB	call	SET2
+    759                 ;ASB	call	Bmove
+    760                 ;ASB	ret
+    761                 ;ASB
+    762                 ;ASBact28:	mov	r5,#28		   ;punch
+    763                 ;ASB	call	PLY_info1
+    764                 ;ASB	bbs	r1,#1,stop1
+    765                 ;ASB	call	SET2
+    766                 ;ASB	ret
+    767                 ;ASB
+    768                 ;ASBact30:	mov	r5,#30		   ;kick
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   30
+
+
+    769                 ;ASB	call	PLY_info1
+    770                 ;ASB	bbs	r1,#4,stop1
+    771                 ;ASB	call	SET2
+    772                 ;ASB	ret
+    773                 ;ASB
+    774                 ;ASBact32:	mov	r5,#32		   ;crouch_punch
+    775                 ;ASB	call	PLY_info1
+    776                 ;ASB	bbs	r1,#1,act14	;stop1
+    777                 ;ASB	call	SET4
+    778                 ;ASB	ret
+    779                 ;ASB
+    780                 ;ASBact34:	mov	r5,#34		   ;crouch_kick
+    781                 ;ASB	call	PLY_info1
+    782                 ;ASB	bbs	r1,#4,act14	;stop1
+    783                 ;ASB	call	SET4
+    784                 ;ASB	ret
+    785                 ;ASB
+    786                 ;ASBact36:	mov	r5,#36		   ;jump_kick_Up
+    787                 ;ASB	cmp	status1,#22
+    788                 ;ASB	jmp	eq,true
+    789                 ;ASBstop1:	ret
+    790                 ;ASB
+    791                 ;ASBact38:	mov	r5,#38		   ;jump_kick_F
+    792                 ;ASB	call	SET6
+    793                 ;ASB	call	Fmove
+    794                 ;ASB	ret
+    795                 ;ASB
+    796                 ;ASBact40:	mov	r5,#40		   ;jump_kick_B
+    797                 ;ASB	call	SET7
+    798                 ;ASB	call	Bmove
+    799                 ;ASB	ret
+    800                 ;ASB
+    801                 ;ASBact42:	mov	r5,#42		   ;add_attack
+    802                 ;ASB	call	SET2
+    803                 ;ASB	call	Fmove
+    804                 ;ASB	ret
+    805                 ;ASB
+    806                 ;ASBact44:	mov	r5,#44		   ;SPAA
+    807                 ;ASB	call	true
+    808                 ;ASB	call	Fmove
+    809                 ;ASB	call	PLY_info2
+    810                 ;ASB	bclr	r1,#bit2	;clear backward flag.
+    811                 ;ASB	mov	@r0,r1
+    812                 ;ASB	ret
+    813                 ;ASB
+    814                 ;ASB;act46:  mov	 r5,#46 	    ;get_up
+    815                 ;ASB;	 call	 SET5
+    816                 ;ASB;	 ret
+    817                 ;ASB;
+    818                 ;ASB;act48:  mov	 r5,#48 	    ;return
+    819                 ;ASB;	 call	 SET5
+    820                 ;ASB;	 ret
+    821                 ;ASB
+    822                 ;ASB;act50:  mov	 r5,#50 	    ;react1
+    823                 ;ASB;act52:  mov	 r5,#52 	    ;react2 #	    (#=lie down case)
+
+
+
+Fighter  SM8521 Assembler V1.10            Wed Dec 23 17:33:58 1998  Page   31
+
+
+    824                 ;ASB;act54:  mov	 r5,#54 	    ;react3
+    825                 ;ASB;act56:  mov	 r5,#56 	    ;react4 #
+    826                 ;ASB;act58:  mov	 r5,#58 	    ;react5 #
+    827                 ;ASB;act60:  mov	 r5,#60 	    ;react6 #
+    828                 ;ASB;act62:  mov	 r5,#62 	    ;react7 #
+    829                 
+    830 0000             	end

@@ -1,0 +1,20 @@
+
+ 
+In the level tables definition, we could place hooks to define.  There is a
+set of labels in mel.asm and mel.inc that define the names of the songs.
+These are potenrial label names we could use.  We would just have to figure
+out how to tell the system the song uses both waveform channels (two songs
+playing simultaneously on SG0 and SG1) or just one (playing one song on
+SG0 -and playing SFX SG1)
+ 
+    Level Start song
+    1st song Set - 0 froggers home level song
+    2nd song set - 1 frogger home completion song
+    2nd song set - 1 frogger home level song
+    3rd song set - 2 frogger home completion song
+    3rd song set - 2 frogger home level song
+    4th song set - 3 frogger home completion song
+    5th song set - 4 frogger home level song
+    Level Completed Song
+ 
+Thanks!

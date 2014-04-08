@@ -1,0 +1,15 @@
+rd art\frnt000.bin,p:80000
+rd art\frnt001.bin,p:84000
+rd art\frnt002.bin,p:88000
+rd art\sprite00.bin,p:8C000
+rd art\strip00.bin,p:90000
+rd art\strip01.bin,p:94000
+rd art\strip02.bin,p:98000
+rd art\strip03.bin,p:9C000
+rd art\strip04.bin,p:A0000
+rd art\strip05.bin,p:A4000
+rd art\strip06.bin,p:A8000
+rd art\strip07.bin,p:AC000
+rd art\strip08.bin,p:B0000
+rd art\strip09.bin,p:B4000
+exit

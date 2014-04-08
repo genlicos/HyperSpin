@@ -1,0 +1,243 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: Control Map Files
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="Control Map Files">Control Map Files</a></h1>
+
+<ul>
+<li><a href="#Joystick">Joystick</a> 
+<li><a href="#Keyboard">Keyboard</a> 
+<li><a href="#Mouse">Mouse</a> &mdash; Sets whether the mouse is disabled, invisible, or visible.
+</ul>
+Control map files assign jukebox function to individual keys, joystick
+or gamepad buttons and axes, or mouse buttons.  For simplicity, this 
+documentation will simply refer to "keys" whether the input device is 
+a keyboard, a keyboard encoder, mouse buttons, or a gamepad. 
+
+<p>
+Although it seems backwards to assign a function to a key as opposed to
+assigning a key to a function, it allows more than one key to perform a
+particular function; this is useful on cocktail-style arcade cabinets,
+where more than one set of controls is available. In the default control
+map file, CONTROLS.INI, all possible key assignments are shown but only
+keys actually in use are required to be present in the file.
+
+<p>
+If you do not assign a function to a key, that function will not be 
+available.  On a coin-operated jukebox, for example, you would probably 
+not want to assign the BTN_SKIP and BTN_RADIO functions.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#Controls" title="Sets the name of the control map file.">Controls</a>.</blockquote>
+<div class="al-api"><b> <a name="Keyboard">Keyboard</a> Key Names</b></div><br>
+NOTE: Key names refer to specific, physical keys, not character symbols.
+Thus, there is no distinction between an uppercase letter and a
+lowercase letter; however, there is a distinction between the number
+keys along the top of a keyboard and the number keys on the numeric
+keypad.
+
+<p>
+<br><center><h2><a name="Alphabetic Keys:">Alphabetic Keys:</a></h2></center><p>
+
+<blockquote class="text"><pre>
+KEY_A 
+KEY_B
+...
+KEY_Y
+KEY_Z
+</pre></blockquote>
+
+<p>
+<br><center><h2><a name="Numeric keys (top of keyboard):">Numeric keys (top of keyboard):</a></h2></center><p>
+
+<blockquote class="text"><pre>
+KEY_0
+KEY_1
+...
+KEY_8
+KEY_9
+</pre></blockquote>
+
+<p>
+<br><center><h2><a name="Numeric Keypad Keys:">Numeric Keypad Keys:</a></h2></center><p>
+
+<blockquote class="text"><pre>
+KEY_0_PAD
+KEY_1_PAD
+...
+KEY_8_PAD
+KEY_9_PAD
+KEY_SLASH_PAD
+KEY_ASTERISK
+KEY_MINUS_PAD
+KEY_PLUS_PAD
+KEY_DEL_PAD
+KEY_ENTER_PAD
+</pre></blockquote>
+
+<p>
+<br><center><h2><a name="Cursor Movement Keys:">Cursor Movement Keys:</a></h2></center><p>
+
+<blockquote class="text"><pre>
+KEY_LEFT
+KEY_RIGHT
+KEY_UP
+KEY_DOWN
+KEY_INSERT
+KEY_DEL
+KEY_HOME
+KEY_END
+KEY_PGUP
+KEY_PGDN
+</pre></blockquote>
+
+<p>
+<br><center><h2><a name="Function Keys:">Function Keys:</a></h2></center><p>
+
+<blockquote class="text"><pre>
+KEY_F1
+KEY_F2
+...
+KEY_F11
+KEY_F12
+</pre></blockquote>
+
+<p>
+<br><center><h2><a name="Modifier and Lock Keys">Modifier and Lock Keys</a></h2></center><p>
+
+<blockquote class="text"><pre>
+KEY_LSHIFT
+KEY_RSHIFT
+KEY_LCTRL
+KEY_RCTRL
+KEY_LALT
+KEY_RALT
+KEY_LWIN
+KEY_RWIN
+KEY_MENU
+KEY_SCRLOCK
+KEY_NUMLOCK
+KEY_CAPSLOCK
+</pre></blockquote>
+
+<p>
+<br><center><h2><a name="Other Keys">Other Keys</a></h2></center><p>
+
+<blockquote class="text"><pre>
+KEY_ESC
+KEY_TILDE
+KEY_MINUS
+KEY_EQUALS
+KEY_BACKSPACE
+KEY_TAB
+KEY_OPENBRACE
+KEY_CLOSEBRACE
+KEY_ENTER
+KEY_SEMICOLON
+KEY_QUOTE
+KEY_BACKSLASH
+KEY_BACKSLASH2
+KEY_COMMA
+KEY_PERIOD
+KEY_SLASH
+KEY_SPACE
+KEY_PRTSCR
+KEY_PAUSE
+</pre></blockquote>
+
+<p>
+NOTE: On some keyboards, KEY_PAUSE and KEY_PRTSCR may not work properly.
+
+<p><br>
+<div class="al-api"><b> <a name="Joystick">Joystick</a> and Gamepad Key Names</b></div><br>
+
+<p>
+The jukebox input engine supports up to four joysticks or gamepads in 
+Windows and two in DOS.  Up to 14 buttons can be accessed per stick.
+Note that in DOS a standard PC gameport only supports two buttons per
+stick.
+
+<blockquote class="text"><pre>
+JOY1_UP
+JOY1_DOWN
+JOY1_LEFT
+JOY1_RIGHT
+JOY1_BUTTON1
+JOY1_BUTTON2
+...
+JOY1_BUTTON13
+JOY1_BUTTON14
+
+JOY2_UP
+JOY2_DOWN
+JOY2_LEFT
+JOY2_RIGHT
+JOY2_BUTTON1
+JOY2_BUTTON2
+...
+JOY2_BUTTON13
+JOY2_BUTTON14
+
+JOY3_UP
+JOY3_DOWN
+JOY3_LEFT
+JOY3_RIGHT
+JOY3_BUTTON1
+JOY3_BUTTON2
+...
+JOY3_BUTTON13
+JOY3_BUTTON14
+
+JOY4_UP
+JOY4_DOWN
+JOY4_LEFT
+JOY4_RIGHT
+JOY4_BUTTON1
+JOY4_BUTTON2
+...
+JOY4_BUTTON13
+JOY4_BUTTON14
+</pre></blockquote>
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href=JoyType " title="">JoyType </a>.</blockquote>
+<div class="al-api"><b> <a name="Mouse">Mouse</a> Button Names</b></div><br>
+Up to 5 buttons on a mouse are supported. Traditionally, the left button
+is button 1, the right button is button 2, and if there is a center
+button it is button 3.  Only one mouse can be used.
+
+<p>
+Please note that mouse button 1 is always used for the user interface,
+so it should be mapped to a control only if a skin with no clickable
+icons is being used; otherwise, clicking the icon will trigger the
+function mapped to button 1. 
+
+<p>
+Also, note that in Windows, the button number reported may be modified
+by the mouse settings in Control Panel. For example, if the rear
+shoulder button on a Microsoft Intellimouse (normally button 4) is set
+in Control Panel to act as a standard click (which is normally button
+1), it will act as button 1 in DWJukebox.
+
+<blockquote class="text"><pre>
+MOUSE_BUTTON1
+MOUSE_BUTTON2
+MOUSE_BUTTON3
+MOUSE_BUTTON4
+MOUSE_BUTTON5
+</textblock>
+
+
+
+
+
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

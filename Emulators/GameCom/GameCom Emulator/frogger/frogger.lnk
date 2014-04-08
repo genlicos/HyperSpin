@@ -1,0 +1,27 @@
+-p2 020
+source\frogger
+source\syscall
+source\open
+source\gamecom
+source\demo
+source\new_sp
+-p3 021
+source\fm_key
+source\misc
+-p3 023
+source\game
+source\levels
+source\sprites
+-p3 024
+source\readword
+source\teams
+-p3 025
+source\mel
+source\option
+-p4 026
+source\strips
+-o frogger.pro
+-M
+-M1
+-M2
+-e

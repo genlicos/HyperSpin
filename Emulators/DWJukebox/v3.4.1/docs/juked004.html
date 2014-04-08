@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html><head><title>
+DWJukebox Documentation: Jukebox Features
+</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link rel="stylesheet" title="Default" type="text/css" href="jukedocs.css"></head><body bgcolor=white text=black link="#0000ee" alink="#ff0000" vlink="#551a8b">
+<h1><a name="Jukebox Features">Jukebox Features</a></h1>
+
+<ul>
+<li><a href="#LoopMode">LoopMode</a> 
+<li><a href="#PlayStimulator">PlayStimulator</a> 
+<li><a href="#RadioMode">RadioMode</a> 
+</ul>
+
+<p>
+(Editor's note: All jukebox features are named with BiCapitalization
+rather than using separate words.  This is not for trendy marketing 
+reasons; it simply allows the documentation builder to index the
+features properly.)
+
+<p><br>
+<div class="al-api"><b> <a name="PlayStimulator">PlayStimulator</a></b></div><br>
+
+<p>
+In a commercial jukebox, a <i>play stimulator</i> is a feature that 
+automatically plays a song after a certain period of inactivity; the 
+theory is that it essentially reminds patrons that the jukebox is there
+which encourages people to use it.
+
+<p>
+DWJukebox has an optional PlayStimulator mode that simulates this 
+function.  The PlayStimulator can be enabled in JUKEBOX.INI or 
+toggled on and off via BTN_PLAYSTIMULATOR. When the PlayStimulator 
+is enabled, a random song will play after the selected period of 
+inactivity.
+
+<p>
+To enable the PlayStimulator via JUKEBOX.INI, set the number of 
+seconds the jukebox is to be idle before the PlayStimulator 
+kicks in by adding or changing the PlayStimulatorDelay setting 
+in JUKEBOX.INI in the [Settings] section:
+
+<blockquote class="code"><pre>
+[Settings]
+<a href="juked010.html#PlayStimulatorDelay" class="autotype" title="">PlayStimulatorDelay</a> = 180
+</pre></blockquote>
+
+<p>
+This would set the PlayStimulator to 180 seconds, or three minutes.  
+Setting this value to 1 will cause the jukebox to play constantly 
+as if it were in Radio Mode.  Setting this value to 0 disables the Play 
+Stimulator.
+
+<p>
+To avoid repetition, the PlayStimulator (and all other functions that
+randomly select songs) remembers the last 20 songs played and will 
+avoid playing them again.  However, this feature is disabled if the 
+jukebox contains less than 40 songs.  Songs higher on the Most Popular
+list will be selected for random play more often.
+
+<p><br>
+<div class="al-api"><b> <a name="RadioMode">RadioMode</a></b></div><br>
+RadioMode is similar to the PlayStimulator, except it selects a new 
+random song as soon as the queue is empty.  Although RadioMode is 
+essentially a PlayStimulator with a one-second delay, it is a
+separate function to allow both modes to be toggled independently.
+
+<p>
+To enable RadioMode via JUKEBOX.INI, set the RadioMode setting 
+in JUKEBOX.INI in the [Settings] section to Enabled.
+
+
+<blockquote class="code"><pre>
+[Settings]
+<a href="#RadioMode" class="autotype" title="">RadioMode</a> = <a href="juked014.html#Enabled" class="autotype" title="">Enabled</a>
+</pre></blockquote>
+
+<p>
+RadioMode can also be toggled on and off via BTN_RADIO.
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_RADIO" title="Toggles radio mode on and off">BTN_RADIO</a>,
+<a class="xref" href="juked003.html#MSG_RADIO" title="">MSG_RADIO</a>.</blockquote>
+<div class="al-api"><b> <a name="LoopMode">LoopMode</a></b></div><br>
+
+<p>
+In LoopMode, when a song finishes playing it is immediately re-added 
+to the end of the queue.  Songs removed with MSG_SKIP are not looped.
+Songs added to the queue through this method do not consume a credit,
+but they do increase the play count.  LoopMode is useful at parties 
+or holiday occasions to keep a particular set of songs on continuous 
+play.
+
+<p>
+LoopMode is usually enabled or disabled via BTN_LOOP.  It can also be
+enabled via the LoopMode setting in the [Settings] section of 
+JUKEBOX.INI
+
+
+
+
+<blockquote class="xref"><em><b>See also:</b></em>
+<a class="xref" href="juked002.html#BTN_LOOP" title="">BTN_LOOP</a>,
+<a class="xref" href="juked003.html#MSG_LOOP" title="">MSG_LOOP</a>.</blockquote>
+<br><center><h2><a name="Song sorting options">Song sorting options</a></h2></center><p>
+
+<p>
+There are three options for sorting the songs: Artist (the default),
+which sorts the labels by artist; Album, which sorts the labels by
+album; and Random, which randomly scrambles the titlestrips as they
+would normally appear on a real jukebox.
+
+<p>
+To set the song sort, add the SongSort parameter to the [Settings] 
+section of JUKEBOX.INI as follows:
+
+<p>
+[Settings]
+SongSort = Random
+
+<p>
+ - or -
+
+<p>
+SongSort = Artist
+
+<p>
+ - or -
+
+<p>
+SongSort = Album
+
+
+<p><br>
+Note that Album sort only applies to album-based (CD-type) skins. If Album
+is selected for a classic-style skin, it will be treated as Artist.
+
+<p>
+<hr><div class="al-back-to-contents"><a href="jukedocs.html">Back to contents</a></div>
+
+</body>
+</html>

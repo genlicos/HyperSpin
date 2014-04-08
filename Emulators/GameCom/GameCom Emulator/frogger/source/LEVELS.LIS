@@ -1,0 +1,1002 @@
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page    1
+
+
+      1                 ;****************************************************************************************
+      2                 ;**  Game Definiton tables
+      3                 ;****************************************************************************************
+      4                 ;**
+      5                 ;** Questions/Comments: 
+      6                 ;	Does Level Renumbering reset between classic/updated game levels?
+      7                 ;ASB: Yes.  The first is level 1 through five (or whatever),
+      8                 ;ASB: the second is 1 through 5 (or whatever).
+      9                 ;ASB:
+     10                 ;ASB: Also, the label after the defw opcode must exist, even if it is
+     11                 ;ASB: temporarily refering to another level (as I did with the level tables
+     12                 ;ASB: below.
+     13                 
+     14                 
+     15                 ClassicGame: global	ClassicGame
+     16 0000 026A'      	defw	ClassLev1A	;Level Name - up to 16 characters
+     17 0002 0100       	defb	1,0		;speed multiplier
+     18 0004 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     19                 
+     20 0006 02D6'      	defw	ClassLev1B	;Level Name - up to 16 characters
+     21 0008 0100       	defb	1,0		;speed multiplier
+     22 000A 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     23                 
+     24 000C 0342'      	defw	ClassLev1C	;Level Name - up to 16 characters
+     25 000E 0100       	defb	1,0		;speed multiplier
+     26 0010 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     27                 
+     28 0012 03AE'      	defw	ClassLev1D	;Level Name - up to 16 characters
+     29 0014 0100       	defb	1,0		;speed multiplier
+     30 0016 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     31                 
+     32 0018 041A'      	defw	ClassLev1E	;Level Name - up to 16 characters
+     33 001A 0100       	defb	1,0		;speed multiplier
+     34 001C 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     35                 
+     36 001E 0486'      	defw	ClassLev1F	;Level Name - up to 16 characters
+     37 0020 0100       	defb	1,0		;speed multiplier
+     38 0022 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     39                 
+     40 0024 04F2'      	defw	ClassLev1G	;Level Name - up to 16 characters
+     41 0026 0100       	defb	1,0		;speed multiplier
+     42 0028 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     43                 
+     44                 	;Classic Level 1
+     45 002A 055E'      	defw	ClassLev1	;Level Name - up to 16 characters
+     46 002C 0100       	defb	1,0		;speed multiplier
+     47 002E 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     48                 
+     49                 
+     50                 
+     51                 UpdatedGame: global UpdatedGame
+     52                 
+     53 0030 004E'      	defw	Updated1	;Level Name - up to 16 characters
+     54 0032 0100       	defb	1,0		;speed multiplier
+     55 0034 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page    2
+
+
+     56                 
+     57                 	;Updated Level 2
+     58 0036 00BA'      	defw	Updated2	;Level Name - up to 16 characters
+     59 0038 0100       	defb	1,0		;speed multiplier
+     60 003A 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     61                 
+     62                 	;Updated Level 3
+     63 003C 0126'      	defw	Updated3	;Level Name - up to 16 characters
+     64 003E 0100       	defb	1,0		;speed multiplier
+     65 0040 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     66                 
+     67                 	;Updated Level 4
+     68 0042 0192'      	defw	Updated4	;Level Name - up to 16 characters
+     69 0044 0100       	defb	1,0		;speed multiplier
+     70 0046 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     71                 
+     72                 	;Updated Level 5                                                                     
+     73 0048 01FE'      	defw	Updated5	;Level Name - up to 16 characters                            
+     74 004A 0100       	defb	1,0		;speed multiplier                                            
+     75 004C 0C09       	defb	12,9		;Frog Start Position - X position across,Band # Down from top
+     76                 
+     77                 ;****************************************************************************************
+     78                 ;**  Classic Level 1
+     79                 ;****************************************************************************************
+     80                 ;**	Band Type: 	0 - normal	1 - band moves - art stands still	
+     81                 ;**	Base Speed:	-X move right	0 stationary	+X moves left
+     82                 ;** 	Speed Increase	X/10 Ratio  - 11/10 = 10% increase
+     83                 ;**	Speed Decrease	10/X Ratio  - 10/9  = 10% decrease
+     84                 ;**	Strips Used	Taken from strip table above
+     85                 ;** Questions / Comments:
+     86                 ;
+     87                 ;ASB: each band has four strip numbers, although the last 3 can
+     88                 ;ASB: all be '255' (meaning unused)
+     89                 ;ASB:
+     90                 ;ASB: I also recommend using three digit decimal numbers.
+     91                 
+     92                 
+     93                 
+     94                 
+     95 004E            Updated1:	;Street with sidewalk divider
+     96 004E 0000       	defb	0,0		;Band Type / Unused
+     97 0050 0000       	defw	0		;base speed
+     98 0052 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+     99 0054 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    100 0056 01FFFFFF   	defb	001,255,255,255	;strips used
+    101                 
+    102 005A 0000       	defb	0,0		;Band Type / Unused
+    103 005C 0032       	defw	50		;base speed
+    104 005E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    105 0060 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    106 0062 20FFFFFF   	defb	32,255,255,255	;strips used
+    107                 
+    108 0066 0200       	defb	2,0		;Band Type / Unused
+    109 0068 003C       	defw	60		;base speed
+    110 006A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page    3
+
+
+    111 006C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    112 006E 2DFFFFFF   	defb	045,255,255,255	;strips used
+    113                 
+    114 0072 0000       	defb	0,0		;Band Type / Unused
+    115 0074 0020       	defw	32		;base speed
+    116 0076 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    117 0078 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    118 007A 2EFFFFFF   	defb	046,255,255,255	;strips used
+    119                 
+    120 007E 0000       	defb	0,0		;Band Type / Unused
+    121 0080 0000       	defw	0		;base speed
+    122 0082 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    123 0084 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    124 0086 04FFFFFF   	defb	004,255,255,255	;strips used
+    125                 
+    126 008A 0000       	defb	0,0		;Band Type / Unused
+    127 008C FFC4       	defw	-60		;base speed
+    128 008E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    129 0090 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    130 0092 2CFFFFFF   	defb	044,255,255,255	;strips used
+    131                 
+    132 0096 0000       	defb	0,0		;Band Type / Unused
+    133 0098 FFB0       	defw	-80		;base speed
+    134 009A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    135 009C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    136 009E 29FFFFFF   	defb	041,255,255,255	;strips used
+    137                 
+    138 00A2 0000       	defb	0,0		;Band Type / Unused
+    139 00A4 FFE2       	defw	-30		;base speed
+    140 00A6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    141 00A8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    142 00AA 28FFFFFF   	defb	040,255,255,255		;strips used
+    143                 
+    144 00AE 0000       	defb	0,0		;Band Type / Unused
+    145 00B0 0000       	defw	0		;base speed
+    146 00B2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    147 00B4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    148 00B6 04FFFFFF   	defb	004,255,255,255	;strips used
+    149                 
+    150                 
+    151 00BA            Updated2:  ;All cars no divider
+    152 00BA 0000       	defb	0,0		;Band Type / Unused
+    153 00BC 0000       	defw	0		;base speed
+    154 00BE 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    155 00C0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    156 00C2 01FFFFFF   	defb	001,255,255,255	;strips used
+    157                 
+    158 00C6 0000       	defb	0,0		;Band Type / Unused
+    159 00C8 FFCE       	defw	-50		;base speed
+    160 00CA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    161 00CC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    162 00CE 20FFFFFF   	defb	32,255,255,255	;strips used
+    163                 
+    164 00D2 0200       	defb	2,0		;Band Type / Unused
+    165 00D4 0064       	defw	100		;base speed
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page    4
+
+
+    166 00D6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    167 00D8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    168 00DA 2DFFFFFF   	defb	045,255,255,255	;strips used
+    169                 
+    170 00DE 0000       	defb	0,0		;Band Type / Unused
+    171 00E0 FFE0       	defw	-32		;base speed
+    172 00E2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    173 00E4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    174 00E6 2EFFFFFF   	defb	046,255,255,255	;strips used
+    175                 
+    176 00EA 0000       	defb	0,0		;Band Type / Unused
+    177 00EC 0014       	defw	20		;base speed
+    178 00EE 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    179 00F0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    180 00F2 23FFFFFF   	defb	035,255,255,255	;strips used
+    181                 
+    182 00F6 0000       	defb	0,0		;Band Type / Unused
+    183 00F8 FFC4       	defw	-60		;base speed
+    184 00FA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    185 00FC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    186 00FE 2CFFFFFF   	defb	044,255,255,255	;strips used
+    187                 
+    188 0102 0000       	defb	0,0		;Band Type / Unused
+    189 0104 0050       	defw	80		;base speed
+    190 0106 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    191 0108 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    192 010A 29FFFFFF   	defb	041,255,255,255	;strips used
+    193                 
+    194 010E 0000       	defb	0,0		;Band Type / Unused
+    195 0110 FFE2       	defw	-30		;base speed
+    196 0112 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    197 0114 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    198 0116 28FFFFFF   	defb	040,255,255,255		;strips used
+    199                 
+    200 011A 0000       	defb	0,0		;Band Type / Unused
+    201 011C 0000       	defw	0		;base speed
+    202 011E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    203 0120 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    204 0122 04FFFFFF   	defb	004,255,255,255	;strips used
+    205                 
+    206                 
+    207 0126            Updated3:	;Street with sidewalk divider
+    208 0126 0000       	defb	0,0		;Band Type / Unused
+    209 0128 0000       	defw	0		;base speed
+    210 012A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    211 012C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    212 012E 01FFFFFF   	defb	001,255,255,255	;strips used
+    213                 
+    214 0132 0000       	defb	0,0		;Band Type / Unused
+    215 0134 003C       	defw	60		;base speed
+    216 0136 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    217 0138 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    218 013A 2423FFFF   	defb	036,035,255,255	;strips used
+    219                 
+    220 013E 0000       	defb	0,0		;Band Type / Unused
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page    5
+
+
+    221 0140 0014       	defw	20		;base speed
+    222 0142 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    223 0144 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    224 0146 2B2AFFFF   	defb	043,042,255,255	;strips used
+    225                 
+    226 014A 0000       	defb	0,0		;Band Type / Unused
+    227 014C FF92       	defw	-110		;base speed
+    228 014E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    229 0150 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    230 0152 2DFFFFFF   	defb	045,255,255,255	;strips used
+    231                 
+    232 0156 0000       	defb	0,0		;Band Type / Unused
+    233 0158 0000       	defw	00		;base speed
+    234 015A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    235 015C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    236 015E 05FFFFFF   	defb	005,255,255,255	;strips used
+    237                 
+    238 0162 0000       	defb	0,0		;Band Type / Unused
+    239 0164 FFEC       	defw	-20		;base speed
+    240 0166 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    241 0168 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    242 016A 2AFFFFFF   	defb	042,255,255,255	;strips used
+    243                 
+    244 016E 0000       	defb	0,0		;Band Type / Unused
+    245 0170 0064       	defw	100		;base speed
+    246 0172 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    247 0174 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    248 0176 292DFFFF   	defb	041,045,255,255	;strips used
+    249                 
+    250 017A 0000       	defb	0,0		;Band Type / Unused
+    251 017C FFC4       	defw	-60		;base speed
+    252 017E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    253 0180 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    254 0182 2FFFFFFF   	defb	047,255,255,255		;strips used
+    255                 
+    256 0186 0000       	defb	0,0		;Band Type / Unused
+    257 0188 0000       	defw	0		;base speed
+    258 018A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    259 018C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    260 018E 04FFFFFF   	defb	004,255,255,255	;strips used
+    261                 
+    262                 
+    263 0192            Updated4:	;Street with sidewalk divider
+    264 0192 0000       	defb	0,0		;Band Type / Unused
+    265 0194 0000       	defw	0		;base speed
+    266 0196 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    267 0198 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    268 019A 00FFFFFF   	defb	000,255,255,255	;strips used
+    269                 
+    270 019E 0200       	defb	2,0		;Band Type / Unused
+    271 01A0 003C       	defw	60		;base speed
+    272 01A2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    273 01A4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    274 01A6 81FFFFFF   	defb	81h,255,255,255	;strips used
+    275                 
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page    6
+
+
+    276 01AA 0200       	defb	2,0		;Band Type / Unused
+    277 01AC 0014       	defw	20		;base speed
+    278 01AE 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    279 01B0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    280 01B2 60FFFFFF   	defb	96,255,255,255	;strips used
+    281                 
+    282 01B6 0000       	defb	0,0		;Band Type / Unused
+    283 01B8 FF92       	defw	-110		;base speed
+    284 01BA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    285 01BC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    286 01BE 6FFFFFFF   	defb	111,255,255,255	;strips used
+    287                 
+    288 01C2 0000       	defb	0,0		;Band Type / Unused
+    289 01C4 0000       	defw	00		;base speed
+    290 01C6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    291 01C8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    292 01CA 09FFFFFF   	defb	009,255,255,255	;strips used
+    293                 
+    294 01CE 0000       	defb	0,0		;Band Type / Unused
+    295 01D0 0032       	defw	50		;base speed
+    296 01D2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    297 01D4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    298 01D6 81FFFFFF   	defb	81h,255,255,255	;strips used
+    299                 
+    300 01DA 0000       	defb	0,0		;Band Type / Unused
+    301 01DC 0064       	defw	100		;base speed
+    302 01DE 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    303 01E0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    304 01E2 5DFFFFFF   	defb	093,255,255,255	;strips used
+    305                 
+    306 01E6 0200       	defb	2,0		;Band Type / Unused
+    307 01E8 FFF6       	defw	-10		;base speed
+    308 01EA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    309 01EC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    310 01EE 84FFFFFF   	defb	84h,255,255,255		;strips used
+    311                 
+    312 01F2 0000       	defb	0,0		;Band Type / Unused
+    313 01F4 0000       	defw	0		;base speed
+    314 01F6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    315 01F8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    316 01FA 07FFFFFF   	defb	007,255,255,255	;strips used
+    317                 
+    318                 
+    319                 
+    320 01FE            Updated5:	;Street with sidewalk divider
+    321 01FE 0000       	defb	0,0		;Band Type / Unused
+    322 0200 0000       	defw	0		;base speed
+    323 0202 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    324 0204 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    325 0206 00FFFFFF   	defb	000,255,255,255	;strips used
+    326                 
+    327 020A 0200       	defb	2,0		;Band Type / Unused
+    328 020C 003C       	defw	60		;base speed
+    329 020E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    330 0210 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page    7
+
+
+    331 0212 81FFFFFF   	defb	81h,255,255,255	;strips used
+    332                 
+    333 0216 0200       	defb	2,0		;Band Type / Unused
+    334 0218 0014       	defw	20		;base speed
+    335 021A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    336 021C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    337 021E 60FFFFFF   	defb	96,255,255,255	;strips used
+    338                 
+    339 0222 0000       	defb	0,0		;Band Type / Unused
+    340 0224 FF92       	defw	-110		;base speed
+    341 0226 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    342 0228 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    343 022A 6FFFFFFF   	defb	111,255,255,255	;strips used
+    344                 
+    345 022E 0000       	defb	0,0		;Band Type / Unused
+    346 0230 0000       	defw	00		;base speed
+    347 0232 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    348 0234 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    349 0236 09FFFFFF   	defb	009,255,255,255	;strips used
+    350                 
+    351 023A 0000       	defb	0,0		;Band Type / Unused
+    352 023C 0032       	defw	50		;base speed
+    353 023E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    354 0240 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    355 0242 81FFFFFF   	defb	81h,255,255,255	;strips used
+    356                 
+    357 0246 0000       	defb	0,0		;Band Type / Unused
+    358 0248 0064       	defw	100		;base speed
+    359 024A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    360 024C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    361 024E 5DFFFFFF   	defb	093,255,255,255	;strips used
+    362                 
+    363 0252 0200       	defb	2,0		;Band Type / Unused
+    364 0254 FFF6       	defw	-10		;base speed
+    365 0256 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    366 0258 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    367 025A 84FFFFFF   	defb	84h,255,255,255		;strips used
+    368                 
+    369 025E 0000       	defb	0,0		;Band Type / Unused
+    370 0260 0000       	defw	0		;base speed
+    371 0262 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    372 0264 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    373 0266 07FFFFFF   	defb	007,255,255,255	;strips used
+    374                 
+    375                 
+    376                 
+    377                 
+    378                 
+    379                 
+    380                 
+    381 026A            ClassLev1A: ; classic level 1
+    382 026A 0000       	defb	0,0		;Band Type / Unused
+    383 026C 0000       	defw	0		;base speed
+    384 026E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    385 0270 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page    8
+
+
+    386 0272 00FFFFFF   	defb	000,255,255,255	;strips used
+    387                 
+    388 0276 0200       	defb	2,0		;Band Type / Unused
+    389 0278 0032       	defw	50		;base speed
+    390 027A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    391 027C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    392 027E 81FFFFFF   	defb	81h,255,255,255	;strips used
+    393                 
+    394 0282 0000       	defb	0,0		;Band Type / Unused
+    395 0284 003C       	defw	60		;base speed
+    396 0286 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    397 0288 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    398 028A 60FFFFFF   	defb	96,255,255,255	;strips used 96
+    399                 
+    400 028E 0200       	defb	2,0		;Band Type / Unused
+    401 0290 0020       	defw	32		;base speed
+    402 0292 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    403 0294 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    404 0296 80FFFFFF   	defb	80h,255,255,255	;strips used
+    405                 
+    406 029A 0000       	defb	0,0		;Band Type / Unused
+    407 029C 0000       	defw	0		;base speed
+    408 029E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    409 02A0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    410 02A2 06FFFFFF   	defb	06,255,255,255	;strips used
+    411                 
+    412 02A6 0000       	defb	0,0		;Band Type / Unused
+    413 02A8 003C       	defw	60		;base speed
+    414 02AA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    415 02AC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    416 02AE 30FFFFFF   	defb	048,255,255,255	;strips used
+    417                 
+    418 02B2 0000       	defb	0,0		;Band Type / Unused
+    419 02B4 FFD8       	defw	-40		;base speed
+    420 02B6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    421 02B8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    422 02BA 3235FFFF   	defb	050,053,255,255	;strips used
+    423                 
+    424 02BE 0000       	defb	0,0		;Band Type / Unused
+    425 02C0 0014       	defw	20		;base speed
+    426 02C2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    427 02C4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    428 02C6 3BFFFFFF   	defb	059,255,255,255		;strips used
+    429                 
+    430 02CA 0000       	defb	0,0		;Band Type / Unused
+    431 02CC 0000       	defw	0		;base speed
+    432 02CE 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    433 02D0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    434 02D2 07FFFFFF   	defb	007,255,255,255	;strips used
+    435                 
+    436                 
+    437 02D6            ClassLev1B:  ;classic level 02
+    438 02D6 0000       	defb	0,0		;Band Type / Unused
+    439 02D8 0000       	defw	0		;base speed
+    440 02DA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page    9
+
+
+    441 02DC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    442 02DE 00FFFFFF   	defb	000,255,255,255	;strips used
+    443                 
+    444 02E2 0200       	defb	2,0		;Band Type / Unused
+    445 02E4 0032       	defw	50		;base speed
+    446 02E6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    447 02E8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    448 02EA 81FFFFFF   	defb	81h,255,255,255	;strips used
+    449                 
+    450 02EE 0200       	defb	2,0		;Band Type / Unused
+    451 02F0 FFD8       	defw	-40		;base speed
+    452 02F2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    453 02F4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    454 02F6 89FFFFFF   	defb	089h,255,255,255	;strips used
+    455                 
+    456 02FA 0200       	defb	2,0		;Band Type / Unused
+    457 02FC 0020       	defw	32		;base speed
+    458 02FE 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    459 0300 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    460 0302 80FFFFFF   	defb	80h,255,255,255	;strips used
+    461                 
+    462 0306 0000       	defb	0,0		;Band Type / Unused
+    463 0308 0000       	defw	0		;base speed
+    464 030A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    465 030C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    466 030E 06FFFFFF   	defb	06,255,255,255	;strips used
+    467                 
+    468 0312 0000       	defb	0,0		;Band Type / Unused
+    469 0314 003C       	defw	60		;base speed
+    470 0316 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    471 0318 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    472 031A 31FFFFFF   	defb	049,255,255,255	;strips used
+    473                 
+    474 031E 0000       	defb	0,0		;Band Type / Unused
+    475 0320 FFD8       	defw	-40		;base speed
+    476 0322 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    477 0324 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    478 0326 3533FFFF   	defb	053,051,255,255	;strips used
+    479                 
+    480 032A 0000       	defb	0,0		;Band Type / Unused
+    481 032C 0014       	defw	20		;base speed
+    482 032E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    483 0330 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    484 0332 3BFFFFFF   	defb	059,255,255,255		;strips used
+    485                 
+    486 0336 0000       	defb	0,0		;Band Type / Unused
+    487 0338 0000       	defw	0		;base speed
+    488 033A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    489 033C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    490 033E 07FFFFFF   	defb	007,255,255,255	;strips used
+    491                 
+    492 0342            ClassLev1C:	;CLASSIC LEVEL 03
+    493 0342 0000       	defb	0,0		;Band Type / Unused
+    494 0344 0000       	defw	0		;base speed
+    495 0346 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page   10
+
+
+    496 0348 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    497 034A 00FFFFFF   	defb	000,255,255,255	;strips used
+    498                 
+    499 034E 0200       	defb	2,0		;Band Type / Unused
+    500 0350 0046       	defw	70		;base speed
+    501 0352 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    502 0354 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    503 0356 81FFFFFF   	defb	81h,255,255,255	;strips used
+    504                 
+    505 035A 0200       	defb	2,0		;Band Type / Unused
+    506 035C FFD8       	defw	-40		;base speed
+    507 035E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    508 0360 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    509 0362 51FFFFFF   	defb	81,255,255,255	;strips used
+    510                 
+    511 0366 0200       	defb	2,0		;Band Type / Unused
+    512 0368 002A       	defw	42		;base speed
+    513 036A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    514 036C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    515 036E 82FFFFFF   	defb	82h,255,255,255	;strips used
+    516                 
+    517 0372 0200       	defb	2,0		;Band Type / Unused
+    518 0374 0000       	defw	0		;base speed
+    519 0376 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    520 0378 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    521 037A 06FFFFFF   	defb	06,255,255,255	;strips used
+    522                 
+    523 037E 0000       	defb	0,0		;Band Type / Unused
+    524 0380 0032       	defw	50		;base speed
+    525 0382 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    526 0384 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    527 0386 3130FFFF   	defb	049,048,255,255	;strips used
+    528                 
+    529 038A 0000       	defb	0,0		;Band Type / Unused
+    530 038C FFE2       	defw	-30		;base speed
+    531 038E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    532 0390 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    533 0392 34FFFFFF   	defb	052,255,255,255	;strips used
+    534                 
+    535 0396 0000       	defb	0,0		;Band Type / Unused
+    536 0398 0080       	defw	128		;base speed
+    537 039A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    538 039C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    539 039E 37FFFFFF   	defb	055,255,255,255		;strips used
+    540                 
+    541 03A2 0000       	defb	0,0		;Band Type / Unused
+    542 03A4 0000       	defw	0		;base speed
+    543 03A6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    544 03A8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    545 03AA 07FFFFFF   	defb	007,255,255,255	;strips used
+    546                 
+    547                 
+    548                 
+    549 03AE            ClassLev1D:   ;Classic Level 04
+    550 03AE 0000       	defb	0,0		;Band Type / Unused
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page   11
+
+
+    551 03B0 0000       	defw	0		;base speed
+    552 03B2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    553 03B4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    554 03B6 00FFFFFF   	defb	000,255,255,255	;strips used
+    555                 
+    556 03BA 0200       	defb	2,0		;Band Type / Unused
+    557 03BC 0046       	defw	70		;base speed
+    558 03BE 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    559 03C0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    560 03C2 83FFFFFF   	defb	83h,255,255,255	;strips used
+    561                 
+    562 03C6 0200       	defb	2,0		;Band Type / Unused
+    563 03C8 FFC4       	defw	-60		;base speed
+    564 03CA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    565 03CC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    566 03CE 85FFFFFF   	defb	085h,255,255,255	;strips used
+    567                 
+    568 03D2 0200       	defb	2,0		;Band Type / Unused
+    569 03D4 003C       	defw	60		;base speed
+    570 03D6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    571 03D8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    572 03DA 80FFFFFF   	defb	80h,255,255,255	;strips used
+    573                 
+    574 03DE 0000       	defb	0,0		;Band Type / Unused
+    575 03E0 0000       	defw	0		;base speed
+    576 03E2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    577 03E4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    578 03E6 06FFFFFF   	defb	06,255,255,255	;strips used
+    579                 
+    580 03EA 0000       	defb	0,0		;Band Type / Unused
+    581 03EC 0032       	defw	50		;base speed
+    582 03EE 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    583 03F0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    584 03F2 36FFFFFF   	defb	054,255,255,255	;strips used
+    585                 
+    586 03F6 0000       	defb	0,0		;Band Type / Unused
+    587 03F8 FFE2       	defw	-30		;base speed
+    588 03FA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    589 03FC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    590 03FE 34FFFFFF   	defb	052,255,255,255	;strips used
+    591                 
+    592 0402 0000       	defb	0,0		;Band Type / Unused
+    593 0404 0080       	defw	128		;base speed
+    594 0406 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    595 0408 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    596 040A 37FFFFFF   	defb	055,255,255,255		;strips used
+    597                 
+    598 040E 0000       	defb	0,0		;Band Type / Unused
+    599 0410 0000       	defw	0		;base speed
+    600 0412 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    601 0414 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    602 0416 07FFFFFF   	defb	007,255,255,255	;strips used
+    603                 
+    604                 
+    605 041A            ClassLev1E:	;classic level 05
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page   12
+
+
+    606 041A 0000       	defb	0,0		;Band Type / Unused
+    607 041C 0000       	defw	0		;base speed
+    608 041E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    609 0420 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    610 0422 00FFFFFF   	defb	000,255,255,255	;strips used
+    611                 
+    612 0426 0200       	defb	2,0		;Band Type / Unused
+    613 0428 0046       	defw	70		;base speed
+    614 042A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    615 042C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    616 042E 83FFFFFF   	defb	83h,255,255,255	;strips used
+    617                 
+    618 0432 0200       	defb	2,0		;Band Type / Unused
+    619 0434 FFC4       	defw	-60		;base speed
+    620 0436 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    621 0438 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    622 043A 85FFFFFF   	defb	085h,255,255,255	;strips used
+    623                 
+    624 043E 0200       	defb	2,0		;Band Type / Unused
+    625 0440 003C       	defw	60		;base speed
+    626 0442 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    627 0444 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    628 0446 80FFFFFF   	defb	80h,255,255,255	;strips used
+    629                 
+    630 044A 0000       	defb	0,0		;Band Type / Unused
+    631 044C 0000       	defw	0		;base speed
+    632 044E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    633 0450 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    634 0452 06FFFFFF   	defb	06,255,255,255	;strips used
+    635                 
+    636 0456 0000       	defb	0,0		;Band Type / Unused
+    637 0458 003C       	defw	60		;base speed
+    638 045A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    639 045C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    640 045E 31FFFFFF   	defb	049,255,255,255	;strips used
+    641                 
+    642 0462 0000       	defb	0,0		;Band Type / Unused
+    643 0464 FFEC       	defw	-20		;base speed
+    644 0466 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    645 0468 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    646 046A 36FFFFFF   	defb	054,255,255,255	;strips used
+    647                 
+    648 046E 0000       	defb	0,0		;Band Type / Unused
+    649 0470 0080       	defw	128		;base speed
+    650 0472 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    651 0474 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    652 0476 39FFFFFF   	defb	057,255,255,255		;strips used
+    653                 
+    654 047A 0000       	defb	0,0		;Band Type / Unused
+    655 047C 0000       	defw	0		;base speed
+    656 047E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    657 0480 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    658 0482 07FFFFFF   	defb	007,255,255,255	;strips used
+    659                 
+    660                 
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page   13
+
+
+    661 0486            ClassLev1F:
+    662 0486 0000       	defb	0,0		;Band Type / Unused
+    663 0488 0000       	defw	0		;base speed
+    664 048A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    665 048C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    666 048E 00FFFFFF   	defb	000,255,255,255	;strips used
+    667                 
+    668 0492 0200       	defb	2,0		;Band Type / Unused
+    669 0494 0046       	defw	70		;base speed
+    670 0496 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    671 0498 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    672 049A 83FFFFFF   	defb	83h,255,255,255	;strips used
+    673                 
+    674 049E 0200       	defb	2,0		;Band Type / Unused
+    675 04A0 FFC4       	defw	-60		;base speed
+    676 04A2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    677 04A4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    678 04A6 85FFFFFF   	defb	085h,255,255,255	;strips used
+    679                 
+    680 04AA 0000       	defb	0,0		;Band Type / Unused
+    681 04AC 003C       	defw	60		;base speed
+    682 04AE 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    683 04B0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    684 04B2 80FFFFFF   	defb	80h,255,255,255	;strips used
+    685                 
+    686 04B6 0000       	defb	0,0		;Band Type / Unused
+    687 04B8 0000       	defw	0		;base speed
+    688 04BA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    689 04BC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    690 04BE 06FFFFFF   	defb	06,255,255,255	;strips used
+    691                 
+    692 04C2 0000       	defb	0,0		;Band Type / Unused
+    693 04C4 0032       	defw	50		;base speed
+    694 04C6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    695 04C8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    696 04CA 36FFFFFF   	defb	054,255,255,255	;strips used
+    697                 
+    698 04CE 0000       	defb	0,0		;Band Type / Unused
+    699 04D0 FFE2       	defw	-30		;base speed
+    700 04D2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    701 04D4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    702 04D6 34FFFFFF   	defb	052,255,255,255	;strips used
+    703                 
+    704 04DA 0000       	defb	0,0		;Band Type / Unused
+    705 04DC 0080       	defw	128		;base speed
+    706 04DE 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    707 04E0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    708 04E2 37FFFFFF   	defb	055,255,255,255		;strips used
+    709                 
+    710 04E6 0000       	defb	0,0		;Band Type / Unused
+    711 04E8 0000       	defw	0		;base speed
+    712 04EA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    713 04EC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    714 04EE 07FFFFFF   	defb	007,255,255,255	;strips used
+    715                 
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page   14
+
+
+    716 04F2            ClassLev1G:
+    717 04F2 0000       	defb	0,0		;Band Type / Unused
+    718 04F4 0000       	defw	0		;base speed
+    719 04F6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    720 04F8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    721 04FA 00FFFFFF   	defb	000,255,255,255	;strips used
+    722                 
+    723 04FE 0200       	defb	2,0		;Band Type / Unused
+    724 0500 0032       	defw	50		;base speed
+    725 0502 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    726 0504 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    727 0506 81FFFFFF   	defb	81h,255,255,255	;strips used
+    728                 
+    729 050A 0200       	defb	2,0		;Band Type / Unused
+    730 050C FFC4       	defw	-60		;base speed
+    731 050E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    732 0510 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    733 0512 0CFFFFFF   	defb	12,255,255,255	;strips used
+    734                 
+    735 0516 0200       	defb	2,0		;Band Type / Unused
+    736 0518 0020       	defw	32		;base speed
+    737 051A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    738 051C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    739 051E 80FFFFFF   	defb	80h,255,255,255	;strips used
+    740                 
+    741 0522 0000       	defb	0,0		;Band Type / Unused
+    742 0524 0000       	defw	0		;base speed
+    743 0526 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    744 0528 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    745 052A 06FFFFFF   	defb	06,255,255,255	;strips used
+    746                 
+    747 052E 0000       	defb	0,0		;Band Type / Unused
+    748 0530 003C       	defw	60		;base speed
+    749 0532 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    750 0534 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    751 0536 30FFFFFF   	defb	048,255,255,255	;strips used
+    752                 
+    753 053A 0000       	defb	0,0		;Band Type / Unused
+    754 053C FFD8       	defw	-40		;base speed
+    755 053E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    756 0540 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    757 0542 32FFFFFF   	defb	050,255,255,255	;strips used
+    758                 
+    759 0546 0000       	defb	0,0		;Band Type / Unused
+    760 0548 0064       	defw	100		;base speed
+    761 054A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    762 054C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    763 054E 3BFFFFFF   	defb	059,255,255,255		;strips used
+    764                 
+    765 0552 0000       	defb	0,0		;Band Type / Unused
+    766 0554 0000       	defw	0		;base speed
+    767 0556 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    768 0558 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    769 055A 07FFFFFF   	defb	007,255,255,255	;strips used
+    770                 
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page   15
+
+
+    771 055E            ClassLev1:	;you can modify this one to make the next classic level!
+    772 055E 0000       	defb	0,0		;Band Type / Unused
+    773 0560 0000       	defw	0		;base speed
+    774 0562 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    775 0564 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    776 0566 01FFFFFF   	defb	001,255,255,255	;strips used
+    777                 
+    778 056A 0200       	defb	2,0		;Band Type / Unused
+    779 056C FFCE       	defw	-50		;base speed
+    780 056E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    781 0570 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    782 0572 20FFFFFF   	defb	32,255,255,255	;strips used
+    783                 
+    784 0576 0200       	defb	2,0		;Band Type / Unused
+    785 0578 0064       	defw	100		;base speed
+    786 057A 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    787 057C 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    788 057E 2DFFFFFF   	defb	045,255,255,255	;strips used
+    789                 
+    790 0582 0200       	defb	2,0		;Band Type / Unused
+    791 0584 FFE0       	defw	-32		;base speed
+    792 0586 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    793 0588 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    794 058A 2EFFFFFF   	defb	046,255,255,255	;strips used
+    795                 
+    796 058E 0000       	defb	0,0		;Band Type / Unused
+    797 0590 0014       	defw	20		;base speed
+    798 0592 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    799 0594 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    800 0596 23FFFFFF   	defb	035,255,255,255	;strips used
+    801                 
+    802 059A 0000       	defb	0,0		;Band Type / Unused
+    803 059C FFC4       	defw	-60		;base speed
+    804 059E 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    805 05A0 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    806 05A2 2CFFFFFF   	defb	044,255,255,255	;strips used
+    807                 
+    808 05A6 0000       	defb	0,0		;Band Type / Unused
+    809 05A8 0050       	defw	80		;base speed
+    810 05AA 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    811 05AC 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    812 05AE 29FFFFFF   	defb	041,255,255,255	;strips used
+    813                 
+    814 05B2 0000       	defb	0,0		;Band Type / Unused
+    815 05B4 FFE2       	defw	-30		;base speed
+    816 05B6 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    817 05B8 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    818 05BA 28FFFFFF   	defb	040,255,255,255		;strips used
+    819                 
+    820 05BE 0000       	defb	0,0		;Band Type / Unused
+    821 05C0 0000       	defw	0		;base speed
+    822 05C2 0000       	defb	0,0		;speed increase - X/10 Ratio - player doing well
+    823 05C4 0000       	defb	0,0		;speed decrease - X/10 Ratio - player doing poorly
+    824 05C6 04FFFFFF   	defb	004,255,255,255	;strips used
+    825                 
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page   16
+
+
+    826                 
+    827                 
+    828                 StripAnims:	global	StripAnims
+    829 05CA 05DE'      	defw	turtle01
+    830 05CC 05E6'      	defw	turtle02
+    831 05CE 05EE'      	defw	turtle03
+    832 05D0 05F6'      	defw	turtle04
+    833 05D2 05FE'      	defw	gator01	
+    834 05D4 0602'      	defw	gator02
+    835 05D6 0606'      	defw	gator03
+    836 05D8 060A'      	defw	gator04
+    837 05DA 0610'      	defw	gator05
+    838 05DC 0615'      	defw	gator06
+    839                 
+    840 05DE            turtle01:
+    841 05DE 06         	defb	6	;number of frames
+    842 05DF 32         	defb	50	;clock rate
+    843 05E0 40414243   	defb	64,65,66,67,68,69
+        05E4 4445
+    844                 	
+    845                 
+    846 05E6            turtle02:
+    847 05E6 06         	defb	6
+    848 05E7 32         	defb	50
+    849 05E8 46474849   	defb	70,71,72,73,74,75
+        05EC 4A4B
+    850                 
+    851 05EE            turtle03:
+    852 05EE 06         	defb	6	;number of frames
+    853 05EF 32         	defb	50	;clock rate
+    854 05F0 50515253   	defb	80,81,82,83,84,85
+        05F4 5455
+    855                 
+    856                 
+    857 05F6            turtle04:
+    858 05F6 06         	defb	6	;number of frames
+    859 05F7 32         	defb	50	;clock rate
+    860 05F8 56575859   	defb	86,87,88,89,90,91
+        05FC 5A5B
+    861                 
+    862                 
+    863 05FE            gator01:
+    864 05FE 02         	defb	2	;number of frames
+    865 05FF 64         	defb	100	;clock rate
+    866 0600 4C4D       	defb	76,77
+    867                 
+    868                 
+    869 0602            gator02:
+    870 0602 02         	defb	2	;number of frames
+    871 0603 64         	defb	100	;clock rate
+    872 0604 4E4F       	defb	78,79
+    873                 
+    874 0606            gator03:
+    875 0606 02         	defb	2	;number of frames
+    876 0607 64         	defb	100	;clock rate
+
+
+
+         SM85 Assembler V1.10            Wed Dec 23 17:33:54 1998  Page   17
+
+
+    877 0608 6263       	defb	98,99
+    878                 
+    879 060A            gator04:
+    880 060A 04         	defb	4	;number of frames
+    881 060B 19         	defb	25	;clock rate
+    882 060C 64656665   	defb	100,101,102,101
+    883                 
+    884                 
+    885 0610            gator05:
+    886 0610 03         	defb	3	;number of frames
+    887 0611 64         	defb	100	;clock rate
+    888 0612 676869     	defb	103,104,105
+    889                 
+    890                 
+    891 0615            gator06:
+    892 0615 02         	defb	2	;number of frames
+    893 0616 64         	defb	100	;clock rate
+    894 0617 6A6B       	defb	106,107
+    895                 
+    896 0619             end

@@ -1,0 +1,37 @@
+nlist
+
+{Q
+EXIT %0
+}
+
+{MAIN
+RD MAIN.HEX,P:0
+RD MAIN0.HEX,P:0
+RD BITMAP2.BIN,P:C000
+}
+
+{SYM
+RD FROGGER.SYM,P:40000
+}
+
+{CODE
+RD FROGGER.HEX,P:40000
+}
+
+{clearrom
+rd blank.bin,p:00000
+rd blank.bin,p:40000
+rd blank.bin,p:80000
+rd blank.bin,p:c0000
+}
+
+list
+main
+code
+bp p:40020
+bp p:40022
+bp p:40024
+bp p:40026
+bp p:4002d
+
+g

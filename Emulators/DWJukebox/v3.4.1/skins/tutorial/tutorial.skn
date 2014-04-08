@@ -1,0 +1,271 @@
+[skin]
+Author = Chris La Mantia
+Description = Simple tutorial skin
+background = tutorial.jpg
+
+[Fonts]
+TitleFont = bluehigh.ttf
+TitleFontSize = 26
+TitleFontCondensed = bluecond.ttf
+TitleFontCondensedSize = 24
+TitleFontColor = Black
+TitleFontCase = Normal
+TitleFontAddQuotes = True
+TitleFontQuoteSymbol = "
+
+ArtistFont = bluehigh.ttf
+ArtistFontSize = 22
+ArtistFontCondensed = bluecond.ttf
+ArtistFontCondensedSize = 18
+ArtistFontColor = Black
+ArtistFontCase = Uppercase
+ArtistFontAddQuotes = False
+
+FixedFont=jbdotmat.fnt
+
+
+
+
+# Display definitions
+#
+# There are four displays: the Now Playing display, the Coming Up/Most 
+# Popular Songs display, the Selection display, and the Credit display.
+# Status messages appear on the Coming Up display.
+#
+# Displays have the following parameters:
+#
+# enabled - Set to True to enable the display, False to disable it.  
+# You may, for example, want to disable the Credit display if your
+# jukebox is not set to accept credits.
+#
+# x, y, w, and h - The position and size of the display.  These are all 
+# relative to the skin background image and not the screen resolution.
+#
+# lines - Sets the number of lines used by the Now Playing and Coming Up 
+# displays.  The size of the dot-matrix display font will automatically
+# be adjusted to fit the specified number of lines in the height of the 
+# display.  The Selection and Credit displays always show only one line.
+#
+# color and bgcolor - Sets the color of the font and the color of the 
+# display background.  See the note on how to specify colors above.
+
+
+[Display1]
+# Now Playing display
+enabled=True
+fontcase=UpperCase
+x=22
+y=20
+w=490
+h=144
+lines=5
+color=palegreen
+bgcolor=transparent
+
+[Display2]
+# Song List display
+enabled=True
+fontcase=UpperCase
+x=527
+y=20
+w=486
+h=144
+lines=6
+color=palegreen
+bgcolor=transparent
+
+[Display3]
+# Selection display
+enabled=True
+x=837
+y=691
+w=69
+h=48
+color=palegreen
+bgcolor=transparent
+
+[Display4]
+# Credit Display
+enabled=True
+x=923
+y=691
+w=57
+h=40
+color=palegreen
+bgcolor=transparent
+
+[Selection]
+SelectionMethod=Numeric
+UseZero=False
+HighNumber=8
+
+[TitleStrips]
+# The image file is scaled and stretched to fit the Width and Height below
+Background=jb45lb09.jpg
+SongsPerStrip=Double
+Width=297
+Height=109
+StripCount=12
+FontSmoothing=true
+FontFocusColor=Navy
+FocusColor=MediumBlue
+ShadowColor=Black
+
+# Animation types: None, FlipHorizontal, FlipVertical, SlideHorizontal, or SlideVertical
+Animation=SlideHorizontal
+
+[StripGrid]
+x=38
+y=180
+rows=4
+cols=3
+rowspace=8
+colspace=43
+order=Vertical
+
+[Icon1]
+x=157
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_1
+
+[Icon2]
+x=210
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_2
+
+[Icon3]
+x=264
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_3
+
+[Icon4]
+x=316
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_4
+
+[Icon5]
+x=369
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_5
+
+[Icon6]
+x=423
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_6
+
+[Icon7]
+x=476
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_7
+
+[Icon8]
+x=529
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_8
+
+[Icon9]
+x=601
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_SELECT
+
+[Icon10]
+x=654
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_POPULAR
+
+[Icon11]
+x=707
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_CLEAR
+
+[Icon12]
+x=761
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_RANDOM
+
+[Icon13]
+x=86
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_PREVPG
+
+[Icon14]
+x=32
+y=689
+w=47
+h=53
+Clickable=True
+FocusColor=white
+Action=BTN_NEXTPG
+
+
+##########################################################
+#
+# Sounds Section
+#
+# Sets sound effects to respond to jukebox messages.
+# To respond to a message being "un-set", put a minus sign
+# before the message name.  The message BTN_ANY will 
+# respond to any BTN message.  See readme.txt for a list 
+# of available messages.
+#
+##########################################################
+
+[Sounds]
+BTN_COIN1=coin.wav
+BTN_COIN2=coin.wav
+BTN_COIN3=coin.wav
+BTN_COIN4=coin.wav
+MSG_INVALID=invalid.wav
+

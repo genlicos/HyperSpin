@@ -1,0 +1,1114 @@
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page    1
+
+
+      1                 	type	8521
+      4                 	LIST
+      5                 
+      6                         global  game_mel1H,game_mel2H,game_mel3H,game_mel4H,open_melH,s_end_melH
+      7                         global  h_end_melH,option_melH
+      8                         global  game_mel1L,game_mel2L,game_mel3L,game_mel4L,open_melL,s_end_melL
+      9                         global  h_end_melL,option_melL
+     10                 
+     11                 
+     12      001F       NLH	EQU	1fh
+     13      001F       NLL	EQU	1fh
+     14      0005       A_LEN	EQU	5
+     15                 
+     16                 ;
+     17                 ; GAMEPLAY 1
+     18                 ;LABEL0001H:
+     19 0000            game_mel1H:
+     20 0000 221F05             db      A3,NLH,A_LEN*8/8
+     21 0003 221F05             db      A3,NLH,A_LEN*8/8
+     22 0006 221F0A             db      A3,NLH,A_LEN*16/8
+     23 0009 221F0A             db      A3,NLH,A_LEN*16/8
+     24 000C 221F05             db      A3,NLH,A_LEN*8/8
+     25 000F 221F05             db      A3,NLH,A_LEN*8/8
+     26 0012 241F0A             db      B3,NLH,A_LEN*16/8
+     27 0015 221F05             db      A3,NLH,A_LEN*8/8
+     28 0018 1B1F05             db      D3,NLH,A_LEN*8/8
+     29 001B 221F05             db      A3,NLH,A_LEN*8/8
+     30 001E 1B1F05             db      D3,NLH,A_LEN*8/8
+     31 0021 1B1F05             db      D3,NLH,A_LEN*8/8
+     32 0024 1B1F05             db      D3,NLH,A_LEN*8/8
+     33 0027 1D1F14             db      E3,NLH,A_LEN*32/8
+     34 002A 1D1F0A             db      E3,NLH,A_LEN*16/8
+     35 002D 1D1F05             db      E3,NLH,A_LEN*8/8
+     36 0030 1D1F0A             db      E3,NLH,A_LEN*16/8
+     37 0033 1D1F0A             db      E3,NLH,A_LEN*16/8
+     38 0036 1D1F0A             db      E3,NLH,A_LEN*16/8
+     39 0039 1D1F0A             db      E3,NLH,A_LEN*16/8
+     40                 ;LABEL0001H:
+     41 003C 221F14             db      A3,NLH,A_LEN*32/8
+     42 003F 221F0F             db      A3,NLH,A_LEN*24/8
+     43 0042 221F05             db      A3,NLH,A_LEN*8/8
+     44 0045 221F0A             db      A3,NLH,A_LEN*16/8
+     45 0048 2E1F0A             db      A4,NLH,A_LEN*16/8
+     46 004B 221F0A             db      A3,NLH,A_LEN*16/8
+     47 004E 221F0A             db      A3,NLH,A_LEN*16/8
+     48 0051 1D1F14             db      E3,NLH,A_LEN*32/8
+     49 0054 1D1F0F             db      E3,NLH,A_LEN*24/8
+     50 0057 241F05             db      B3,NLH,A_LEN*8/8
+     51 005A 271F0A             db      D4,NLH,A_LEN*16/8
+     52 005D 291F0A             db      E4,NLH,A_LEN*16/8
+     53 0060 291F0A             db      E4,NLH,A_LEN*16/8
+     54 0063 1D1F0A             db      E3,NLH,A_LEN*16/8
+     55                 ;LABEL0001H:
+     56 0066 1D1F14             db      E3,NLH,A_LEN*32/8
+     57 0069 291F0F             db      E4,NLH,A_LEN*24/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page    2
+
+
+     58 006C 1D1F05             db      E3,NLH,A_LEN*8/8
+     59 006F 241F0A             db      B3,NLH,A_LEN*16/8
+     60 0072 201F05             db      G3,NLH,A_LEN*8/8
+     61 0075 201F05             db      G3,NLH,A_LEN*8/8
+     62 0078 201F0A             db      G3,NLH,A_LEN*16/8
+     63 007B 201F0A             db      G3,NLH,A_LEN*16/8
+     64 007E 1D1F0A             db      E3,NLH,A_LEN*16/8
+     65 0081 221F05             db      A3,NLH,A_LEN*8/8
+     66 0084 221F05             db      A3,NLH,A_LEN*8/8
+     67 0087 221F0A             db      A3,NLH,A_LEN*16/8
+     68 008A 221F0A             db      A3,NLH,A_LEN*16/8
+     69 008D 201F0A             db      G3,NLH,A_LEN*16/8
+     70 0090 1D1F05             db      E3,NLH,A_LEN*8/8
+     71 0093 1D1F05             db      E3,NLH,A_LEN*8/8
+     72 0096 1D1F0A             db      E3,NLH,A_LEN*16/8
+     73 0099 1D1F0A             db      E3,NLH,A_LEN*16/8
+     74                 ;LABEL0001H:
+     75 009C 291F0A             db      E4,NLH,A_LEN*16/8
+     76 009F 221F05             db      A3,NLH,A_LEN*8/8
+     77 00A2 221F05             db      A3,NLH,A_LEN*8/8
+     78 00A5 2E1F0A             db      A4,NLH,A_LEN*16/8
+     79 00A8 2E1F0A             db      A4,NLH,A_LEN*16/8
+     80 00AB 201F0A             db      G3,NLH,A_LEN*16/8
+     81 00AE 1D1F05             db      E3,NLH,A_LEN*8/8
+     82 00B1 1D1F05             db      E3,NLH,A_LEN*8/8
+     83 00B4 1D1F0A             db      E3,NLH,A_LEN*16/8
+     84 00B7 291F05             db      E4,NLH,A_LEN*8/8
+     85 00BA 1D1F05             db      E3,NLH,A_LEN*8/8
+     86 00BD 1D1F0A             db      E3,NLH,A_LEN*16/8
+     87 00C0 221F05             db      A3,NLH,A_LEN*8/8
+     88 00C3 221F05             db      A3,NLH,A_LEN*8/8
+     89 00C6 2E1F0A             db      A4,NLH,A_LEN*16/8
+     90 00C9 221F0A             db      A3,NLH,A_LEN*16/8
+     91 00CC 201F0A             db      G3,NLH,A_LEN*16/8
+     92 00CF 1D1F05             db      E3,NLH,A_LEN*8/8
+     93 00D2 1D1F05             db      E3,NLH,A_LEN*8/8
+     94 00D5 1D1F0A             db      E3,NLH,A_LEN*16/8
+     95 00D8 1D1F0A             db      E3,NLH,A_LEN*16/8
+     96 00DB 1D1F05             db      E3,NLH,A_LEN*8/8
+     97 00DE 1D1F05             db      E3,NLH,A_LEN*8/8
+     98                 ;LABEL0001H:
+     99 00E1 1D1F0A             db      E3,NLH,A_LEN*16/8
+    100 00E4 221F05             db      A3,NLH,A_LEN*8/8
+    101 00E7 221F05             db      A3,NLH,A_LEN*8/8
+    102 00EA 221F0A             db      A3,NLH,A_LEN*16/8
+    103 00ED 221F0A             db      A3,NLH,A_LEN*16/8
+    104 00F0 201F0A             db      G3,NLH,A_LEN*16/8
+    105 00F3 1D1F05             db      E3,NLH,A_LEN*8/8
+    106 00F6 1D1F05             db      E3,NLH,A_LEN*8/8
+    107 00F9 1B1F0A             db      D3,NLH,A_LEN*16/8
+    108 00FC 1B1F05             db      D3,NLH,A_LEN*8/8
+    109 00FF 1B1F05             db      D3,NLH,A_LEN*8/8
+    110 0102 000000     	db	0,0,0
+    111                 
+    112                 ;
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page    3
+
+
+    113                 ; GAMEPLAY 2
+    114                 ;LABEL0002H:
+    115 0105            game_mel2H:
+    116 0105 1D1F14             db      E3,NLH,A_LEN*32/8
+    117 0108 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    118 010B 1D1F0A             db      E3,NLH,A_LEN*16/8
+    119 010E 1D1F0A             db      E3,NLH,A_LEN*16/8
+    120 0111 1D1F0A             db      E3,NLH,A_LEN*16/8
+    121 0114 1B1F0A             db      D3,NLH,A_LEN*16/8
+    122 0117 1B1F0A             db      D3,NLH,A_LEN*16/8
+    123 011A 1D1F14             db      E3,NLH,A_LEN*32/8
+    124 011D 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    125 0120 1D1F0A             db      E3,NLH,A_LEN*16/8
+    126 0123 1D1F0A             db      E3,NLH,A_LEN*16/8
+    127 0126 1D1F0A             db      E3,NLH,A_LEN*16/8
+    128 0129 1B1F0A             db      D3,NLH,A_LEN*16/8
+    129 012C 1B1F0A             db      D3,NLH,A_LEN*16/8
+    130                 ;LABEL0002H:
+    131 012F 1D1F14             db      E3,NLH,A_LEN*32/8
+    132 0132 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    133 0135 1D1F0A             db      E3,NLH,A_LEN*16/8
+    134 0138 1D1F0A             db      E3,NLH,A_LEN*16/8
+    135 013B 1D1F0A             db      E3,NLH,A_LEN*16/8
+    136 013E 1D1F0A             db      E3,NLH,A_LEN*16/8
+    137 0141 1B1F0A             db      D3,NLH,A_LEN*16/8
+    138 0144 1B1F0A             db      D3,NLH,A_LEN*16/8
+    139 0147 1D1F14             db      E3,NLH,A_LEN*32/8
+    140 014A 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    141 014D 1D1F0A             db      E3,NLH,A_LEN*16/8
+    142 0150 241F14             db      B3,NLH,A_LEN*32/8
+    143 0153 241F14             db      B3,NLH,A_LEN*32/8
+    144                 ;LABEL0002H:
+    145 0156 1D1F14             db      E3,NLH,A_LEN*32/8
+    146 0159 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    147 015C 1D1F0A             db      E3,NLH,A_LEN*16/8
+    148 015F 1D1F0A             db      E3,NLH,A_LEN*16/8
+    149 0162 1D1F0A             db      E3,NLH,A_LEN*16/8
+    150 0165 1B1F0A             db      D3,NLH,A_LEN*16/8
+    151 0168 1B1F0A             db      D3,NLH,A_LEN*16/8
+    152 016B 1D1F14             db      E3,NLH,A_LEN*32/8
+    153 016E 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    154 0171 1D1F0A             db      E3,NLH,A_LEN*16/8
+    155 0174 1D1F0A             db      E3,NLH,A_LEN*16/8
+    156 0177 1D1F0A             db      E3,NLH,A_LEN*16/8
+    157 017A 1B1F0A             db      D3,NLH,A_LEN*16/8
+    158 017D 1B1F0A             db      D3,NLH,A_LEN*16/8
+    159                 ;LABEL0002H:
+    160 0180 1D1F14             db      E3,NLH,A_LEN*32/8
+    161 0183 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    162 0186 1D1F0A             db      E3,NLH,A_LEN*16/8
+    163 0189 1D1F0A             db      E3,NLH,A_LEN*16/8
+    164 018C 1D1F0A             db      E3,NLH,A_LEN*16/8
+    165 018F 1B1F0A             db      D3,NLH,A_LEN*16/8
+    166 0192 1B1F0A             db      D3,NLH,A_LEN*16/8
+    167 0195 1D1F14             db      E3,NLH,A_LEN*32/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page    4
+
+
+    168 0198 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    169 019B 1D1F0A             db      E3,NLH,A_LEN*16/8
+    170 019E 241F14             db      B3,NLH,A_LEN*32/8
+    171 01A1 241F14             db      B3,NLH,A_LEN*32/8
+    172 01A4 000000     	db	0,0,0
+    173                 
+    174                 ;
+    175                 ; GAMEPLAY 3
+    176                 ;LABEL0003H:
+    177 01A7            game_mel3H:
+    178 01A7 1D1F05             db      E3,NLH,A_LEN*8/8
+    179 01AA 1D1F05             db      E3,NLH,A_LEN*8/8
+    180 01AD 1D1F05             db      E3,NLH,A_LEN*8/8
+    181 01B0 1D1F05             db      E3,NLH,A_LEN*8/8
+    182 01B3 1D1F0A             db      E3,NLH,A_LEN*16/8
+    183 01B6 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    184 01B9 1D1F0A             db      E3,NLH,A_LEN*16/8
+    185 01BC 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    186 01BF 1D1F0A             db      E3,NLH,A_LEN*16/8
+    187 01C2 1B1F0A             db      D3,NLH,A_LEN*16/8
+    188 01C5 1D1F0A             db      E3,NLH,A_LEN*16/8
+    189 01C8 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    190 01CB 1D1F0A             db      E3,NLH,A_LEN*16/8
+    191 01CE 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    192 01D1 1D1F0A             db      E3,NLH,A_LEN*16/8
+    193 01D4 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    194 01D7 1D1F0A             db      E3,NLH,A_LEN*16/8
+    195 01DA 1B1F0A             db      D3,NLH,A_LEN*16/8
+    196                 ;LABEL0003H:
+    197 01DD 1D1F05             db      E3,NLH,A_LEN*8/8
+    198 01E0 1D1F05             db      E3,NLH,A_LEN*8/8
+    199 01E3 1D1F05             db      E3,NLH,A_LEN*8/8
+    200 01E6 1D1F05             db      E3,NLH,A_LEN*8/8
+    201 01E9 1D1F0A             db      E3,NLH,A_LEN*16/8
+    202 01EC 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    203 01EF 1D1F0A             db      E3,NLH,A_LEN*16/8
+    204 01F2 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    205 01F5 1D1F0A             db      E3,NLH,A_LEN*16/8
+    206 01F8 251F0A             db      C4,NLH,A_LEN*16/8
+    207 01FB 251F0A             db      C4,NLH,A_LEN*16/8
+    208 01FE 241F05             db      B3,NLH,A_LEN*8/8
+    209 0201 251F0A             db      C4,NLH,A_LEN*16/8
+    210 0204 201F0A             db      G3,NLH,A_LEN*16/8
+    211 0207 251F0A             db      C4,NLH,A_LEN*16/8
+    212 020A 271F0A             db      D4,NLH,A_LEN*16/8
+    213 020D 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    214 0210 271F0A             db      D4,NLH,A_LEN*16/8
+    215 0213 271F0A             db      D4,NLH,A_LEN*16/8
+    216                 ;LABEL0003H:
+    217 0216 1D1F0A             db      E3,NLH,A_LEN*16/8
+    218 0219 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    219 021C 1D1F0A             db      E3,NLH,A_LEN*16/8
+    220 021F 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    221 0222 1D1F0A             db      E3,NLH,A_LEN*16/8
+    222 0225 801F0A             db      PAUSE,NLH,A_LEN*16/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page    5
+
+
+    223 0228 1D1F0A             db      E3,NLH,A_LEN*16/8
+    224 022B 1B1F0A             db      D3,NLH,A_LEN*16/8
+    225 022E 1D1F05             db      E3,NLH,A_LEN*8/8
+    226 0231 1D1F05             db      E3,NLH,A_LEN*8/8
+    227 0234 1D1F05             db      E3,NLH,A_LEN*8/8
+    228 0237 1D1F05             db      E3,NLH,A_LEN*8/8
+    229 023A 1D1F0A             db      E3,NLH,A_LEN*16/8
+    230 023D 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    231 0240 1D1F0A             db      E3,NLH,A_LEN*16/8
+    232 0243 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    233 0246 1D1F0A             db      E3,NLH,A_LEN*16/8
+    234 0249 1B1F0A             db      D3,NLH,A_LEN*16/8
+    235                 ;LABEL0003H:
+    236 024C 291F05             db      E4,NLH,A_LEN*8/8
+    237 024F 1D1F05             db      E3,NLH,A_LEN*8/8
+    238 0252 1D1F05             db      E3,NLH,A_LEN*8/8
+    239 0255 1D1F05             db      E3,NLH,A_LEN*8/8
+    240 0258 1D1F0A             db      E3,NLH,A_LEN*16/8
+    241 025B 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    242 025E 1D1F0A             db      E3,NLH,A_LEN*16/8
+    243 0261 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    244 0264 1D1F0A             db      E3,NLH,A_LEN*16/8
+    245 0267 251F0A             db      C4,NLH,A_LEN*16/8
+    246 026A 251F0A             db      C4,NLH,A_LEN*16/8
+    247 026D 251F05             db      C4,NLH,A_LEN*8/8
+    248 0270 251F05             db      C4,NLH,A_LEN*8/8
+    249 0273 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    250 0276 251F0A             db      C4,NLH,A_LEN*16/8
+    251 0279 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    252 027C 251F0A             db      C4,NLH,A_LEN*16/8
+    253 027F 201F05             db      G3,NLH,A_LEN*8/8
+    254 0282 201F05             db      G3,NLH,A_LEN*8/8
+    255 0285 000000     	db	0,0,0
+    256                 
+    257                 ;
+    258                 ; GAMEPLAY 4
+    259                 ;LABEL0004H:
+    260 0288            game_mel4H:
+    261 0288 261F0A             db      C4S,NLH,A_LEN*16/8
+    262 028B 261F0A             db      C4S,NLH,A_LEN*16/8
+    263 028E 261F0A             db      C4S,NLH,A_LEN*16/8
+    264 0291 241F0A             db      B3,NLH,A_LEN*16/8
+    265 0294 271F0A             db      D4,NLH,A_LEN*16/8
+    266 0297 271F0A             db      D4,NLH,A_LEN*16/8
+    267 029A 271F0A             db      D4,NLH,A_LEN*16/8
+    268 029D 241F0A             db      B3,NLH,A_LEN*16/8
+    269 02A0 291F0A             db      E4,NLH,A_LEN*16/8
+    270 02A3 291F0A             db      E4,NLH,A_LEN*16/8
+    271 02A6 291F0A             db      E4,NLH,A_LEN*16/8
+    272 02A9 261F0A             db      C4S,NLH,A_LEN*16/8
+    273 02AC 2B1F0A             db      F4S,NLH,A_LEN*16/8
+    274 02AF 2B1F0A             db      F4S,NLH,A_LEN*16/8
+    275 02B2 2B1F0A             db      F4S,NLH,A_LEN*16/8
+    276 02B5 2B1F0A             db      F4S,NLH,A_LEN*16/8
+    277 02B8 2E1F0A             db      A4,NLH,A_LEN*16/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page    6
+
+
+    278 02BB 291F0A             db      E4,NLH,A_LEN*16/8
+    279 02BE 2E1F0A             db      A4,NLH,A_LEN*16/8
+    280 02C1 291F0A             db      E4,NLH,A_LEN*16/8
+    281 02C4 271F0A             db      D4,NLH,A_LEN*16/8
+    282 02C7 271F0A             db      D4,NLH,A_LEN*16/8
+    283 02CA 271F0A             db      D4,NLH,A_LEN*16/8
+    284 02CD 221F0A             db      A3,NLH,A_LEN*16/8
+    285                 ;LABEL0004H:
+    286 02D0 291F0A             db      E4,NLH,A_LEN*16/8
+    287 02D3 291F0A             db      E4,NLH,A_LEN*16/8
+    288 02D6 291F0A             db      E4,NLH,A_LEN*16/8
+    289 02D9 291F0A             db      E4,NLH,A_LEN*16/8
+    290 02DC 2E1F0A             db      A4,NLH,A_LEN*16/8
+    291 02DF 2E1F0A             db      A4,NLH,A_LEN*16/8
+    292 02E2 2E1F0A             db      A4,NLH,A_LEN*16/8
+    293 02E5 2E1F0A             db      A4,NLH,A_LEN*16/8
+    294 02E8 261F0A             db      C4S,NLH,A_LEN*16/8
+    295 02EB 321F0A             db      C5S,NLH,A_LEN*16/8
+    296 02EE 321F0A             db      C5S,NLH,A_LEN*16/8
+    297 02F1 241F0A             db      B3,NLH,A_LEN*16/8
+    298 02F4 271F0A             db      D4,NLH,A_LEN*16/8
+    299 02F7 271F0A             db      D4,NLH,A_LEN*16/8
+    300 02FA 271F0A             db      D4,NLH,A_LEN*16/8
+    301 02FD 241F0A             db      B3,NLH,A_LEN*16/8
+    302 0300 291F0A             db      E4,NLH,A_LEN*16/8
+    303 0303 291F0A             db      E4,NLH,A_LEN*16/8
+    304 0306 291F0A             db      E4,NLH,A_LEN*16/8
+    305 0309 251F0A             db      C4,NLH,A_LEN*16/8
+    306 030C 2B1F0A             db      F4S,NLH,A_LEN*16/8
+    307 030F 2B1F0A             db      F4S,NLH,A_LEN*16/8
+    308 0312 2B1F0A             db      F4S,NLH,A_LEN*16/8
+    309 0315 2B1F0A             db      F4S,NLH,A_LEN*16/8
+    310                 ;LABEL0004H:
+    311 0318 2E1F0A             db      A4,NLH,A_LEN*16/8
+    312 031B 291F0A             db      E4,NLH,A_LEN*16/8
+    313 031E 2E1F0A             db      A4,NLH,A_LEN*16/8
+    314 0321 291F0A             db      E4,NLH,A_LEN*16/8
+    315 0324 271F0A             db      D4,NLH,A_LEN*16/8
+    316 0327 271F0A             db      D4,NLH,A_LEN*16/8
+    317 032A 271F0A             db      D4,NLH,A_LEN*16/8
+    318 032D 221F0A             db      A3,NLH,A_LEN*16/8
+    319 0330 291F14             db      E4,NLH,A_LEN*32/8
+    320 0333 291F0A             db      E4,NLH,A_LEN*16/8
+    321 0336 291F0A             db      E4,NLH,A_LEN*16/8
+    322 0339 000000     	db	0,0,0
+    323                 ;
+    324                 ; OPENING
+    325                 ;LABEL0005H:
+    326 033C            open_melH:
+    327 033C 241F05             db      B3,NLH,A_LEN*8/8
+    328 033F 221F05             db      A3,NLH,A_LEN*8/8
+    329 0342 1F1F05             db      F3S,NLH,A_LEN*8/8
+    330 0345 1D1F05             db      E3,NLH,A_LEN*8/8
+    331 0348 1B1F05             db      D3,NLH,A_LEN*8/8
+    332 034B 1B1F05             db      D3,NLH,A_LEN*8/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page    7
+
+
+    333 034E 221F05             db      A3,NLH,A_LEN*8/8
+    334 0351 251F05             db      C4,NLH,A_LEN*8/8
+    335 0354 221F05             db      A3,NLH,A_LEN*8/8
+    336 0357 221F05             db      A3,NLH,A_LEN*8/8
+    337 035A 221F05             db      A3,NLH,A_LEN*8/8
+    338 035D 221F05             db      A3,NLH,A_LEN*8/8
+    339 0360 2E1F14             db      A4,NLH,A_LEN*32/8
+    340 0363 2E1F14             db      A4,NLH,A_LEN*32/8
+    341 0366 2E1F0A             db      A4,NLH,A_LEN*16/8
+    342 0369 2E1F0A             db      A4,NLH,A_LEN*16/8
+    343                 ;LABEL0005H:
+    344 036C 201F05             db      G3,NLH,A_LEN*8/8
+    345 036F 201F0F             db      G3,NLH,A_LEN*24/8
+    346 0372 201F05             db      G3,NLH,A_LEN*8/8
+    347 0375 201F14             db      G3,NLH,A_LEN*32/8
+    348 0378 201F14             db      G3,NLH,A_LEN*32/8
+    349 037B 201F0A             db      G3,NLH,A_LEN*16/8
+    350 037E 201F0A             db      G3,NLH,A_LEN*16/8
+    351 0381 1E1F05             db      F3,NLH,A_LEN*8/8
+    352 0384 1E1F05             db      F3,NLH,A_LEN*8/8
+    353 0387 1E1F05             db      F3,NLH,A_LEN*8/8
+    354 038A 1E1F14             db      F3,NLH,A_LEN*32/8
+    355 038D 1E1F14             db      F3,NLH,A_LEN*32/8
+    356 0390 1E1F0A             db      F3,NLH,A_LEN*16/8
+    357 0393 1E1F0A             db      F3,NLH,A_LEN*16/8
+    358                 ;LABEL0005H:
+    359 0396 201F05             db      G3,NLH,A_LEN*8/8
+    360 0399 201F05             db      G3,NLH,A_LEN*8/8
+    361 039C 201F05             db      G3,NLH,A_LEN*8/8
+    362 039F 201F05             db      G3,NLH,A_LEN*8/8
+    363 03A2 381F14             db      G5,NLH,A_LEN*32/8
+    364 03A5 291F05             db      E4,NLH,A_LEN*8/8
+    365 03A8 271F05             db      D4,NLH,A_LEN*8/8
+    366 03AB 241F05             db      B3,NLH,A_LEN*8/8
+    367 03AE 221F05             db      A3,NLH,A_LEN*8/8
+    368 03B1 201F05             db      G3,NLH,A_LEN*8/8
+    369 03B4 381F05             db      G5,NLH,A_LEN*8/8
+    370 03B7 381F0A             db      G5,NLH,A_LEN*16/8
+    371 03BA 271F14             db      D4,NLH,A_LEN*32/8
+    372 03BD 000000     	db	0,0,0
+    373                 
+    374                 ;
+    375                 ; H-END
+    376                 ;LABEL0006H:
+    377 03C0            h_end_melH:
+    378 03C0 221F14             db      A3,NLH,A_LEN*32/8
+    379 03C3 271F14             db      D4,NLH,A_LEN*32/8
+    380 03C6 201F14             db      G3,NLH,A_LEN*32/8
+    381 03C9 251F14             db      C4,NLH,A_LEN*32/8
+    382 03CC 251F0A             db      C4,NLH,A_LEN*16/8
+    383 03CF 251F05             db      C4,NLH,A_LEN*8/8
+    384 03D2 251F05             db      C4,NLH,A_LEN*8/8
+    385 03D5 201F05             db      G3,NLH,A_LEN*8/8
+    386 03D8 2E1F0A             db      A4,NLH,A_LEN*16/8
+    387 03DB 201F05             db      G3,NLH,A_LEN*8/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page    8
+
+
+    388 03DE 2E1F0A             db      A4,NLH,A_LEN*16/8
+    389 03E1 201F05             db      G3,NLH,A_LEN*8/8
+    390 03E4 2E1F0A             db      A4,NLH,A_LEN*16/8
+    391 03E7 201F05             db      G3,NLH,A_LEN*8/8
+    392 03EA 2E1F0A             db      A4,NLH,A_LEN*16/8
+    393 03ED 1D1F0A             db      E3,NLH,A_LEN*16/8
+    394 03F0 291F05             db      E4,NLH,A_LEN*8/8
+    395 03F3 291F05             db      E4,NLH,A_LEN*8/8
+    396                 ;LABEL0006H:
+    397 03F6 201F05             db      G3,NLH,A_LEN*8/8
+    398 03F9 221F0A             db      A3,NLH,A_LEN*16/8
+    399 03FC 201F05             db      G3,NLH,A_LEN*8/8
+    400 03FF 221F0A             db      A3,NLH,A_LEN*16/8
+    401 0402 201F05             db      G3,NLH,A_LEN*8/8
+    402 0405 221F0A             db      A3,NLH,A_LEN*16/8
+    403 0408 201F0A             db      G3,NLH,A_LEN*16/8
+    404 040B 271F0F             db      D4,NLH,A_LEN*24/8
+    405 040E 271F05             db      D4,NLH,A_LEN*8/8
+    406 0411 251F05             db      C4,NLH,A_LEN*8/8
+    407 0414 201F05             db      G3,NLH,A_LEN*8/8
+    408 0417 221F0A             db      A3,NLH,A_LEN*16/8
+    409 041A 201F05             db      G3,NLH,A_LEN*8/8
+    410 041D 221F0A             db      A3,NLH,A_LEN*16/8
+    411 0420 201F05             db      G3,NLH,A_LEN*8/8
+    412 0423 221F0A             db      A3,NLH,A_LEN*16/8
+    413 0426 201F05             db      G3,NLH,A_LEN*8/8
+    414 0429 221F0A             db      A3,NLH,A_LEN*16/8
+    415 042C 1D1F0A             db      E3,NLH,A_LEN*16/8
+    416 042F 1D1F05             db      E3,NLH,A_LEN*8/8
+    417 0432 1D1F05             db      E3,NLH,A_LEN*8/8
+    418 0435 201F05             db      G3,NLH,A_LEN*8/8
+    419 0438 221F0A             db      A3,NLH,A_LEN*16/8
+    420 043B 201F05             db      G3,NLH,A_LEN*8/8
+    421 043E 221F0A             db      A3,NLH,A_LEN*16/8
+    422 0441 201F05             db      G3,NLH,A_LEN*8/8
+    423 0444 221F0A             db      A3,NLH,A_LEN*16/8
+    424 0447 201F0A             db      G3,NLH,A_LEN*16/8
+    425 044A 271F0F             db      D4,NLH,A_LEN*24/8
+    426 044D 331F05             db      D5,NLH,A_LEN*8/8
+    427 0450 331F05             db      D5,NLH,A_LEN*8/8
+    428                 ;LABEL0006H:
+    429 0453 201F05             db      G3,NLH,A_LEN*8/8
+    430 0456 221F0A             db      A3,NLH,A_LEN*16/8
+    431 0459 201F05             db      G3,NLH,A_LEN*8/8
+    432 045C 221F0A             db      A3,NLH,A_LEN*16/8
+    433 045F 201F05             db      G3,NLH,A_LEN*8/8
+    434 0462 221F0A             db      A3,NLH,A_LEN*16/8
+    435 0465 201F05             db      G3,NLH,A_LEN*8/8
+    436 0468 221F0A             db      A3,NLH,A_LEN*16/8
+    437 046B 1D1F0A             db      E3,NLH,A_LEN*16/8
+    438 046E 1D1F05             db      E3,NLH,A_LEN*8/8
+    439 0471 1D1F05             db      E3,NLH,A_LEN*8/8
+    440 0474 201F05             db      G3,NLH,A_LEN*8/8
+    441 0477 221F0A             db      A3,NLH,A_LEN*16/8
+    442 047A 201F05             db      G3,NLH,A_LEN*8/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page    9
+
+
+    443 047D 221F0A             db      A3,NLH,A_LEN*16/8
+    444 0480 201F05             db      G3,NLH,A_LEN*8/8
+    445 0483 221F0A             db      A3,NLH,A_LEN*16/8
+    446 0486 221F05             db      A3,NLH,A_LEN*8/8
+    447 0489 221F05             db      A3,NLH,A_LEN*8/8
+    448 048C 221F0A             db      A3,NLH,A_LEN*16/8
+    449 048F 801F0A             db      PAUSE,NLH,A_LEN*16/8
+    450 0492 000000     	db	0,0,0
+    451                 
+    452                 ;
+    453                 ; S-END
+    454                 ;LABEL0007H:
+    455 0495            s_end_melH:
+    456                 
+    457 0495 201F0A             db      G3,NLH,A_LEN*16/8
+    458 0498 201F0A             db      G3,NLH,A_LEN*16/8
+    459 049B 201F05             db      G3,NLH,A_LEN*8/8
+    460 049E 211F0F             db      G3S,NLH,A_LEN*24/8
+    461 04A1 1E1F0A             db      F3,NLH,A_LEN*16/8
+    462 04A4 1E1F14             db      F3,NLH,A_LEN*32/8
+    463 04A7 1E1F14             db      F3,NLH,A_LEN*32/8
+    464 04AA 1E1F14             db      F3,NLH,A_LEN*32/8
+    465 04AD 1D1F0A             db      E3,NLH,A_LEN*16/8
+    466 04B0 1E1F0A             db      F3,NLH,A_LEN*16/8
+    467 04B3 1E1F14             db      F3,NLH,A_LEN*32/8
+    468 04B6 1E1F14             db      F3,NLH,A_LEN*32/8
+    469 04B9 1E1F14             db      F3,NLH,A_LEN*32/8
+    470 04BC 201F0A             db      G3,NLH,A_LEN*16/8
+    471                 ;LABEL0007H:
+    472 04BF 221F0A             db      A3,NLH,A_LEN*16/8
+    473 04C2 221F14             db      A3,NLH,A_LEN*32/8
+    474 04C5 221F14             db      A3,NLH,A_LEN*32/8
+    475 04C8 221F14             db      A3,NLH,A_LEN*32/8
+    476 04CB 1D1F0A             db      E3,NLH,A_LEN*16/8
+    477 04CE 221F14             db      A3,NLH,A_LEN*32/8
+    478 04D1 201F0A             db      G3,NLH,A_LEN*16/8
+    479 04D4 201F0A             db      G3,NLH,A_LEN*16/8
+    480 04D7 201F05             db      G3,NLH,A_LEN*8/8
+    481 04DA 211F0F             db      G3S,NLH,A_LEN*24/8
+    482 04DD 221F14             db      A3,NLH,A_LEN*32/8
+    483 04E0 221F14             db      A3,NLH,A_LEN*32/8
+    484 04E3 000000     	db	0,0,0
+    485                 
+    486                 ;
+    487                 ; OPTION
+    488                 ;LABEL0008H:
+    489 04E6            option_melH:
+    490 04E6 1D1F0A             db      E3,NLH,A_LEN*16/8
+    491 04E9 291F0A             db      E4,NLH,A_LEN*16/8
+    492 04EC 271F0A             db      D4,NLH,A_LEN*16/8
+    493 04EF 251F0A             db      C4,NLH,A_LEN*16/8
+    494 04F2 271F0A             db      D4,NLH,A_LEN*16/8
+    495 04F5 1D1F0A             db      E3,NLH,A_LEN*16/8
+    496 04F8 251F0A             db      C4,NLH,A_LEN*16/8
+    497 04FB 1D1F0A             db      E3,NLH,A_LEN*16/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page   10
+
+
+    498 04FE 301F0A             db      B4,NLH,A_LEN*16/8
+    499 0501 1D1F0A             db      E3,NLH,A_LEN*16/8
+    500 0504 251F0A             db      C4,NLH,A_LEN*16/8
+    501 0507 291F0A             db      E4,NLH,A_LEN*16/8
+    502 050A 271F0A             db      D4,NLH,A_LEN*16/8
+    503 050D 1D1F0A             db      E3,NLH,A_LEN*16/8
+    504 0510 291F0A             db      E4,NLH,A_LEN*16/8
+    505 0513 1D1F0A             db      E3,NLH,A_LEN*16/8
+    506 0516 1D1F0A             db      E3,NLH,A_LEN*16/8
+    507 0519 291F0A             db      E4,NLH,A_LEN*16/8
+    508 051C 271F0A             db      D4,NLH,A_LEN*16/8
+    509 051F 251F0A             db      C4,NLH,A_LEN*16/8
+    510 0522 271F0A             db      D4,NLH,A_LEN*16/8
+    511 0525 1D1F0A             db      E3,NLH,A_LEN*16/8
+    512 0528 251F0A             db      C4,NLH,A_LEN*16/8
+    513 052B 1D1F0A             db      E3,NLH,A_LEN*16/8
+    514                 ;LABEL0008H:
+    515 052E 301F0A             db      B4,NLH,A_LEN*16/8
+    516 0531 1D1F0A             db      E3,NLH,A_LEN*16/8
+    517 0534 251F0A             db      C4,NLH,A_LEN*16/8
+    518 0537 1D1F0A             db      E3,NLH,A_LEN*16/8
+    519 053A 271F0A             db      D4,NLH,A_LEN*16/8
+    520 053D 1D1F0A             db      E3,NLH,A_LEN*16/8
+    521 0540 291F0A             db      E4,NLH,A_LEN*16/8
+    522 0543 1D1F0A             db      E3,NLH,A_LEN*16/8
+    523 0546 000000     	db	0,0,0
+    524                 
+    525                 
+    526                 
+    527                 
+    528                 ;LABEL0001L:
+    529                 
+    530 0549            game_mel1L:
+    531                 
+    532 0549 801F0A             db      PAUSE,NLL,A_LEN*16/8
+    533 054C 461F0A             db      A6,NLL,A_LEN*16/8
+    534 054F 461F0A             db      A6,NLL,A_LEN*16/8
+    535 0552 461F0A             db      A6,NLL,A_LEN*16/8
+    536 0555 481F0A             db      B6,NLL,A_LEN*16/8
+    537 0558 461F05             db      A6,NLL,A_LEN*8/8
+    538 055B 441F05             db      G6,NLL,A_LEN*8/8
+    539 055E 461F05             db      A6,NLL,A_LEN*8/8
+    540 0561 441F05             db      G6,NLL,A_LEN*8/8
+    541 0564 431F05             db      F6S,NLL,A_LEN*8/8
+    542 0567 3F1F05             db      D6,NLL,A_LEN*8/8
+    543 056A 411F14             db      E6,NLL,A_LEN*32/8
+    544 056D 411F05             db      E6,NLL,A_LEN*8/8
+    545 0570 441F05             db      G6,NLL,A_LEN*8/8
+    546 0573 481F14             db      B6,NLL,A_LEN*32/8
+    547 0576 481F14             db      B6,NLL,A_LEN*32/8
+    548 0579 3C1F05             db      B5,NLL,A_LEN*8/8
+    549 057C 461F05             db      A6,NLL,A_LEN*8/8
+    550 057F 441F05             db      G6,NLL,A_LEN*8/8
+    551                 ;LABEL0001L:
+    552 0582 461F0A             db      A6,NLL,A_LEN*16/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page   11
+
+
+    553 0585 441F05             db      G6,NLL,A_LEN*8/8
+    554 0588 431F05             db      F6S,NLL,A_LEN*8/8
+    555 058B 441F0A             db      G6,NLL,A_LEN*16/8
+    556 058E 431F05             db      F6S,NLL,A_LEN*8/8
+    557 0591 411F05             db      E6,NLL,A_LEN*8/8
+    558 0594 431F0A             db      F6S,NLL,A_LEN*16/8
+    559 0597 411F05             db      E6,NLL,A_LEN*8/8
+    560 059A 3F1F05             db      D6,NLL,A_LEN*8/8
+    561 059D 411F0A             db      E6,NLL,A_LEN*16/8
+    562 05A0 411F05             db      E6,NLL,A_LEN*8/8
+    563 05A3 3F1F05             db      D6,NLL,A_LEN*8/8
+    564 05A6 411F14             db      E6,NLL,A_LEN*32/8
+    565 05A9 411F14             db      E6,NLL,A_LEN*32/8
+    566 05AC 411F14             db      E6,NLL,A_LEN*32/8
+    567 05AF 411F14             db      E6,NLL,A_LEN*32/8
+    568                 ;LABEL0001L:
+    569 05B2 801F0A             db      PAUSE,NLL,A_LEN*16/8
+    570 05B5 411F05             db      E6,NLL,A_LEN*8/8
+    571 05B8 3C1F05             db      B5,NLL,A_LEN*8/8
+    572 05BB 3F1F05             db      D6,NLL,A_LEN*8/8
+    573 05BE 411F05             db      E6,NLL,A_LEN*8/8
+    574 05C1 461F05             db      A6,NLL,A_LEN*8/8
+    575 05C4 3C1F05             db      B5,NLL,A_LEN*8/8
+    576 05C7 3F1F05             db      D6,NLL,A_LEN*8/8
+    577 05CA 411F05             db      E6,NLL,A_LEN*8/8
+    578 05CD 461F05             db      A6,NLL,A_LEN*8/8
+    579 05D0 481F05             db      B6,NLL,A_LEN*8/8
+    580 05D3 3F1F05             db      D6,NLL,A_LEN*8/8
+    581 05D6 411F05             db      E6,NLL,A_LEN*8/8
+    582 05D9 461F0A             db      A6,NLL,A_LEN*16/8
+    583 05DC 801F0A             db      PAUSE,NLL,A_LEN*16/8
+    584 05DF 461F0A             db      A6,NLL,A_LEN*16/8
+    585 05E2 461F0A             db      A6,NLL,A_LEN*16/8
+    586 05E5 461F0A             db      A6,NLL,A_LEN*16/8
+    587 05E8 441F0A             db      G6,NLL,A_LEN*16/8
+    588 05EB 411F05             db      E6,NLL,A_LEN*8/8
+    589 05EE 3F1F05             db      D6,NLL,A_LEN*8/8
+    590 05F1 411F14             db      E6,NLL,A_LEN*32/8
+    591                 ;LABEL0001L:
+    592 05F4 801F0A             db      PAUSE,NLL,A_LEN*16/8
+    593 05F7 461F0A             db      A6,NLL,A_LEN*16/8
+    594 05FA 461F0A             db      A6,NLL,A_LEN*16/8
+    595 05FD 461F0A             db      A6,NLL,A_LEN*16/8
+    596 0600 461F0A             db      A6,NLL,A_LEN*16/8
+    597 0603 411F05             db      E6,NLL,A_LEN*8/8
+    598 0606 3F1F05             db      D6,NLL,A_LEN*8/8
+    599 0609 411F14             db      E6,NLL,A_LEN*32/8
+    600 060C 801F0A             db      PAUSE,NLL,A_LEN*16/8
+    601 060F 461F0A             db      A6,NLL,A_LEN*16/8
+    602 0612 461F0A             db      A6,NLL,A_LEN*16/8
+    603 0615 461F0A             db      A6,NLL,A_LEN*16/8
+    604 0618 441F0A             db      G6,NLL,A_LEN*16/8
+    605 061B 411F05             db      E6,NLL,A_LEN*8/8
+    606 061E 3F1F05             db      D6,NLL,A_LEN*8/8
+    607 0621 411F14             db      E6,NLL,A_LEN*32/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page   12
+
+
+    608                 ;LABEL0001L:
+    609 0624 801F0A             db      PAUSE,NLL,A_LEN*16/8
+    610 0627 461F0A             db      A6,NLL,A_LEN*16/8
+    611 062A 461F0A             db      A6,NLL,A_LEN*16/8
+    612 062D 461F0A             db      A6,NLL,A_LEN*16/8
+    613 0630 461F0A             db      A6,NLL,A_LEN*16/8
+    614 0633 441F05             db      G6,NLL,A_LEN*8/8
+    615 0636 411F05             db      E6,NLL,A_LEN*8/8
+    616 0639 3F1F05             db      D6,NLL,A_LEN*8/8
+    617 063C 000000     	db	0,0,0
+    618                 
+    619                 
+    620                 
+    621                 ;LABEL0002L:
+    622                 
+    623 063F            game_mel2L:
+    624                 
+    625 063F 441F02             db      G6,NLL,A_LEN*4/8
+    626 0642 461F07             db      A6,NLL,A_LEN*12/8
+    627 0645 411F0A             db      E6,NLL,A_LEN*16/8
+    628 0648 3C1F14             db      B5,NLL,A_LEN*32/8
+    629 064B 3C1F0A             db      B5,NLL,A_LEN*16/8
+    630 064E 381F0A             db      G5,NLL,A_LEN*16/8
+    631 0651 351F0A             db      E5,NLL,A_LEN*16/8
+    632 0654 381F0A             db      G5,NLL,A_LEN*16/8
+    633 0657 3C1F0A             db      B5,NLL,A_LEN*16/8
+    634 065A 411F14             db      E6,NLL,A_LEN*32/8
+    635 065D 3A1F0A             db      A5,NLL,A_LEN*16/8
+    636                 ;LABEL0002L:
+    637 0660 3A1F02             db      A5,NLL,A_LEN*4/8
+    638 0663 3C1F07             db      B5,NLL,A_LEN*12/8
+    639 0666 3C1F14             db      B5,NLL,A_LEN*32/8
+    640 0669 501F05             db      G7,NLL,A_LEN*8/8
+    641 066C 461F05             db      A6,NLL,A_LEN*8/8
+    642 066F 411F05             db      E6,NLL,A_LEN*8/8
+    643 0672 441F05             db      G6,NLL,A_LEN*8/8
+    644 0675 3F1F05             db      D6,NLL,A_LEN*8/8
+    645 0678 411F05             db      E6,NLL,A_LEN*8/8
+    646 067B 3A1F05             db      A5,NLL,A_LEN*8/8
+    647 067E 3F1F05             db      D6,NLL,A_LEN*8/8
+    648 0681 3C1F14             db      B5,NLL,A_LEN*32/8
+    649 0684 381F0A             db      G5,NLL,A_LEN*16/8
+    650 0687 351F0A             db      E5,NLL,A_LEN*16/8
+    651 068A 381F0A             db      G5,NLL,A_LEN*16/8
+    652 068D 3C1F0A             db      B5,NLL,A_LEN*16/8
+    653 0690 381F0A             db      G5,NLL,A_LEN*16/8
+    654                 ;LABEL0002L:
+    655 0693 441F02             db      G6,NLL,A_LEN*4/8
+    656 0696 461F07             db      A6,NLL,A_LEN*12/8
+    657 0699 411F0A             db      E6,NLL,A_LEN*16/8
+    658 069C 3C1F14             db      B5,NLL,A_LEN*32/8
+    659 069F 3C1F0A             db      B5,NLL,A_LEN*16/8
+    660 06A2 381F0A             db      G5,NLL,A_LEN*16/8
+    661 06A5 351F0A             db      E5,NLL,A_LEN*16/8
+    662 06A8 381F0A             db      G5,NLL,A_LEN*16/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page   13
+
+
+    663 06AB 3C1F0A             db      B5,NLL,A_LEN*16/8
+    664 06AE 411F14             db      E6,NLL,A_LEN*32/8
+    665 06B1 3A1F0A             db      A5,NLL,A_LEN*16/8
+    666                 ;LABEL0002L:
+    667 06B4 3A1F02             db      A5,NLL,A_LEN*4/8
+    668 06B7 3C1F07             db      B5,NLL,A_LEN*12/8
+    669 06BA 3A1F14             db      A5,NLL,A_LEN*32/8
+    670 06BD 3F1F05             db      D6,NLL,A_LEN*8/8
+    671 06C0 411F05             db      E6,NLL,A_LEN*8/8
+    672 06C3 3C1F05             db      B5,NLL,A_LEN*8/8
+    673 06C6 3F1F05             db      D6,NLL,A_LEN*8/8
+    674 06C9 381F05             db      G5,NLL,A_LEN*8/8
+    675 06CC 3A1F05             db      A5,NLL,A_LEN*8/8
+    676 06CF 3C1F1E             db      B5,NLL,A_LEN*48/8
+    677 06D2 381F0A             db      G5,NLL,A_LEN*16/8
+    678 06D5 351F0A             db      E5,NLL,A_LEN*16/8
+    679 06D8 381F0A             db      G5,NLL,A_LEN*16/8
+    680 06DB 3C1F0A             db      B5,NLL,A_LEN*16/8
+    681 06DE 381F0A             db      G5,NLL,A_LEN*16/8
+    682 06E1 000000     	db	0,0,0
+    683                 
+    684                 
+    685                 
+    686                 ;LABEL0003L:
+    687                 
+    688 06E4            game_mel3L:
+    689                 
+    690 06E4 801F14             db      PAUSE,NLL,A_LEN*32/8
+    691 06E7 3A1F0A             db      A5,NLL,A_LEN*16/8
+    692 06EA 371F05             db      F5S,NLL,A_LEN*8/8
+    693 06ED 331F05             db      D5,NLL,A_LEN*8/8
+    694 06F0 381F14             db      G5,NLL,A_LEN*32/8
+    695 06F3 801F14             db      PAUSE,NLL,A_LEN*32/8
+    696 06F6 3A1F0A             db      A5,NLL,A_LEN*16/8
+    697 06F9 371F05             db      F5S,NLL,A_LEN*8/8
+    698 06FC 331F05             db      D5,NLL,A_LEN*8/8
+    699 06FF 381F05             db      G5,NLL,A_LEN*8/8
+    700 0702 381F05             db      G5,NLL,A_LEN*8/8
+    701 0705 371F0A             db      F5S,NLL,A_LEN*16/8
+    702 0708 361F14             db      F5,NLL,A_LEN*32/8
+    703                 ;LABEL0003L:
+    704 070B 801F14             db      PAUSE,NLL,A_LEN*32/8
+    705 070E 3A1F0A             db      A5,NLL,A_LEN*16/8
+    706 0711 371F05             db      F5S,NLL,A_LEN*8/8
+    707 0714 331F05             db      D5,NLL,A_LEN*8/8
+    708 0717 381F14             db      G5,NLL,A_LEN*32/8
+    709 071A 371F0A             db      F5S,NLL,A_LEN*16/8
+    710 071D 381F0A             db      G5,NLL,A_LEN*16/8
+    711 0720 381F14             db      G5,NLL,A_LEN*32/8
+    712 0723 351F0A             db      E5,NLL,A_LEN*16/8
+    713 0726 371F05             db      F5S,NLL,A_LEN*8/8
+    714 0729 381F05             db      G5,NLL,A_LEN*8/8
+    715 072C 3C1F14             db      B5,NLL,A_LEN*32/8
+    716 072F 3A1F0A             db      A5,NLL,A_LEN*16/8
+    717 0732 381F05             db      G5,NLL,A_LEN*8/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page   14
+
+
+    718 0735 3A1F05             db      A5,NLL,A_LEN*8/8
+    719                 ;LABEL0003L:
+    720 0738 351F14             db      E5,NLL,A_LEN*32/8
+    721 073B 3A1F0A             db      A5,NLL,A_LEN*16/8
+    722 073E 371F05             db      F5S,NLL,A_LEN*8/8
+    723 0741 331F05             db      D5,NLL,A_LEN*8/8
+    724 0744 381F14             db      G5,NLL,A_LEN*32/8
+    725 0747 801F14             db      PAUSE,NLL,A_LEN*32/8
+    726 074A 3A1F0A             db      A5,NLL,A_LEN*16/8
+    727 074D 371F05             db      F5S,NLL,A_LEN*8/8
+    728 0750 331F05             db      D5,NLL,A_LEN*8/8
+    729 0753 381F0A             db      G5,NLL,A_LEN*16/8
+    730 0756 371F0A             db      F5S,NLL,A_LEN*16/8
+    731 0759 381F0A             db      G5,NLL,A_LEN*16/8
+    732 075C 3A1F0A             db      A5,NLL,A_LEN*16/8
+    733                 ;LABEL0003L:
+    734 075F 801F14             db      PAUSE,NLL,A_LEN*32/8
+    735 0762 3A1F0A             db      A5,NLL,A_LEN*16/8
+    736 0765 371F05             db      F5S,NLL,A_LEN*8/8
+    737 0768 331F05             db      D5,NLL,A_LEN*8/8
+    738 076B 381F14             db      G5,NLL,A_LEN*32/8
+    739 076E 371F0A             db      F5S,NLL,A_LEN*16/8
+    740 0771 381F0A             db      G5,NLL,A_LEN*16/8
+    741 0774 381F0A             db      G5,NLL,A_LEN*16/8
+    742 0777 3A1F05             db      A5,NLL,A_LEN*8/8
+    743 077A 3B1F05             db      A5S,NLL,A_LEN*8/8
+    744 077D 3C1F05             db      B5,NLL,A_LEN*8/8
+    745 0780 411F05             db      E6,NLL,A_LEN*8/8
+    746 0783 441F05             db      G6,NLL,A_LEN*8/8
+    747 0786 411F05             db      E6,NLL,A_LEN*8/8
+    748 0789 441F05             db      G6,NLL,A_LEN*8/8
+    749 078C 461F05             db      A6,NLL,A_LEN*8/8
+    750 078F 471F05             db      A6S,NLL,A_LEN*8/8
+    751 0792 481F05             db      B6,NLL,A_LEN*8/8
+    752 0795 471F05             db      A6S,NLL,A_LEN*8/8
+    753 0798 461F05             db      A6,NLL,A_LEN*8/8
+    754 079B 441F05             db      G6,NLL,A_LEN*8/8
+    755 079E 461F05             db      A6,NLL,A_LEN*8/8
+    756 07A1 000000     	db	0,0,0
+    757                 
+    758                 
+    759                 
+    760                 ;LABEL0004L:
+    761                 
+    762 07A4            game_mel4L:
+    763                 
+    764 07A4 451F14             db      G6S,NLL,A_LEN*32/8
+    765 07A7 451F05             db      G6S,NLL,A_LEN*8/8
+    766 07AA 411F0A             db      E6,NLL,A_LEN*16/8
+    767 07AD 3E1F05             db      C6S,NLL,A_LEN*8/8
+    768 07B0 461F1E             db      A6,NLL,A_LEN*48/8
+    769 07B3 481F05             db      B6,NLL,A_LEN*8/8
+    770 07B6 4A1F05             db      C7S,NLL,A_LEN*8/8
+    771 07B9 4B1F14             db      D7,NLL,A_LEN*32/8
+    772 07BC 4A1F14             db      C7S,NLL,A_LEN*32/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page   15
+
+
+    773 07BF 481F0A             db      B6,NLL,A_LEN*16/8
+    774 07C2 461F0A             db      A6,NLL,A_LEN*16/8
+    775 07C5 461F0F             db      A6,NLL,A_LEN*24/8
+    776 07C8 451F05             db      G6S,NLL,A_LEN*8/8
+    777 07CB 461F0F             db      A6,NLL,A_LEN*24/8
+    778 07CE 411F0A             db      E6,NLL,A_LEN*16/8
+    779 07D1 411F05             db      E6,NLL,A_LEN*8/8
+    780 07D4 3E1F0A             db      C6S,NLL,A_LEN*16/8
+    781 07D7 3A1F1E             db      A5,NLL,A_LEN*48/8
+    782 07DA 3C1F05             db      B5,NLL,A_LEN*8/8
+    783 07DD 3E1F05             db      C6S,NLL,A_LEN*8/8
+    784                 ;LABEL0004L:
+    785 07E0 3C1F14             db      B5,NLL,A_LEN*32/8
+    786 07E3 411F0F             db      E6,NLL,A_LEN*24/8
+    787 07E6 451F05             db      G6S,NLL,A_LEN*8/8
+    788 07E9 461F14             db      A6,NLL,A_LEN*32/8
+    789 07EC 451F14             db      G6S,NLL,A_LEN*32/8
+    790 07EF 451F05             db      G6S,NLL,A_LEN*8/8
+    791 07F2 411F0A             db      E6,NLL,A_LEN*16/8
+    792 07F5 3E1F05             db      C6S,NLL,A_LEN*8/8
+    793 07F8 461F1E             db      A6,NLL,A_LEN*48/8
+    794 07FB 481F05             db      B6,NLL,A_LEN*8/8
+    795 07FE 4A1F05             db      C7S,NLL,A_LEN*8/8
+    796 0801 4B1F14             db      D7,NLL,A_LEN*32/8
+    797 0804 4A1F14             db      C7S,NLL,A_LEN*32/8
+    798 0807 481F0A             db      B6,NLL,A_LEN*16/8
+    799 080A 461F0A             db      A6,NLL,A_LEN*16/8
+    800 080D 461F05             db      A6,NLL,A_LEN*8/8
+    801 0810 411F05             db      E6,NLL,A_LEN*8/8
+    802 0813 3F1F05             db      D6,NLL,A_LEN*8/8
+    803 0816 3E1F05             db      C6S,NLL,A_LEN*8/8
+    804 0819 3D1F05             db      C6,NLL,A_LEN*8/8
+    805                 ;LABEL0004L:
+    806 081C 3C1F05             db      B5,NLL,A_LEN*8/8
+    807 081F 3A1F0A             db      A5,NLL,A_LEN*16/8
+    808 0822 411F05             db      E6,NLL,A_LEN*8/8
+    809 0825 411F05             db      E6,NLL,A_LEN*8/8
+    810 0828 3A1F05             db      A5,NLL,A_LEN*8/8
+    811 082B 3F1F05             db      D6,NLL,A_LEN*8/8
+    812 082E 3A1F05             db      A5,NLL,A_LEN*8/8
+    813 0831 3E1F0A             db      C6S,NLL,A_LEN*16/8
+    814 0834 3A1F0A             db      A5,NLL,A_LEN*16/8
+    815 0837 3A1F0A             db      A5,NLL,A_LEN*16/8
+    816 083A 3C1F14             db      B5,NLL,A_LEN*32/8
+    817 083D 3C1F14             db      B5,NLL,A_LEN*32/8
+    818 0840 000000     	db	0,0,0
+    819                 
+    820                 
+    821                 
+    822                 
+    823                 ;LABEL0005L:
+    824                 
+    825 0843            open_melL:
+    826                 
+    827 0843 3F1F05             db      D6,NLL,A_LEN*8/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page   16
+
+
+    828 0846 3D1F05             db      C6,NLL,A_LEN*8/8
+    829 0849 3A1F05             db      A5,NLL,A_LEN*8/8
+    830 084C 381F05             db      G5,NLL,A_LEN*8/8
+    831 084F 361F05             db      F5,NLL,A_LEN*8/8
+    832 0852 331F05             db      D5,NLL,A_LEN*8/8
+    833 0855 3A1F05             db      A5,NLL,A_LEN*8/8
+    834 0858 3D1F05             db      C6,NLL,A_LEN*8/8
+    835 085B 461F1E             db      A6,NLL,A_LEN*48/8
+    836 085E 3A1F05             db      A5,NLL,A_LEN*8/8
+    837 0861 3D1F0F             db      C6,NLL,A_LEN*24/8
+    838                 ;LABEL0005L:
+    839 0864 441F1E             db      G6,NLL,A_LEN*48/8
+    840 0867 3A1F05             db      A5,NLL,A_LEN*8/8
+    841 086A 3D1F0F             db      C6,NLL,A_LEN*24/8
+    842 086D 421F1E             db      F6,NLL,A_LEN*48/8
+    843 0870 3A1F05             db      A5,NLL,A_LEN*8/8
+    844 0873 3D1F05             db      C6,NLL,A_LEN*8/8
+    845 0876 421F05             db      F6,NLL,A_LEN*8/8
+    846 0879 441F05             db      G6,NLL,A_LEN*8/8
+    847                 ;LABEL0005L:
+    848 087C 461F14             db      A6,NLL,A_LEN*32/8
+    849 087F 461F05             db      A6,NLL,A_LEN*8/8
+    850 0882 441F05             db      G6,NLL,A_LEN*8/8
+    851 0885 411F05             db      E6,NLL,A_LEN*8/8
+    852 0888 3F1F05             db      D6,NLL,A_LEN*8/8
+    853 088B 3D1F05             db      C6,NLL,A_LEN*8/8
+    854 088E 3A1F05             db      A5,NLL,A_LEN*8/8
+    855 0891 3A1F0A             db      A5,NLL,A_LEN*16/8
+    856 0894 3F1F14             db      D6,NLL,A_LEN*32/8
+    857 0897 000000     	db	0,0,0
+    858                 
+    859                 
+    860                 
+    861                 ;LABEL0006L:
+    862                 
+    863 089A            s_end_melL:
+    864                 
+    865 089A 411F14             db      E6,NLL,A_LEN*32/8
+    866 089D 461F14             db      A6,NLL,A_LEN*32/8
+    867 08A0 3F1F14             db      D6,NLL,A_LEN*32/8
+    868 08A3 441F14             db      G6,NLL,A_LEN*32/8
+    869 08A6 3F1F05             db      D6,NLL,A_LEN*8/8
+    870 08A9 411F0A             db      E6,NLL,A_LEN*16/8
+    871 08AC 3F1F05             db      D6,NLL,A_LEN*8/8
+    872 08AF 411F0A             db      E6,NLL,A_LEN*16/8
+    873 08B2 3F1F05             db      D6,NLL,A_LEN*8/8
+    874 08B5 411F0A             db      E6,NLL,A_LEN*16/8
+    875 08B8 3F1F05             db      D6,NLL,A_LEN*8/8
+    876 08BB 411F0A             db      E6,NLL,A_LEN*16/8
+    877 08BE 3C1F14             db      B5,NLL,A_LEN*32/8
+    878                 ;LABEL0006L:
+    879 08C1 3F1F05             db      D6,NLL,A_LEN*8/8
+    880 08C4 411F0A             db      E6,NLL,A_LEN*16/8
+    881 08C7 3F1F05             db      D6,NLL,A_LEN*8/8
+    882 08CA 411F0A             db      E6,NLL,A_LEN*16/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page   17
+
+
+    883 08CD 3F1F05             db      D6,NLL,A_LEN*8/8
+    884 08D0 411F0A             db      E6,NLL,A_LEN*16/8
+    885 08D3 3F1F0A             db      D6,NLL,A_LEN*16/8
+    886 08D6 461F05             db      A6,NLL,A_LEN*8/8
+    887 08D9 461F14             db      A6,NLL,A_LEN*32/8
+    888 08DC 3F1F05             db      D6,NLL,A_LEN*8/8
+    889 08DF 411F0A             db      E6,NLL,A_LEN*16/8
+    890 08E2 3F1F05             db      D6,NLL,A_LEN*8/8
+    891 08E5 411F0A             db      E6,NLL,A_LEN*16/8
+    892 08E8 3F1F05             db      D6,NLL,A_LEN*8/8
+    893 08EB 411F0A             db      E6,NLL,A_LEN*16/8
+    894 08EE 3F1F05             db      D6,NLL,A_LEN*8/8
+    895 08F1 411F0A             db      E6,NLL,A_LEN*16/8
+    896 08F4 3C1F14             db      B5,NLL,A_LEN*32/8
+    897 08F7 3F1F05             db      D6,NLL,A_LEN*8/8
+    898 08FA 411F0A             db      E6,NLL,A_LEN*16/8
+    899 08FD 3F1F05             db      D6,NLL,A_LEN*8/8
+    900 0900 411F0A             db      E6,NLL,A_LEN*16/8
+    901 0903 3F1F05             db      D6,NLL,A_LEN*8/8
+    902 0906 411F0A             db      E6,NLL,A_LEN*16/8
+    903 0909 3F1F0A             db      D6,NLL,A_LEN*16/8
+    904 090C 461F05             db      A6,NLL,A_LEN*8/8
+    905 090F 461F14             db      A6,NLL,A_LEN*32/8
+    906                 ;LABEL0006L:
+    907 0912 3F1F05             db      D6,NLL,A_LEN*8/8
+    908 0915 411F0A             db      E6,NLL,A_LEN*16/8
+    909 0918 3F1F05             db      D6,NLL,A_LEN*8/8
+    910 091B 411F0A             db      E6,NLL,A_LEN*16/8
+    911 091E 3F1F05             db      D6,NLL,A_LEN*8/8
+    912 0921 411F0A             db      E6,NLL,A_LEN*16/8
+    913 0924 3F1F05             db      D6,NLL,A_LEN*8/8
+    914 0927 411F0A             db      E6,NLL,A_LEN*16/8
+    915 092A 481F14             db      B6,NLL,A_LEN*32/8
+    916 092D 3F1F05             db      D6,NLL,A_LEN*8/8
+    917 0930 411F0A             db      E6,NLL,A_LEN*16/8
+    918 0933 3F1F05             db      D6,NLL,A_LEN*8/8
+    919 0936 411F0A             db      E6,NLL,A_LEN*16/8
+    920 0939 3F1F05             db      D6,NLL,A_LEN*8/8
+    921 093C 461F0A             db      A6,NLL,A_LEN*16/8
+    922 093F 461F0A             db      A6,NLL,A_LEN*16/8
+    923 0942 461F05             db      A6,NLL,A_LEN*8/8
+    924 0945 3A1F0A             db      A5,NLL,A_LEN*16/8
+    925 0948 801F0A             db      PAUSE,NLL,A_LEN*16/8
+    926 094B 000000     	db	0,0,0
+    927                 
+    928                 
+    929                 
+    930                 
+    931                 
+    932                 ;LABEL0007L:
+    933                 
+    934 094E            h_end_melL:
+    935                 
+    936 094E 441F05             db      G6,NLL,A_LEN*8/8
+    937 0951 801F05             db      PAUSE,NLL,A_LEN*8/8
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page   18
+
+
+    938 0954 441F05             db      G6,NLL,A_LEN*8/8
+    939 0957 801F05             db      PAUSE,NLL,A_LEN*8/8
+    940 095A 441F05             db      G6,NLL,A_LEN*8/8
+    941 095D 451F0F             db      G6S,NLL,A_LEN*24/8
+    942 0960 4B1F05             db      D7,NLL,A_LEN*8/8
+    943 0963 4D1F0F             db      E7,NLL,A_LEN*24/8
+    944 0966 411F14             db      E6,NLL,A_LEN*32/8
+    945 0969 441F05             db      G6,NLL,A_LEN*8/8
+    946 096C 461F0A             db      A6,NLL,A_LEN*16/8
+    947 096F 461F14             db      A6,NLL,A_LEN*32/8
+    948 0972 461F14             db      A6,NLL,A_LEN*32/8
+    949 0975 481F05             db      B6,NLL,A_LEN*8/8
+    950 0978 491F05             db      C7,NLL,A_LEN*8/8
+    951 097B 4B1F0A             db      D7,NLL,A_LEN*16/8
+    952 097E 4B1F05             db      D7,NLL,A_LEN*8/8
+    953 0981 4D1F05             db      E7,NLL,A_LEN*8/8
+    954 0984 4D1F0A             db      E7,NLL,A_LEN*16/8
+    955 0987 4B1F05             db      D7,NLL,A_LEN*8/8
+    956 098A 491F05             db      C7,NLL,A_LEN*8/8
+    957 098D 461F0A             db      A6,NLL,A_LEN*16/8
+    958                 ;LABEL0007L:
+    959 0990 4B1F05             db      D7,NLL,A_LEN*8/8
+    960 0993 4D1F0F             db      E7,NLL,A_LEN*24/8
+    961 0996 4D1F0A             db      E7,NLL,A_LEN*16/8
+    962 0999 461F05             db      A6,NLL,A_LEN*8/8
+    963 099C 441F05             db      G6,NLL,A_LEN*8/8
+    964 099F 461F14             db      A6,NLL,A_LEN*32/8
+    965 09A2 491F05             db      C7,NLL,A_LEN*8/8
+    966 09A5 4B1F0F             db      D7,NLL,A_LEN*24/8
+    967 09A8 441F05             db      G6,NLL,A_LEN*8/8
+    968 09AB 801F05             db      PAUSE,NLL,A_LEN*8/8
+    969 09AE 441F05             db      G6,NLL,A_LEN*8/8
+    970 09B1 801F05             db      PAUSE,NLL,A_LEN*8/8
+    971 09B4 441F05             db      G6,NLL,A_LEN*8/8
+    972 09B7 451F0F             db      G6S,NLL,A_LEN*24/8
+    973 09BA 461F14             db      A6,NLL,A_LEN*32/8
+    974 09BD 461F14             db      A6,NLL,A_LEN*32/8
+    975 09C0 000000     	db	0,0,0
+    976                 
+    977                 ;LABEL0008L:
+    978                 
+    979 09C3            option_melL:
+    980 09C3 381F0A             db      G5,NLL,A_LEN*16/8
+    981 09C6 3A1F1E             db      A5,NLL,A_LEN*48/8
+    982 09C9 381F14             db      G5,NLL,A_LEN*32/8
+    983 09CC 361F14             db      F5,NLL,A_LEN*32/8
+    984 09CF 351F14             db      E5,NLL,A_LEN*32/8
+    985 09D2 361F14             db      F5,NLL,A_LEN*32/8
+    986 09D5 381F14             db      G5,NLL,A_LEN*32/8
+    987 09D8 3A1F14             db      A5,NLL,A_LEN*32/8
+    988 09DB 381F0A             db      G5,NLL,A_LEN*16/8
+    989 09DE 3A1F1E             db      A5,NLL,A_LEN*48/8
+    990 09E1 381F14             db      G5,NLL,A_LEN*32/8
+    991 09E4 361F14             db      F5,NLL,A_LEN*32/8
+    992                 ;LABEL0008L:
+
+
+
+         SM8521 Assembler V1.10            Thu Dec 03 12:57:02 1998  Page   19
+
+
+    993 09E7 351F14             db      E5,NLL,A_LEN*32/8
+    994 09EA 3A1F14             db      A5,NLL,A_LEN*32/8
+    995 09ED 3C1F14             db      B5,NLL,A_LEN*32/8
+    996 09F0 351F14             db      E5,NLL,A_LEN*32/8
+    997 09F3 000000     	db	0,0,0
+    998                 
+    999                 
+   1000                 
+   1001                 
+   1002 09F6             	END

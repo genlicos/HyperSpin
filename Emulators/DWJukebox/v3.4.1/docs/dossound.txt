@@ -1,0 +1,56 @@
+
+================================================================
+============ DOSCab: Sound card compatibility list  ============
+================================================================
+
+Many of my support queries have to do with trying to find a sound card 
+in DOS that works.  Unfortunately, the official list of cards is pretty 
+limited: the SoundBlaster 1.0, SoundBlaster 1.5, SoundBlaster 2.0, 
+SoundBlaster Pro, SoundBlaster 16, ESS Audiodrive, Ensoniq Soundscape, 
+and Windows Sound System.  All of these cards are ISA (with the 
+exception of WSS, which I think is found on some old integrated 
+chipsets).  Any card that is 100% hardware compatible with one of these 
+cards should work.  
+
+For sound cards that don't work, either sound won't initialize and 
+DOSCab will error out, or it will initialize as a SoundBlaster but when 
+attempting to play a song the song will get stuck at 0:00. 
+
+Because of declining support for DOS among sound card manufacturers, 
+there is little I can do to make more recent cards work with DOSCab.
+
+Here is a list of cards known to be working with DOSCab:
+
+
+Creative Labs SoundBlaster 1.0
+Creative Labs SoundBlaster 1.5
+Creative Labs SoundBlaster 2.0
+Creative Labs SoundBlaster Pro
+Creative Labs SoundBlaster 16 ISA
+Creative Labs SoundBlaster 32 ISA
+Creative Labs SoundBlaster 64 ISA
+Creative Labs Soundblaster PCI 512 (requires SBEINIT.COM)
+Creative Labs SoundBlaster PCI 128
+Creative Labs SoundBlaster Live!
+Creative Vibra16 Model CT4180
+ESS Technology - ES1938/ES1941/ES1946 Solo-1(E) AudioDrive
+ESS ES1869 AudioDrive
+CompUSA 32bit 4 Channel PCI Sound Card (part #272121)
+ASUS K7M (motherboard with onboard sound)
+IWill KK266-R (motherboard with onboard sound)
+ThinkPad 380ED (laptop with onboard sound)
+
+Cards based on the following chipsets should also work:
+
+
+Creative CT2960
+Creative CT4170
+Creative CT4180
+Creative CT4380
+Creative CT4500
+Creative CT4520
+Crystal Semiconductor CS4236
+Via VT82C686A
+ALS 4000
+C-media CM8738
+

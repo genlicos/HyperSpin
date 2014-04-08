@@ -1,0 +1,35 @@
+
+ 
+    >[Noise Generator]
+    >We are currently programming frogger and need to get this part of the
+CPU interfaced with our current >sound drives which does not address this
+part of the sound system.  Have you looked at this part of >the CPU/game.com
+hardware yet?  Is there anything you can shed light upon where we may be
+able >to compare this part of the cpu to the noise generator in the game
+gear?  When I cross referenced the >bried documentation in the Sharp manual
+with game hear hardware specs - they sounded familiar.
+ 
+    The documentation is a bit vague.
+ 
+    It says that the output is fCK/ "cycle divided" time constant, where fCK
+is 10Mhz (a very high value) and time constant is between 0-4095.  That
+would mean an output range of 10Mhz to 2442hz (with an output frequency of
+5Mhz to 1221hz).
+ 
+    It doesn't say anything about the internal noise algorithm...
+ 
+    The "cycle divided" bit could be significant, especially as the top
+frequency is so high.  One guess could be to divide it by 32 (the number of
+steps used for the waveform of the other two channels), which would give an
+output range of 312.5Khz to 76.3hz (freq 156.25Khz to 38.15hz).  That would
+move it a bit closer to the Game Gear's (approx) 220Khz to 429hz (freq
+110Khz to 214hz).
+ 
+    Erm....  quite a lot of guesswork there...  So try multiplying your old
+GG noise freq reg by 1.5 when feeding it into the Game.Com SG2TL/SG2TH time
+constant register....  and see how it goes...  Not sure if that's much help.
+ 
+    bye,
+    
+ 
+ 

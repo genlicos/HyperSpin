@@ -1,0 +1,11 @@
+Atari BASIC revisions
+~~~~~~~~~~~~~~~~~~~~~
+
+Freddy Offenga (mailto: F.Offenga@student.kun.nl)
+
+Rev.  Romdump        CRC-32      Parts               peek(0xa8e2)
+~~~~~ ~~~~~~~~~~~~~~ ~~~~~~~~~~  ~~~~~~~~~~~~~~~~~~~ ~~~~~~~~~~~~~
+A     reva.rom       0x4bec4de2  CO12402 + CO14502   0xa2 (162)
+B     revb.rom       0xf0202fb3  CO60302A            0x60 (96)
+C     revc.rom       0x7d684184  CO24947A            0xea (234)
+

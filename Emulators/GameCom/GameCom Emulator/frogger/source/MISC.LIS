@@ -1,0 +1,2510 @@
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page    1
+
+
+      1                 	title   FIGHTER MEGAMIX
+      2                 	type    8521
+      3                 
+      9                 	LIST
+     10                 
+     11                 	include frogger.tmp
+     11+                             data
+     11+                
+     11+                ;============================================================================
+     11+                ;
+     11+                ; Game Equates
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+     0008       MaxPlayers	equ	8
+     11+     000C       MaxLevels	equ	12
+     11+     0009       NumBands	equ	9
+     11+     0004       NumStrips	equ	4
+     11+     0008       NumAnims	equ	8
+     11+     0012       NumSAnims	equ	NumBands*2
+     11+     0013       NumSounds	equ	19
+     11+                
+     11+     4E00       TimerFull	equ	04e00h	;78*256 is full time per level
+     11+     0007       TimerDec	equ	7	;timer decrease per loop
+     11+                
+     11+                ;============================================================================
+     11+                ;
+     11+                ; Game Equates: Game.Com Control
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+     0000       ini_game        EQU     0   ; INITIAL
+     11+     0001       exe_game        EQU     1   ; EXECUTE
+     11+     0002       close_game      EQU     2   ; CLOSE GAME
+     11+     0003       reset_game      EQU     3   ; RESET
+     11+     0426       frogger_id      equ     0426h
+     11+                
+     11+     0000       override        equ     00h
+     11+     0001       composite       equ     01h
+     11+     0040       left_right      equ     40h
+     11+     0080       up_down         equ     80h
+     11+     00C0       lr_up           equ     0c0h
+     11+                
+     11+                ;============================================================================
+     11+                ;
+     11+                ; Game Equates: Scoring
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+     000A       SCORE_forward equ	10
+     11+     0032       SCORE_home	equ	50
+     11+     03E8       SCORE_five	equ	1000
+     11+     00C8       SCORE_lady	equ	200
+     11+     00C8       SCORE_fly	equ	200
+     11+     000A       SCORE_time	equ	10
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page    2
+
+
+     11+                
+     11+                ;============================================================================
+     11+                ;
+     11+                ; Game Equates: Home Bases
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+     000C       HomeBase1	equ	12
+     11+     0034       HomeBase2	equ	52
+     11+     005C       HomeBase3	equ	92
+     11+     0084       HomeBase4	equ	132
+     11+     00AC       HomeBase5	equ	172
+     11+                
+     11+                ;============================================================================
+     11+                ;
+     11+                ; Game Structures
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+                ; ROM
+     11+                
+     11+                	; Game Data
+     11+                                         ;                 struct      
+     11+     0000       GameLevel        equ 0   ;GameLevel        word    1   
+     11+     0002       GameMult         equ 2   ;GameMult         byte    1   
+     11+     0003       GameDiv          equ 3   ;GameDiv          byte    1   
+     11+     0004       GameFrogX        equ 4   ;GameFrogX        byte    1   
+     11+     0005       GameFrogY        equ 5   ;GameFrogY        byte    1   
+     11+     0006       GameSize         equ 6   ;GameSize         size        
+     11+                
+     11+                	; Level Data
+     11+                                         ;                 struct      
+     11+     0000       LevelFlags       equ 0   ;LevelFlags       byte    1   
+     11+                ;                equ 1   ;;                byte    1   
+     11+     0002       LevelBaseU       equ 2   ;LevelBaseU       byte    1   
+     11+     0003       LevelBaseF       equ 3   ;LevelBaseF       byte    1   
+     11+     0004       LevelIncM        equ 4   ;LevelIncM        byte    1   
+     11+     0005       LevelIncD        equ 5   ;LevelIncD        byte    1   
+     11+     0006       LevelDecM        equ 6   ;LevelDecM        byte    1   
+     11+     0007       LevelDecD        equ 7   ;LevelDecD        byte    1   
+     11+     0008       LevelStrips      equ 8   ;LevelStrips      byte    4   ;NumStrips
+     11+     000C       LevelSize        equ 12  ;LevelSize        size        
+     11+                
+     11+                	;Level Data: strip byte values
+     11+                
+     11+     0000       StripStill	equ	0	;Frog doesn't move and is safe
+     11+     0001       StripMove	equ	1	;Frog is moving and is safe
+     11+     0002       StripHome	equ	2	;Frog has reached home
+     11+     0003       StripWall	equ	3	;Frog can't go here: wall
+     11+     0004       StripWDead	equ	4	;Frog dies in water
+     11+     0005       StripXDead	equ	5	;Frog Dies not in water
+     11+     000A       StripBDead	equ	10	;Frog can't move here, trying dies
+     11+                
+     11+                	; Anim Data
+     11+                                         ;                 struct      
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page    3
+
+
+     11+     0000       AnimStrip        equ 0   ;AnimStrip        byte    1   ;the art strip holding the anim
+     11+     0001       AnimWidth        equ 1   ;AnimWidth        byte    1   ;width of anim in 8 pixel pieces
+     11+     0002       AnimNum          equ 2   ;AnimNum          byte    1   ;Number of frames in animation
+     11+     0003       AnimPal          equ 3   ;AnimPal          byte    1   ;Palette
+     11+     0004       AnimStripX       equ 4   ;AnimStripX       byte    1   ;Number of 8 bit pixels into strip
+     11+     0005       AnimMove         equ 5   ;AnimMove         byte    1   ;Number of pixels movement each frame
+     11+     0006       AnimSize         equ 6   ;AnimSize         size        ;size of header
+     11+     0006       AnimTicks        equ 6   ;AnimTicks        byte    1   ;start of frame tickers
+     11+                
+     11+                	; Strip Animation
+     11+                                         ;                 struct      
+     11+     0000       SAnimNum         equ 0   ;SAnimNum         byte    1   ;number of frames in the animation
+     11+     0001       SAnimTick        equ 1   ;SAnimTick        byte    1   ;Number of ticks between frames
+     11+     0002       SAnimStrips      equ 2   ;SAnimStrips      byte    1   ;The first strip in the list of animating strips
+     11+                
+     11+                ; RAM
+     11+                	; Player Data
+     11+                                         ;                 struct      
+     11+     0000       PlayerScore      equ 0   ;PlayerScore      word    1   
+     11+     0002       PlayerLevel      equ 2   ;PlayerLevel      byte    1   
+     11+     0003       PlayerLives      equ 3   ;PlayerLives      byte    1   
+     11+     0004       PlayerHomeF      equ 4   ;PlayerHomeF      byte    1   
+     11+     0005       PlayerUnused     equ 5   ;PlayerUnused     byte    1   
+     11+     0006       PlayerVSize      equ 6   ;PlayerVSize      size        
+     11+                
+     11+                	; Level Data
+     11+                                         ;                 struct      
+     11+     0000       LevelSpeedU      equ 0   ;LevelSpeedU      byte    1   ;composite (current) speed
+     11+     0001       LevelSpeedF      equ 1   ;LevelSpeedF      byte    1   ;
+     11+     0002       LevelVFlags      equ 2   ;LevelVFlags      byte    1   
+     11+     0003       LevelOffset      equ 3   ;LevelOffset      byte    1   ;offset (LevelStrips - +3) to left strip number
+     11+     0004       LevelPageA       equ 4   ;LevelPageA       byte    1   ;Art page
+     11+     0005       LevelYoffA       equ 5   ;LevelYoffA       byte    1   ;Art yoffset
+     11+     0006       LevelAddr1       equ 6   ;LevelAddr1       word    1   ;Left Strip table address
+     11+     0008       LevelAddr2       equ 8   ;LevelAddr2       word    1   ;Right strip table address
+     11+     000A       LevelPage1       equ 10  ;LevelPage1       byte    1   ;Left or unmoving art page
+     11+     000B       LevelPage2       equ 11  ;LevelPage2       byte    1   ;Right or unused art page
+     11+     000C       LevelYoff1       equ 12  ;LevelYoff1       byte    1   ;Left or unmoving art offset
+     11+     000D       LevelYoff2       equ 13  ;LevelYoff2       byte    1   ;Right or unused art offset
+     11+     000E       LevelXoff1       equ 14  ;LevelXoff1       byte    1   ;Left X offset for art (pixels)
+     11+     000F       LevelXofff       equ 15  ;LevelXofff       byte    1   ;Left X offset fraction (pixels)
+     11+     0010       LevelVSize       equ 16  ;LevelVSize       size        
+     11+                
+     11+                	; Animation Data
+     11+                                         ;                 struct      
+     11+     0000       AnimBand         equ 0   ;AnimBand         word    1   ;Band animation is on
+     11+     0002       AnimAnim         equ 2   ;AnimAnim         word    1   ;which animation am I controlling
+     11+     0004       AnimXOff         equ 4   ;AnimXOff         word    1   ;offset from left edge of screen (+100h)
+     11+     0006       AnimXOffH        equ 6   ;AnimXOffH        byte    1   ;X offset high value
+     11+     0007       AnimFNum         equ 7   ;AnimFNum         byte    1   ;the frame number currently diplayed
+     11+     0008       AnimFTick        equ 8   ;AnimFTick        byte    1   ;how many ticks left till anim changes
+     11+     0009       AnimRange        equ 9   ;AnimRange        byte    1   ;width of animation area in pixels
+     11+     000A       AnimVFlags       equ 10  ;AnimVFlags       byte    1   ;flags
+     11+     000B       AnimXRel         equ 11  ;AnimXRel         word    1   ;relative position in area U.F
+     11+     000D       AnimYOff         equ 13  ;AnimYOff         byte    1   ;offset from top of screen
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page    4
+
+
+     11+     000E       AnimCall         equ 14  ;AnimCall         byte    1   ;routine to call (1 to ...)
+     11+     000F       AnimVSize        equ 15  ;AnimVSize        size        
+     11+                
+     11+                	;Strip Animation
+     11+                                         ;                 struct      
+     11+     0000       SAnimTime        equ 0   ;SAnimTime        byte    1   ;Time left before change
+     11+     0001       SAnimCur         equ 1   ;SAnimCur         byte    1   ;current strip in animation
+     11+     0002       SAnimVSize       equ 2   ;SAnimVSize       size        
+     11+                
+     11+                ; these two flags are also copied to LevelVFlag
+     11+     0001       LevelFlagS	equ	01h  	;Art does not move
+     11+     0002       LevelFlagH	equ	02h	;Art doesn't h-flip on direction change
+     11+                
+     11+     0080       LevelVFlagD	equ	80h	;80h= left to right
+     11+     0040       LevelVFlagH	equ	40h	;last byte processed was anim header
+     11+     0020       LevelVFlagT	equ	20h	;last byte processed was anim non-header
+     11+                
+     11+     0080       AnimVFlagD	equ	80h	;anim moving left to right
+     11+                
+     11+                ;============================================================================
+     11+                ;
+     11+                ; Game States
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+     0000       Game_Open	equ	0
+     11+     0001       Game_Menus	equ	1
+     11+     0002       Game_Init	equ	2
+     11+     0003       Game_Next	equ	3	;go to next (or first, or only)
+     11+     0004       Game_Play	equ	4
+     11+                
+     11+                ;============================================================================
+     11+                ;
+     11+                ; Zero Page Ram (0beh-0ffh)
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+00BE                         org     0beh
+     11+00BE            HoldSP      defs    2                   ;hold the game SP
+     11+00C0            CursorX     defs    1                   ;Cursor X,Y
+     11+00C1            CursorY     defs    1                   ;
+     11+00C2            GameState   defs    1                   ;game state
+     11+00C3            NumPlayers  defs    1                   ;1-MaxPlayers
+     11+00C4            GameMode    defs    1                   ;0=Arcade, 1=Tiger
+     11+00C5            Difficulty  defs    1                   ;0=Easy, 1=Arcade
+     11+00C6            Lives       defs    1                   ;3-5
+     11+00C7            Continue    defs    1                   ;0=Off, 1=On
+     11+00C8            StartLevel  defs    1                   ;1-5
+     11+00C9            Paused      defs    1                   ;1=game paused
+     11+00CA            SfxOn       defs    1                   ;1=Sound Effects on
+     11+00CB            MusicOn     defs    1                   ;1=Music On
+     11+00CC            DemoMode    defs    1                   ;1=Demo, 0=regular
+     11+00CD            sound_flag	defs	1
+     11+00CE            Timer	defs	2	;Time on level remaining (4E00h=full time)
+     11+                
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page    5
+
+
+     11+00D0            temp0w      defs    2                   ;work areas word
+     11+00D2            temp1w      defs    2                   ;work areas word
+     11+00D4            temp0       defs    1                   ;work areas
+     11+00D5            temp1       defs    1                   ;work areas
+     11+00D6            temp2       defs    1                   ;work areas
+     11+                
+     11+                	; Game Data
+     11+                
+     11+00D7            NextPlayer	defs	1
+     11+00D8            PlayerVAddr	defs	2
+     11+00DA            LevelAddr	defs	2
+     11+                
+     11+                	; Frog animation controls
+     11+                
+     11+00DC            FrogX	defs	2	;Current screen X
+     11+00DE            FrogY	defs	1	;Current screen Y
+     11+00DF            FrogMinY	defs	1	;Current minimum Y for scoring
+     11+00E0            FrogTick	defs	1	;Ticks till next move
+     11+00E1            FrogDir	defs	1	;1=S, 2=N, 3=E, 4=W, 0=sitting
+     11+00E2            FrogCnt	defs	1	;Count of remaining animations
+     11+00E3            FrogFlags	defs	1	;Frog Flags
+     11+00E4            FrogPage	defs	1	;page of frog art
+     11+00E5            FrogArtX	defs	1	;x of frog art
+     11+00E6            FrogArtY	defs	1	;y of frog art
+     11+00E7            FrogRest	defs	1	;resting animation
+     11+                
+     11+00E8            TargetX	defs	1	;Where Frog will be for texting
+     11+00E9            TargetY	defs	1	;
+     11+                
+     11+00EA            LastKey	defs	1	;Last Key entered
+     11+                
+     11+00EB            hold_byte1	defs	1
+     11+                
+     11+     0080       FrogFlagM	equ	80h	;on if moving with strip
+     11+                
+     11+     0001       FrogDirS	equ	1	;moving south
+     11+     0002       FrogDirN	equ	2	;moving north
+     11+     0003       FrogDirE	equ	3	;moving east
+     11+     0004       FrogDirW	equ	4	;moving west
+     11+     0005       FrogDirXW	equ	5	;dying waterdeath
+     11+     0006       FrogDirXL	equ	6	;dying landdeath
+     11+                
+     11+     0002       FrogSpeed	equ	2	;Number of ticks per move
+     11+     0004       FrogMoves	equ	4	;Number of movement pixels
+     11+     0004       FrogFrames	equ	4	;Number of frames
+     11+                
+     11+00EC            ZZZ	defs	10
+     11+                
+     11+00F6            testff:
+     11+                            if      testff .gt. 0ffh
+     11+                            error 	Too much data in zero page ram
+     11+                            endif
+     11+                
+     11+                ;============================================================================
+     11+                ;
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page    6
+
+
+     11+                ; Non-Zero page Ram (208h-37fh)
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+0208             	org	208h
+     11+0208            PlayerData	defs	MaxPlayers*PlayerVSize
+     11+0238            LevelData	defs	NumBands*LevelVSize
+     11+02C8            AnimData	defs	NumAnims*AnimVSize
+     11+0340            SAnimData	defs	NumSAnims*SAnimVSize
+     11+                
+     11+0364            new_melody_ptr defs 1
+     11+0365            DemoPtr	defs	2
+     11+0367            DemoCnt	defs	1
+     11+                
+     11+0368            page_ptr1	defs	2
+     11+036A            index0	defs	1
+     11+036B            index1	defs	1
+     11+036C            index2	defs	1
+     11+036D            index3	defs	1
+     11+                
+     11+036E            test37f:
+     11+                	if	test37f .gt. 37fh
+     11+                	error	Too much data in non-zero page ram
+     11+                	endif
+     11+                
+     11+                ;============================================================================
+     11+                ;
+     11+                ; User input equates
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+                ;	001-013	 ;row 0 of screen, column 0 to 12
+     11+                ;	...	 ;...
+     11+                ;	118-082h ;row 9 of screen, column 0 to 12
+     11+                ;
+     11+                ;	spot on screen = row*13+column+1
+     11+                
+     11+     0082       UserScreen	equ	082h	;highest screen press
+     11+                
+     11+     0083       UserUp	equ	083h	;joypad up
+     11+     0084       UserDown	equ	084h	;joypad down
+     11+     0085       UserLeft	equ	085h	;joypad left
+     11+     0086       UserRight	equ	086h	;joypad right
+     11+                
+     11+     0087       UserMenu	equ	087h	;Menu button
+     11+     0089       UserSound	equ	089h	;Sound button
+     11+     008A       UserPause	equ	08ah	;Pause button
+     11+                
+     11+     008B       UserA	equ	08bh	;A button
+     11+     008C       UserB	equ	08ch	;B button
+     11+     008D       UserC	equ	08dh	;C button
+     11+     008E       UserD	equ	08eh	;D button
+     11+                
+     11+                ;============================================================================
+     11+                ;
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page    7
+
+
+     11+                ; Bank definitions
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+     0020       program_bank1   equ     020h
+     11+     0021       program_bank2   equ     021h
+     11+     0023       program_bank3   equ     023h
+     11+     0024       program_bank4   equ     024h
+     11+     0025       program_bank5   equ     025h
+     11+     0026       program_bank6   equ     026h
+     11+                
+     11+     0020       bankno_front0 equ   20h
+     11+     0021       bankno_front1 equ   21h
+     11+     0022       bankno_front2 equ   22h
+     11+     0023       bankno_sprite equ   23h
+     11+     0024       bankno_strip  equ   24h
+     11+     0072       bankno_winpic10 equ 72h ;    bankno_winpic9+2
+     11+                
+     11+                ;============================================================================
+     11+                ;
+     11+                ; Macros
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+                ;	; long conditional branches
+     11+                ;
+     11+                ;breq:	macro	?dest
+     11+                ;	br	ne,cont???
+     11+                ;	jmp	eq,?dest
+     11+                ;cont???:
+     11+                ;	endm
+     11+                ;
+     11+                ;brne:	macro	?dest
+     11+                ;	br	eq,cont???
+     11+                ;	jmp	ne,?dest
+     11+                ;cont???:
+     11+                ;	endm
+     11+                ;
+     11+                ;brnz:	macro	?dest
+     11+                ;	br	z,cont???
+     11+                ;	jmp	nz,?dest
+     11+                ;cont???:
+     11+                ;	endm
+     11+                ;
+     11+                ;bruge:	macro	?dest
+     11+                ;	br	ult,cont???
+     11+                ;	jmp	uge,?dest
+     11+                ;cont???:
+     11+                ;	endm
+     11+                ;
+     11+                ;brugt:	macro	?dest
+     11+                ;	br	ule,cont???
+     11+                ;	jmp	ugt,?dest
+     11+                ;cont???:
+     11+                ;	endm
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page    8
+
+
+     11+                ;
+     11+                ;brule:	macro	?dest
+     11+                ;	br	ugt,cont???
+     11+                ;	jmp	ule,?dest
+     11+                ;cont???:
+     11+                ;	endm
+     11+                ;
+     11+                ;brz:	macro	?dest
+     11+                ;	br	nz,cont???
+     11+                ;	jmp	z,?dest
+     11+                ;cont???:
+     11+                ;	endm
+     11+                
+     11+                ;============================================================================
+     11+                ;
+     11+                ; The old stuff here
+     11+                ;
+     11+                ;----------------------------------------------------------------------------
+     11+                
+     11+                ;ASB	include oldstuff.inc
+     11+                
+     11+                            program
+     12                 
+     13                 ;ASB	global  restart_game
+     14                 ;ASB	global  map_start_word
+     15                 ;ASB	global  start_word
+     16                 ;ASB	global  ko_word
+     17                 ;ASB	global  map_name
+     18                 ;ASB	global  finish_count
+     19                 ;ASB	global  game_timeout
+     20                 ;ASB	global  map_timeout
+     21                 ;ASB	global  key_handler
+     22                 ;ASB	global  map_mode_misc
+     23                 ;ASB	global  map_armor_body
+     24                 ;ASB	global  p1_win_num
+     25                 ;ASB	global  p2_win_num
+     26                 ;ASB	global  map_explose
+     27                 ;ASB	global  count_explose
+     28                 ;ASB	global  p2_win_game
+     29                 ;ASB	global  map_continue
+     30                 ;ASB	global  do_continue
+     31                 ;ASB	global  win_picture
+     32                 ;ASB	global  Win_show_name
+     33                 ;ASB	global  map_gameover
+     34                 
+     35                 
+     36                 	program
+     37                 
+     38                 
+     39                 
+     40                 ;ASBrestart_game:
+     41                 ;ASB
+     42                 ;ASB	mov     r0,start_word_flag
+     43                 ;ASB	bbs     r0,#bit3,do_restart_game
+     44                 ;ASB	ret
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page    9
+
+
+     45                 ;ASB
+     46                 ;ASBdo_restart_game:
+     47                 ;ASB
+     48                 ;ASB	clr     r0
+     49                 ;ASB	mov     start_word_flag,r0
+     50                 ;ASB	mov     GAME_TIMER0,R0
+     51                 ;ASB	mov     r1,Msel_ram
+     52                 ;ASB	cmp     r1,#survival_mode
+     53                 ;ASB	br      ne,normal_restart
+     54                 ;ASB	mov     r1,#full_energy
+     55                 ;ASB	mov     p2_energy,r1
+     56                 ;ASB	mov     p2_energy_buf,r1
+     57                 ;ASB	mov     r1,p1_energy
+     58                 ;ASB	cmp     r1,#30
+     59                 ;ASB	br      ugt,survival_dead
+     60                 ;ASB	add     r1,#08
+     61                 ;ASB	mov     p1_energy,r1
+     62                 ;ASB	br      survival_dead
+     63                 ;ASB
+     64                 ;ASBnormal_restart:
+     65                 ;ASB
+     66                 ;ASB	bbc     game_info,#bit2,new_roundx
+     67                 ;ASB
+     68                 ;ASBsurvival_dead:
+     69                 ;ASB
+     70                 ;ASB	mov     null_round,r0
+     71                 ;ASB	mov     round_num,r0
+     72                 ;ASB	mov     p1_win_round,r0
+     73                 ;ASB	mov     p2_win_round,r0
+     74                 ;ASB	mov     r1,Msel_ram
+     75                 ;ASB	cmp     r1,#vs_mode
+     76                 ;ASB	br      eq,p2_win_game
+     77                 ;ASB	bbs     game_info,#bit1,p2_win_game
+     78                 ;ASB	bbs     game_info2,#bit0,p2_win_game
+     79                 ;ASB
+     80                 ;ASBnext_char_loop:
+     81                 ;ASB
+     82                 ;ASB	mov     r0,Msel_ram
+     83                 ;ASB	cmp     r0,#survival_mode
+     84                 ;ASB	br      eq,survival_char
+     85                 ;ASB	mov     r3,course_ram
+     86                 ;ASB	clr     r2
+     87                 ;ASB;       movw    rr4,co(rr2)
+     88                 ;ASB	mov     r3,opp_pointer
+     89                 ;ASB	inc     r3
+     90                 ;ASB	mov     opp_pointer,r3
+     91                 ;ASB	clr     r2
+     92                 ;ASB	addw    rr4,rr2
+     93                 ;ASB	mov     r2,@rr4
+     94                 ;ASB	cmp     r2,#0ffh
+     95                 ;ASB	br      ne,save_char
+     96                 ;ASB	call    p2_win_game2a
+     97                 ;ASB	br      p2_win_game
+     98                 ;ASB
+     99                 ;ASBsave_char:
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   10
+
+
+    100                 ;ASB
+    101                 ;ASB	mov     plyr2_id,r2
+    102                 ;ASB	mov     r0,stage_num
+    103                 ;ASB	inc     r0
+    104                 ;ASB	mov     stage_num,r0
+    105                 ;ASB	call    armor_init
+    106                 ;ASB	mov     r0,ram_BG
+    107                 ;ASB	add     r0,#02
+    108                 ;ASB	mov     ram_BG,r0
+    109                 ;ASB	cmp     r0,#20                  ;change on 15/12/1997
+    110                 ;ASB	br      ult,new_roundx
+    111                 ;ASB	clr     r0
+    112                 ;ASB	mov     ram_BG,r0
+    113                 ;ASB
+    114                 ;ASBnew_roundx:
+    115                 ;ASB
+    116                 ;ASB	and     game_info,#038h
+    117                 ;ASB	jmp     new_round
+    118                 ;ASB
+    119                 ;ASB
+    120                 ;ASBsurvival_char:
+    121                 ;ASB
+    122                 ;ASB	mov     r2,plyr2_id
+    123                 ;ASB	inc     r2
+    124                 ;ASB	cmp     r2,#honeys_id
+    125                 ;ASB	br      ult,save_char
+    126                 ;ASB	clr     r2
+    127                 ;ASB	br      save_char
+    128                 ;ASB
+    129                 ;ASB
+    130                 ;ASBp2_win_game:
+    131                 ;ASB
+    132                 ;ASB	clr     r0
+    133                 ;ASB	mov     opp_pointer,r0
+    134                 ;ASB	mov     game_info,r0
+    135                 ;ASB	mov     game_min,r0
+    136                 ;ASB	mov     game_sec,r0
+    137                 ;ASB	mov     start_word_flag,r0
+    138                 ;ASB;        mov     stage_num,r0
+    139                 ;ASB	mov     null_round,r0
+    140                 ;ASB	mov     round_num,r0
+    141                 ;ASB	mov     p1_win_round,r0
+    142                 ;ASB	mov     p2_win_round,r0
+    143                 ;ASB	movw    rr2,#Msel_ram+1
+    144                 ;ASBclr_loop:
+    145                 ;ASB	mov     (rr2)+,r0
+    146                 ;ASB	cmpw    rr2,#control_ram        ;clear opening ram
+    147                 ;ASB	br      ule,clr_loop
+    148                 ;ASB	mov     temp1,#0
+    149                 ;ASB	mov     temp2,#22
+    150                 ;ASB	call    clrdisplaybuffer
+    151                 ;ASB	call    Swap_page
+    152                 ;ASB	call    clrdisplaybuffer
+    153                 ;ASB	call    Active_page_B
+    154                 ;ASB;        call    stop_melody
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   11
+
+
+    155                 ;ASB	bset    game_info,#bit7
+    156                 ;ASB	mov     r0,#05
+    157                 ;ASB	mov     new_melody_ptr,r0
+    158                 ;ASB	mov     r0,Msel_ram
+    159                 ;ASB	cmp     r0,#vs_mode
+    160                 ;ASB	br      ne,survival_restart
+    161                 ;ASB	mov     r0,#0c0h
+    162                 ;ASB	mov     option_ram,r0
+    163                 ;ASB	br      vs_restart
+    164                 ;ASB
+    165                 ;ASBsurvival_restart:
+    166                 ;ASB
+    167                 ;ASB	cmp     r0,#survival_mode
+    168                 ;ASB	br      eq,survival_x
+    169                 ;ASB	and     game_info,#038h
+    170                 ;ASB	br      p1_x
+    171                 ;ASB
+    172                 ;ASBsurvival_x:
+    173                 ;ASB
+    174                 ;ASB	call    p2_win_game2a
+    175                 ;ASB	bbc     game_info2,#bit1,p1_x
+    176                 ;ASB	bclr    game_info2,#bit1
+    177                 ;ASB	mov     r0,#80h
+    178                 ;ASB	mov     option_ram,r0
+    179                 ;ASB
+    180                 ;ASBvs_restart:
+    181                 ;ASB
+    182                 ;ASB	bset    game_info,#bit5
+    183                 ;ASB	mov     r0,#20h
+    184                 ;ASB	mov     control_ram,r0
+    185                 ;ASBp1_x:
+    186                 ;ASB	call    refill_energy
+    187                 ;ASB	call    restart_init
+    188                 ;ASB	clr     r0
+    189                 ;ASB	mov     stage_num,r0
+    190                 ;ASB	mov     p1_win_times,r0
+    191                 ;ASB	mov     p2_win_times,r0
+    192                 ;ASB	bset    game_info2,#bit7
+    193                 ;ASB;        call    stop_melody
+    194                 ;ASB	ret
+    195                 ;ASB
+    196                 ;ASB
+    197                 ;ASB
+    198                 ;ASBnew_round:
+    199                 ;ASB
+    200                 ;ASB	bclr    game_info3,#bit1
+    201                 ;ASB	mov     r1,Msel_ram
+    202                 ;ASB	cmp     r1,#survival_mode
+    203                 ;ASB	br      eq,survival_round
+    204                 ;ASB	call    refill_energy
+    205                 ;ASB
+    206                 ;ASBsurvival_round:
+    207                 ;ASB
+    208                 ;ASB	call    restart_init
+    209                 ;ASB	ret
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   12
+
+
+    210                 ;ASB
+    211                 ;ASB
+    212                 ;ASB
+    213                 ;ASB
+    214                 ;ASB
+    215                 ;ASBstart_word:
+    216                 ;ASB
+    217                 ;ASB	mov     r0,start_word_flag
+    218                 ;ASB	bbc     r0,#bit0,do_start_word
+    219                 ;ASB	bbs     r0,#bit1,chk_start_word
+    220                 ;ASB	bset    r0,#bit1
+    221                 ;ASB	mov     start_word_flag,r0
+    222                 ;ASB	mov     r5,#fight
+    223                 ;ASB;       call    speech
+    224                 ;ASB	movw    rr0,#80
+    225                 ;ASB
+    226                 ;ASBnormal_start:
+    227                 ;ASB
+    228                 ;ASB	movw    GAME_TIMER1A,rr0
+    229                 ;ASB	mov     r1,#01
+    230                 ;ASB	mov     GAME_TIMER0,r1
+    231                 ;ASB
+    232                 ;ASB
+    233                 ;ASBchk_start_word:
+    234                 ;ASB
+    235                 ;ASB	movw    rr0,GAME_TIMER1A
+    236                 ;ASB	cmpw    rr0,#50
+    237                 ;ASB	br      ult,chk_start_word2
+    238                 ;ASB	cmpw    rr0,#55
+    239                 ;ASB	br      ugt,chk_start_word2
+    240                 ;ASB	mov     r2,speech_flag
+    241                 ;ASB	bbs     r2,#bit2,chk_start_word2
+    242                 ;ASB	bset    r2,#bit2
+    243                 ;ASB	mov     speech_flag,r2
+    244                 ;ASB	mov     r5,#ready
+    245                 ;ASB;       call    speech
+    246                 ;ASB
+    247                 ;ASBchk_start_word2:
+    248                 ;ASB
+    249                 ;ASB	cmpw    rr0,#06
+    250                 ;ASB	br      ugt,chk_start_word3
+    251                 ;ASB	cmpw    rr0,#04
+    252                 ;ASB	br      ult,chk_start_word3
+    253                 ;ASB	mov     r0,speech_flag
+    254                 ;ASB	bbs     r0,#bit3,chk_start_word3
+    255                 ;ASB	bset    r0,#bit3
+    256                 ;ASB	mov     speech_flag,r0
+    257                 ;ASB	mov     r5,#go
+    258                 ;ASB;       call    speech
+    259                 ;ASB
+    260                 ;ASBchk_start_word3:
+    261                 ;ASB
+    262                 ;ASB	mov     r2,GAME_TIMER0
+    263                 ;ASB	cmp     r2,#00
+    264                 ;ASB	br      ne,do_start_word
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   13
+
+
+    265                 ;ASB	clr     r2
+    266                 ;ASB	mov     GAME_TIMER1A,r2
+    267                 ;ASB	mov     GAME_TIMER1B,r2
+    268                 ;ASB	mov     start_word_flag,r2
+    269                 ;ASB	mov     start_word_seq,r2
+    270                 ;ASB	mov     speech_flag,r2
+    271                 ;ASB
+    272                 ;ASBdo_start_word:
+    273                 ;ASB
+    274                 ;ASB	ret
+    275                 ;ASB
+    276                 ;ASB
+    277                 ;ASB
+    278                 ;ASB
+    279                 ;ASB
+    280                 ;ASB
+    281                 ;ASB
+    282                 ;ASBmap_start_word:
+    283                 ;ASB
+    284                 ;ASB	mov     r0,Msel_ram
+    285                 ;ASB	cmp     r0,#survival_mode
+    286                 ;ASB	br      eq,no_map_word
+    287                 ;ASB	mov     r0,start_word_flag
+    288                 ;ASB	bbs     r0,#bit1,map_start_word1
+    289                 ;ASB
+    290                 ;ASBno_map_word:
+    291                 ;ASB
+    292                 ;ASB	ret
+    293                 ;ASB
+    294                 ;ASB
+    295                 ;ASBmap_start_word1:
+    296                 ;ASB
+    297                 ;ASB	mov     r8,#61
+    298                 ;ASB	mov     r9,#70
+    299                 ;ASB	movw    rr4,#0 ;#IROUND
+    300                 ;ASB	call    getlookupinfo
+    301                 ;ASB	mov     r15,#composite
+    302                 ;ASB	call    CK_page
+    303                 ;ASB	call    Fi_grapha
+    304                 ;ASB	mov     r3,round_num
+    305                 ;ASB	inc     r3
+    306                 ;ASB	clr     r4
+    307                 ;ASB	cmp     r3,#10
+    308                 ;ASB	br      ult,single_round
+    309                 ;ASBcount_10:
+    310                 ;ASB	sub     r3,#10
+    311                 ;ASB	inc     r4
+    312                 ;ASB	cmp     r3,#10
+    313                 ;ASB	br      uge,count_10
+    314                 ;ASB	push    r4
+    315                 ;ASB	mov     r8,#127
+    316                 ;ASB	call    map_round
+    317                 ;ASB	pop     r4
+    318                 ;ASB	mov     r3,r4
+    319                 ;ASB
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   14
+
+
+    320                 ;ASBsingle_round:
+    321                 ;ASB
+    322                 ;ASB	mov     r8,#138
+    323                 ;ASB
+    324                 ;ASBmap_round:
+    325                 ;ASB
+    326                 ;ASB	mov     r9,#70
+    327                 ;ASB	sll     r3
+    328                 ;ASB	clr     r2
+    329                 ;ASB;       movw    rr4,round_num_tbl(rr2)
+    330                 ;ASB	jmp     map_rtn
+    331                 ;ASB
+    332                 ;ASB
+    333                 ;ASB
+    334                 ;ASB;check round/game end,then map 'k.o.'
+    335                 ;ASB
+    336                 ;ASBko_word:
+    337                 ;ASB
+    338                 ;ASB	bbc     game_info,#bit0,no_ko_word      ;round end flag.
+    339                 ;ASB	bbs     game_info,#bit6,no_ko_wordx
+    340                 ;ASB	mov     r0,start_word_flag
+    341                 ;ASB	bbs     r0,#bit2,finish_word
+    342                 ;ASBno_ko_word:
+    343                 ;ASB	mov     r0,speech_flag
+    344                 ;ASB	and     r0,#0fch
+    345                 ;ASB	mov     speech_flag,r0
+    346                 ;ASBno_ko_wordx:
+    347                 ;ASB	ret
+    348                 ;ASB
+    349                 ;ASBfinish_word:
+    350                 ;ASB
+    351                 ;ASB	bbc     uart_info,#bit1,finish_word1
+    352                 ;ASB	jmp     p2_ko_word
+    353                 ;ASB
+    354                 ;ASBfinish_word1:
+    355                 ;ASB
+    356                 ;ASB	bbs     game_info,#bit2,finish_word2
+    357                 ;ASB	jmp     step1_word
+    358                 ;ASB
+    359                 ;ASBfinish_word2:
+    360                 ;ASB
+    361                 ;ASB	mov     r2,start_word_flag
+    362                 ;ASB	bclr    r2,#bit6
+    363                 ;ASB	mov     start_word_flag,r2
+    364                 ;ASB	mov     r0,Msel_ram
+    365                 ;ASB	cmp     r0,#00                  ;1 player mode ?
+    366                 ;ASB	br      ne,non_p1_mode
+    367                 ;ASB	bbc     game_info,#bit1,win_mel?     ;player lose ?
+    368                 ;ASB	movw    rr0,GAME_TIMER1A
+    369                 ;ASB	cmpw    rr0,#35
+    370                 ;ASB	br      ugt,non_p1_mode
+    371                 ;ASB	jmp     set_continue
+    372                 ;ASB
+    373                 ;ASB
+    374                 ;ASB;p1 win.
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   15
+
+
+    375                 ;ASB
+    376                 ;ASBwin_mel?:
+    377                 ;ASB
+    378                 ;ASB	mov     r0,stage_num
+    379                 ;ASB	cmp     r0,#05
+    380                 ;ASB	br      ne,non_p1_mode
+    381                 ;ASB	movw    rr0,GAME_TIMER1A
+    382                 ;ASB	cmpw    rr0,#192
+    383                 ;ASB	jmp     ugt,step1_word
+    384                 ;ASB	br      map_win_lose
+    385                 ;ASB
+    386                 ;ASBnon_p1_mode:
+    387                 ;ASB
+    388                 ;ASB	movw    rr0,GAME_TIMER1A
+    389                 ;ASB	cmpw    rr0,#96
+    390                 ;ASB	jmp     ugt,step1_word
+    391                 ;ASB
+    392                 ;ASBmap_win_lose:
+    393                 ;ASB
+    394                 ;ASB	bbs     game_info,#bit1,map_win_losex
+    395                 ;ASB	bbc     game_info,#bit2,map_win_losex
+    396                 ;ASB	mov     r0,new_melody_ptr
+    397                 ;ASB	cmp     r0,#07
+    398                 ;ASB	br      ne,no_win_mel
+    399                 ;ASB	movw    rr0,GAME_TIMER1A
+    400                 ;ASB	cmpw    rr0,#150
+    401                 ;ASB	br      ugt,map_win_losex
+    402                 ;ASB	br      win_mel_anim
+    403                 ;ASB
+    404                 ;ASBno_win_mel:
+    405                 ;ASB
+    406                 ;ASB	movw    rr0,GAME_TIMER1A
+    407                 ;ASB	cmpw    rr0,#80
+    408                 ;ASB	br      ugt,map_win_losex
+    409                 ;ASB	mov     r0,stage_num            ;yes.
+    410                 ;ASB	cmp     r0,#05
+    411                 ;ASB	br      ult,map_win_losex
+    412                 ;ASBwin_mel_anim:
+    413                 ;ASB	mov     r0,Msel_ram
+    414                 ;ASB	cmp     r0,#00                  ;p1 mode ?
+    415                 ;ASB	br      ne,map_win_losex
+    416                 ;ASB	bset    game_info3,#bit2
+    417                 ;ASB;        call    win_animat
+    418                 ;ASB	br      map_loss2
+    419                 ;ASB
+    420                 ;ASBmap_win_losex:
+    421                 ;ASB
+    422                 ;ASB	mov     r2,start_word_flag
+    423                 ;ASB	bset    r2,#bit6
+    424                 ;ASB	mov     start_word_flag,r2
+    425                 ;ASB	bbc     game_info,#bit1,map_win
+    426                 ;ASB	bbs     uart_info,#bit0,p1_lose_snd
+    427                 ;ASB	mov     r0,speech_flag
+    428                 ;ASB	bset    r0,#bit1
+    429                 ;ASB	mov     speech_flag,r0
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   16
+
+
+    430                 ;ASB
+    431                 ;ASBp1_lose_snd:
+    432                 ;ASB
+    433                 ;ASB	mov     speechnum,#you_lose
+    434                 ;ASB	movw    rr4,#0 ;#ILOSE
+    435                 ;ASB	mov     r8,#55
+    436                 ;ASB	br      map_loss
+    437                 ;ASB
+    438                 ;ASBmap_win:
+    439                 ;ASB	mov     speechnum,#you_win
+    440                 ;ASB	movw    rr4,#0 ;#IWIN
+    441                 ;ASB	mov     r8,#60
+    442                 ;ASBmap_loss:
+    443                 ;ASB	mov     r9,#70
+    444                 ;ASB	call    map_rtn
+    445                 ;ASB	bbc     game_info,#bit2,map_loss2
+    446                 ;ASB	mov     r0,speech_flag
+    447                 ;ASB	bbs     r0,#bit1,map_loss2
+    448                 ;ASB	bset    r0,#bit1
+    449                 ;ASB	mov     speech_flag,r0
+    450                 ;ASB	mov     r5,speechnum
+    451                 ;ASB;       call    speech
+    452                 ;ASB	bclr    game_info3,#bit0
+    453                 ;ASBmap_loss2:
+    454                 ;ASB	ret
+    455                 ;ASB
+    456                 ;ASB
+    457                 ;ASBstep1_word:
+    458                 ;ASB
+    459                 ;ASB	mov     r0,p1_energy
+    460                 ;ASB	cmp     r0,#full_energy
+    461                 ;ASB	br      eq,map_perfect
+    462                 ;ASB	bbs     uart_info,#bit0,map_ko
+    463                 ;ASB	mov     r0,p2_energy
+    464                 ;ASB	cmp     r0,#full_energy
+    465                 ;ASB	br      ne,map_ko
+    466                 ;ASB
+    467                 ;ASBmap_perfect:
+    468                 ;ASB
+    469                 ;ASB	mov     r0,speech_flag
+    470                 ;ASB	bbs     r0,#bit0,map_perfect1
+    471                 ;ASB	bset    r0,#bit0
+    472                 ;ASB	mov     speech_flag,r0
+    473                 ;ASB	mov     r5,#excellent
+    474                 ;ASB;       call    speech
+    475                 ;ASB	bclr    game_info3,#bit0
+    476                 ;ASB
+    477                 ;ASBmap_perfect1:
+    478                 ;ASB
+    479                 ;ASB	mov     r8,#60
+    480                 ;ASB	mov     r9,#70
+    481                 ;ASB	movw    rr4,#0 ;#IPERFECT
+    482                 ;ASB	br      map_rtn
+    483                 ;ASB
+    484                 ;ASBmap_ko:
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   17
+
+
+    485                 ;ASB	mov     r0,speech_flag
+    486                 ;ASB	bbs     r0,#bit0,map_kox
+    487                 ;ASB	bset    r0,#bit0
+    488                 ;ASB	mov     speech_flag,r0
+    489                 ;ASB	mov     r5,#ko
+    490                 ;ASB;       call    speech
+    491                 ;ASB	bclr    game_info3,#bit0
+    492                 ;ASBmap_kox:
+    493                 ;ASB	mov     r0,p1_energy
+    494                 ;ASB	cmp     r0,#00
+    495                 ;ASB	br      ne,map_ko1
+    496                 ;ASB	mov     r0,p2_energy
+    497                 ;ASB	cmp     r0,#00
+    498                 ;ASB	br      eq,map_ko2
+    499                 ;ASBmap_ko1:
+    500                 ;ASB	mov     r8,#85
+    501                 ;ASB	mov     r9,#70
+    502                 ;ASB	movw    rr4,#0 ;#IKO
+    503                 ;ASBmap_rtn:
+    504                 ;ASB	call    getlookupinfo
+    505                 ;ASB	mov     r15,#composite
+    506                 ;ASB	call    CK_page
+    507                 ;ASB	call    Fi_grapha
+    508                 ;ASB	ret
+    509                 ;ASB
+    510                 ;ASBmap_ko2:
+    511                 ;ASB	bclr    game_info,#bit1         ;set player 1 win.
+    512                 ;ASB	mov     r8,#40
+    513                 ;ASB	mov     r9,#70
+    514                 ;ASB	movw    rr4,#IDOUBLE
+    515                 ;ASB	call    map_rtn
+    516                 ;ASB	mov     r8,#119
+    517                 ;ASB	mov     r9,#70
+    518                 ;ASB	movw    rr4,#0 ;#IKO
+    519                 ;ASB	br      map_rtn
+    520                 ;ASB
+    521                 ;ASB
+    522                 ;ASB
+    523                 ;ASB
+    524                 ;ASB;check round/game end,then map 'k.o.' for head to head mode.
+    525                 ;ASB
+    526                 ;ASB
+    527                 ;ASBp2_ko_word:
+    528                 ;ASB
+    529                 ;ASB	bbc     game_info,#bit2,p2_step1_word
+    530                 ;ASB	mov     r0,start_word_flag
+    531                 ;ASB	bbc     r0,#bit6,p2_step1_word
+    532                 ;ASB
+    533                 ;ASBp2_win_lose:
+    534                 ;ASB
+    535                 ;ASB	bbs     game_info3,#bit4,quit_finish
+    536                 ;ASB	mov     speechnum,#you_lose
+    537                 ;ASB	movw    rr4,#0; #ILOSE
+    538                 ;ASB	mov     r8,#55
+    539                 ;ASB	bbc     game_info,#bit1,map_lossx
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   18
+
+
+    540                 ;ASB	mov     speechnum,#you_win
+    541                 ;ASB	movw    rr4,#0 ;#IWIN
+    542                 ;ASB	mov     r8,#60
+    543                 ;ASBmap_lossx:
+    544                 ;ASB;        bbs     game_info,#bit2,map_lossx1
+    545                 ;ASB;        mov     r0,speech_flag
+    546                 ;ASB;        bset    r0,#bit1
+    547                 ;ASB;        mov     speech_flag,r0
+    548                 ;ASBmap_lossx1:
+    549                 ;ASB	jmp     map_loss
+    550                 ;ASB
+    551                 ;ASB
+    552                 ;ASBp2_step1_word:
+    553                 ;ASB
+    554                 ;ASB	mov     r0,p2_energy
+    555                 ;ASB	cmp     r0,#full_energy
+    556                 ;ASB	jmp     eq,map_perfect
+    557                 ;ASB	jmp     map_ko
+    558                 ;ASB
+    559                 ;ASB
+    560                 ;ASB
+    561                 ;ASB
+    562                 ;ASBJmpDo_continue:
+    563                 ;ASB
+    564                 ;ASB	jmp     do_continue
+    565                 ;ASB
+    566                 ;ASBquit_finish:
+    567                 ;ASB
+    568                 ;ASB	ret
+    569                 ;ASB
+    570                 ;ASB
+    571                 ;ASB
+    572                 ;ASB;count the time from map 'k.o.' to start new round/game.
+    573                 ;ASB
+    574                 ;ASBfinish_count:
+    575                 ;ASB
+    576                 ;ASB	bbc     game_info,#bit0,quit_finish
+    577                 ;ASB	mov     r0,start_word_flag
+    578                 ;ASB	bbs     r0,#bit5,JmpDo_continue
+    579                 ;ASB	bbs     r0,#bit2,do_finish_count
+    580                 ;ASB	bset    r0,#bit2
+    581                 ;ASB	mov     start_word_flag,r0
+    582                 ;ASB	bbs     game_info,#bit6,not_endx
+    583                 ;ASB	movw    rr0,#50
+    584                 ;ASB	bbc     game_info,#bit2,not_end
+    585                 ;ASB	bbs     game_info3,#bit4,not_end
+    586                 ;ASBnot_endx:
+    587                 ;ASB	movw    rr0,#08ah
+    588                 ;ASB	bbs     game_info,#bit1,not_end
+    589                 ;ASB	mov     r2,stage_num
+    590                 ;ASB	cmp     r2,#05
+    591                 ;ASB	br      ult,not_end
+    592                 ;ASB	bset    game_info,#bit7
+    593                 ;ASB	mov     r2,#07
+    594                 ;ASB	mov     new_melody_ptr,r2
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   19
+
+
+    595                 ;ASB	movw    rr0,#0d0h
+    596                 ;ASB
+    597                 ;ASBnot_end:
+    598                 ;ASB	movw    GAME_TIMER1A,rr0
+    599                 ;ASB	mov     r0,#01
+    600                 ;ASB	mov     GAME_TIMER0,r0
+    601                 ;ASB
+    602                 ;ASBdo_finish_count:
+    603                 ;ASB
+    604                 ;ASB	mov     r0,GAME_TIMER0
+    605                 ;ASB	cmp     r0,#00
+    606                 ;ASB	br      eq,set_continue
+    607                 ;ASB	mov     r0,Msel_ram
+    608                 ;ASB	cmp     r0,#survival_mode
+    609                 ;ASB	br      ne,non_survival
+    610                 ;ASB	bbs     game_info2,#bit0,survival_tout
+    611                 ;ASB	bbc     game_info,#bit1,non_survival    ;player 1 win ?
+    612                 ;ASB
+    613                 ;ASBsurvival_tout:
+    614                 ;ASB
+    615                 ;ASB	mov     r1,GAME_TIMER1B
+    616                 ;ASB	cmp     r1,#45
+    617                 ;ASB	br      ugt,end_finish_count
+    618                 ;ASB	bclr    game_info,#bit2
+    619                 ;ASB	mov     r0,start_word_flag
+    620                 ;ASB	bbs     r0,#bit4,skip_record
+    621                 ;ASB	bset    r0,#bit4
+    622                 ;ASB	mov     start_word_flag,r0
+    623                 ;ASB	call    Active_page_B
+    624                 ;ASB	call    jmp_record_show
+    625                 ;ASB	mov     r0,#00
+    626                 ;ASB	mov     GAME_TIMER0,r0
+    627                 ;ASB	mov     start_word_seq,r0
+    628                 ;ASB	movw    rr0,#70
+    629                 ;ASB	movw    GAME_TIMER1A,rr0
+    630                 ;ASB	mov     r0,#01
+    631                 ;ASB	mov     GAME_TIMER0,r0
+    632                 ;ASB
+    633                 ;ASBnon_survival:
+    634                 ;ASB
+    635                 ;ASB	mov     r1,GAME_TIMER1B
+    636                 ;ASB	cmp     r1,#20
+    637                 ;ASB	br      ugt,end_finish_count
+    638                 ;ASB	mov     r0,#00
+    639                 ;ASB	mov     start_word_seq,r0
+    640                 ;ASB
+    641                 ;ASBend_finish_count:
+    642                 ;ASB
+    643                 ;ASB	ret
+    644                 ;ASB
+    645                 ;ASB
+    646                 ;ASB
+    647                 ;ASBskip_record:
+    648                 ;ASB
+    649                 ;ASB	mov     r0,cur_key
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   20
+
+
+    650                 ;ASB	cmp     r0,#b_key
+    651                 ;ASB	br      ne,end_finish_count
+    652                 ;ASB	bset    game_info2,#bit1
+    653                 ;ASB
+    654                 ;ASBset_restart_y:
+    655                 ;ASB
+    656                 ;ASB	jmp     set_restart_x
+    657                 ;ASB
+    658                 ;ASB
+    659                 ;ASB
+    660                 ;ASBset_continue:
+    661                 ;ASB
+    662                 ;ASB	mov     r0,Msel_ram
+    663                 ;ASB	cmp     r0,#one_player_mode             ;one player mode ?
+    664                 ;ASB	jmp     ne,set_restart_x
+    665                 ;ASB	bbc     game_info,#bit2,set_restart_y        ;game end ?
+    666                 ;ASB	bbc     game_info,#bit1,set_restart_y        ;player 1 win ?
+    667                 ;ASB	mov     r0,#20h
+    668                 ;ASB	mov     start_word_flag,r0      ;set show continue flag.
+    669                 ;ASB	mov     r0,#09
+    670                 ;ASB	mov     continue_count,r0
+    671                 ;ASB	bclr    game_info,#bit6
+    672                 ;ASB
+    673                 ;ASBdo_continue2:
+    674                 ;ASB
+    675                 ;ASB	movw    rr0,#25
+    676                 ;ASB	movw    GAME_TIMER1A,rr0
+    677                 ;ASB	mov     r0,#01
+    678                 ;ASB	mov     GAME_TIMER0,r0
+    679                 ;ASBno_continue:
+    680                 ;ASB	ret
+    681                 ;ASB
+    682                 ;ASB
+    683                 ;ASB
+    684                 ;ASB
+    685                 ;ASB
+    686                 ;ASB
+    687                 ;ASBdo_continue:
+    688                 ;ASB
+    689                 ;ASB	call    Speech_Stop
+    690                 ;ASB	br      nc,do_continue1
+    691                 ;ASB	mov     r5,#you_lose
+    692                 ;ASB;       call    speech
+    693                 ;ASB
+    694                 ;ASBdo_continue1:
+    695                 ;ASB
+    696                 ;ASB	bbs     game_info3,#bit3,do_gameover
+    697                 ;ASB	mov     r0,cur_key
+    698                 ;ASB	cmp     r0,#a_key
+    699                 ;ASB	br      eq,set_resume
+    700                 ;ASB	cmp     r0,#b_key
+    701                 ;ASB	br      eq,down_time
+    702                 ;ASB	cmp     r0,#c_key
+    703                 ;ASB	br      eq,down_time
+    704                 ;ASB	cmp     r0,#d_key
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   21
+
+
+    705                 ;ASB	br      eq,down_time
+    706                 ;ASB	mov     r0,GAME_TIMER0
+    707                 ;ASB	cmp     r0,#00
+    708                 ;ASB	br      ne,no_continue
+    709                 ;ASBdown_time:
+    710                 ;ASB	mov     r0,continue_count
+    711                 ;ASB	cmp     r0,#00
+    712                 ;ASB	br      eq,set_game_over
+    713                 ;ASB	dec     r0
+    714                 ;ASB	mov     continue_count,r0
+    715                 ;ASB	br      do_continue2
+    716                 ;ASB
+    717                 ;ASBset_game_over:
+    718                 ;ASB
+    719                 ;ASB	bset    game_info3,#bit3
+    720                 ;ASB	movw    rr0,#70
+    721                 ;ASB	movw    GAME_TIMER1A,rr0
+    722                 ;ASB	mov     r0,#01
+    723                 ;ASB	mov     GAME_TIMER0,r0
+    724                 ;ASBgo_gameover:
+    725                 ;ASB	ret
+    726                 ;ASB
+    727                 ;ASBdo_gameover:
+    728                 ;ASB
+    729                 ;ASB	mov     r0,GAME_TIMER0
+    730                 ;ASB	cmp     r0,#00
+    731                 ;ASB	br      ne,go_gameover
+    732                 ;ASB
+    733                 ;ASBset_restart_x:
+    734                 ;ASB
+    735                 ;ASB	mov     r0,#0ch
+    736                 ;ASB	call    CTRL_SP
+    737                 ;ASB	jmp     set_restart_flag
+    738                 ;ASB
+    739                 ;ASB
+    740                 ;ASB
+    741                 ;ASBset_resume:
+    742                 ;ASB
+    743                 ;ASB	clr     r0
+    744                 ;ASB	mov     start_word_flag,r0
+    745                 ;ASB	mov     GAME_TIMER0,R0
+    746                 ;ASB	mov     round_num,r0
+    747                 ;ASB	mov     p1_win_round,r0
+    748                 ;ASB	mov     p2_win_round,r0
+    749                 ;ASB	and     game_info,#38h
+    750                 ;ASB	jmp     new_round
+    751                 ;ASB
+    752                 ;ASB
+    753                 ;ASB
+    754                 ;ASB
+    755                 ;ASBmap_continue:
+    756                 ;ASB
+    757                 ;ASB	bbs     game_info3,#bit3,no_map_continue
+    758                 ;ASB	mov     r0,start_word_flag
+    759                 ;ASB	bbc     r0,#bit5,no_map_continue
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   22
+
+
+    760                 ;ASB	mov     r3,continue_count
+    761                 ;ASB	sll     r3
+    762                 ;ASB	clr     r2
+    763                 ;ASB	mov     r8,#95
+    764                 ;ASB	mov     r9,#80
+    765                 ;ASB;       movw    rr4,round_num_tbl(rr2)
+    766                 ;ASB	call    map_rtn
+    767                 ;ASB	movw    rr4,#0 ;#ICONTINUE
+    768                 ;ASB	call    getlookupinfo
+    769                 ;ASB	mov     r8,#55
+    770                 ;ASB	mov     r9,#120
+    771                 ;ASB	mov     r15,#composite
+    772                 ;ASB	call    CK_page
+    773                 ;ASB	call    Fi_graphx
+    774                 ;ASB
+    775                 ;ASBno_map_continue:
+    776                 ;ASB
+    777                 ;ASB	ret
+    778                 ;ASB
+    779                 ;ASB
+    780                 ;ASBmap_gameover:
+    781                 ;ASB
+    782                 ;ASB	bbc     game_info3,#bit3,no_gameover
+    783                 ;ASB	movw    rr4,#0 ;#IGMOVER
+    784                 ;ASB	mov     r8,#46
+    785                 ;ASB	mov     r9,#70
+    786                 ;ASB	call    map_rtn3
+    787                 ;ASBno_gameover:
+    788                 ;ASB	ret
+    789                 ;ASB
+    790                 ;ASB
+    791                 ;ASB
+    792                 ;ASB
+    793                 ;ASBset_restart_flag:
+    794                 ;ASB
+    795                 ;ASB	mov     r0,#08
+    796                 ;ASB	mov     start_word_flag,r0
+    797                 ;ASB	bclr    game_info,#bit6
+    798                 ;ASB
+    799                 ;ASBno_timeoutx:
+    800                 ;ASB
+    801                 ;ASB	ret
+    802                 ;ASB
+    803                 ;ASB
+    804                 ;ASB
+    805                 ;ASB
+    806                 ;ASB
+    807                 ;ASBgame_timeout:
+    808                 ;ASB
+    809                 ;ASB	mov     r0,start_word_flag
+    810                 ;ASB	bbs     r0,#bit5,no_timeoutx
+    811                 ;ASB	bbs     game_info,#bit6,no_timeoutx
+    812                 ;ASB	bbs     game_info2,#bit0,set_timeout
+    813                 ;ASB	mov     r0,gtimer1
+    814                 ;ASB	cmp     r0,#12h
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   23
+
+
+    815                 ;ASB	jmp     ne,no_timeout
+    816                 ;ASB	mov     r0,gtimer2
+    817                 ;ASB	cmp     r0,#12h
+    818                 ;ASB	br      ne,no_timeout
+    819                 ;ASB
+    820                 ;ASBset_timeout:
+    821                 ;ASB
+    822                 ;ASB	mov     r5,#time_over
+    823                 ;ASB;       call    speech
+    824                 ;ASB	bset    game_info,#bit6
+    825                 ;ASB	mov     r0,p1_energy
+    826                 ;ASB	mov     r1,p2_energy
+    827                 ;ASB	cmp     r0,r1
+    828                 ;ASB	br      eq,set_draw
+    829                 ;ASB	br      ult,p2_timeout_win
+    830                 ;ASB
+    831                 ;ASBp1_timeout_win:
+    832                 ;ASB
+    833                 ;ASB	bclr    game_info,#bit1         ;player 2 less energy, set player 1 win.
+    834                 ;ASB	mov     r0,p1_win_round
+    835                 ;ASB	inc     r0
+    836                 ;ASB	mov     p1_win_round,r0
+    837                 ;ASB;       call    finish_set
+    838                 ;ASB	ret
+    839                 ;ASB
+    840                 ;ASBp2_timeout_win:
+    841                 ;ASB
+    842                 ;ASB	bset    game_info,#bit1         ;player 1 less energy, set player 2 win.
+    843                 ;ASB	mov     r0,p2_win_round
+    844                 ;ASB	inc     r0
+    845                 ;ASB	mov     p2_win_round,r0
+    846                 ;ASB;       call    finish_set
+    847                 ;ASB	ret
+    848                 ;ASB
+    849                 ;ASB
+    850                 ;ASB;draw game.
+    851                 ;ASB
+    852                 ;ASBset_draw:
+    853                 ;ASB
+    854                 ;ASB	bset    game_info3,#bit1        ;set draw game flag.
+    855                 ;ASB	bset    game_info,#bit0         ;set round end flag.
+    856                 ;ASB	ret
+    857                 ;ASB
+    858                 ;ASB
+    859                 ;ASB
+    860                 ;ASBmap_timeout:
+    861                 ;ASB
+    862                 ;ASB	mov     r0,start_word_flag
+    863                 ;ASB	bbs     r0,#bit5,no_timeout
+    864                 ;ASB	bbc     game_info,#bit6,no_timeout
+    865                 ;ASB	bbc     uart_info,#bit1,map_timeout1
+    866                 ;ASB	bbc     r0,#bit6,map_timeout2
+    867                 ;ASB	bbs     game_info3,#bit1,map_draw
+    868                 ;ASB	jmp     p2_win_lose
+    869                 ;ASB
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   24
+
+
+    870                 ;ASBmap_timeout1:
+    871                 ;ASB
+    872                 ;ASB	movw    rr0,GAME_TIMER1A
+    873                 ;ASB	cmpw    rr0,#96
+    874                 ;ASB	br      ugt,map_timeout2
+    875                 ;ASB	bbs     game_info3,#bit1,map_draw       ;draw game ?
+    876                 ;ASB	bbs     game_info,#bit2,timeout_win
+    877                 ;ASB;        movw    rr0,#40
+    878                 ;ASB	mov     r0,speech_flag
+    879                 ;ASB	bset    r0,#bit1
+    880                 ;ASB	mov     speech_flag,r0
+    881                 ;ASB
+    882                 ;ASBtimeout_win:
+    883                 ;ASB
+    884                 ;ASB	jmp     map_win_lose
+    885                 ;ASB
+    886                 ;ASBmap_timeout2:
+    887                 ;ASB
+    888                 ;ASB	mov     r8,#50
+    889                 ;ASB	mov     r9,#70
+    890                 ;ASB	movw    rr4,#0 ;#ITIMEOVER
+    891                 ;ASB	jmp     map_rtn
+    892                 ;ASB
+    893                 ;ASBno_timeout:
+    894                 ;ASB
+    895                 ;ASB	ret
+    896                 ;ASB
+    897                 ;ASB
+    898                 ;ASBmap_draw:
+    899                 ;ASB
+    900                 ;ASB	mov     r0,start_word_flag
+    901                 ;ASB	bset    r0,#bit6
+    902                 ;ASB	mov     start_word_flag,r0
+    903                 ;ASB	mov     r8,#72
+    904                 ;ASB	mov     r9,#70
+    905                 ;ASB	movw    rr4,#0 ;#IDRAW
+    906                 ;ASB	jmp     map_rtn3
+    907                 ;ASB
+    908                 ;ASB
+    909                 ;ASB
+    910                 ;ASB
+    911                 ;ASB
+    912                 ;ASBmap_name:
+    913                 ;ASB
+    914                 ;ASB;map player 1 name.
+    915                 ;ASB
+    916                 ;ASB	mov     r3,plyr1_id
+    917                 ;ASB	clr     r2
+    918                 ;ASB	sll     r3
+    919                 ;ASB;       movw    rr4,name_tbl(rr2)
+    920                 ;ASB	mov     r8,#22
+    921                 ;ASB	mov     r9,#4
+    922                 ;ASB	call    map_rtn2
+    923                 ;ASB
+    924                 ;ASB	mov     r3,plyr2_id
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   25
+
+
+    925                 ;ASB	clr     r2
+    926                 ;ASB	sll     r3
+    927                 ;ASB;       movw    rr4,name_tbl(rr2)
+    928                 ;ASB	call    getlookupinfo
+    929                 ;ASB	mov     r8,#177
+    930                 ;ASB	sub     r8,r12
+    931                 ;ASB	mov     r15,#override
+    932                 ;ASB	call    CK_page
+    933                 ;ASB	call    Fi_graph
+    934                 ;ASB	ret
+    935                 ;ASB
+    936                 ;ASB
+    937                 ;ASB
+    938                 ;ASBmap_rtn2:
+    939                 ;ASB	call    getlookupinfo
+    940                 ;ASB	mov     r15,#override
+    941                 ;ASB	call    CK_page
+    942                 ;ASB	call    Fi_graph
+    943                 ;ASB	ret
+    944                 ;ASB
+    945                 ;ASBmap_rtn3:
+    946                 ;ASB	call    getlookupinfo
+    947                 ;ASB	mov     r15,#composite
+    948                 ;ASB	call    CK_page
+    949                 ;ASB	call    Fi_graphx
+    950                 ;ASB	ret
+    951                 ;ASB
+    952                 ;ASB
+    953                 ;ASB
+    954                 ;ASB
+    955                 ;ASB
+    956                 ;ASB
+    957                 ;ASBkey_handler:
+    958                 ;ASB
+    959                 ;ASBkey_p1:
+    960                 ;ASB;        call    GetUser
+    961                 ;ASB;        mov     cur_key,r0
+    962                 ;ASB	mov     r0,cur_key
+    963                 ;ASBkey_h1:
+    964                 ;ASB	cmp     r0,#89h         ;mute key
+    965                 ;ASB	br      ne,key_h2
+    966                 ;ASB
+    967                 ;ASBgo_2:
+    968                 ;ASB	;
+    969                 ;ASB	;mute_key is pressed
+    970                 ;ASB	;
+    971                 ;ASB	mov     r0,#4
+    972                 ;ASB;        call    CTRL_SPX
+    973                 ;ASB	call    CTRL_SP
+    974                 ;ASB	mov     r0,#89h
+    975                 ;ASB	br      key_h_end
+    976                 ;ASB
+    977                 ;ASBkey_h2:
+    978                 ;ASB	cmp     r0,#88h         ;off key
+    979                 ;ASB	br      ne,key_h3
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   26
+
+
+    980                 ;ASB
+    981                 ;ASB	mov     r0,#4
+    982                 ;ASB;        call    CTRL_SPX
+    983                 ;ASB	call    CTRL_SP
+    984                 ;ASB;        call    restore_uart
+    985                 ;ASB;        call    update_score
+    986                 ;ASB;        and     p3,#0f0h
+    987                 ;ASB	mov     r0,#88h
+    988                 ;ASB	br      key_h_end
+    989                 ;ASB
+    990                 ;ASBkey_h3:
+    991                 ;ASB	cmp     r0,#8ah         ;pause key
+    992                 ;ASB	br      ne,key_h_next
+    993                 ;ASB	bset    sp_control,#5   ;disable time_out
+    994                 ;ASB	mov     r0,#4
+    995                 ;ASB;        call    CTRL_SPX
+    996                 ;ASB	call    CTRL_SP
+    997                 ;ASB;       call    stop_melody
+    998                 ;ASB	mov     r7,inverse
+    999                 ;ASB	cmp     r7,#0
+   1000                 ;ASB	br      eq,no_problem
+   1001                 ;ASB	nop
+   1002                 ;ASBno_problem:
+   1003                 ;ASB	mov     r0,#8ah
+   1004                 ;ASB	bbs     uart_info,#bit0,key_h_end       ;h2h mode ?
+   1005                 ;ASB	call    save_screen
+   1006                 ;ASB	mov     r1,internet_flag
+   1007                 ;ASB	and     r1,#03
+   1008                 ;ASB	cmp     r1,#00
+   1009                 ;ASB	br      eq,key_h_end
+   1010                 ;ASB	call    pause_box
+   1011                 ;ASB	call    Short_Beep
+   1012                 ;ASB	call    pause_wait
+   1013                 ;ASB	call    Short_Beep
+   1014                 ;ASB	bset    game_info,#bit7         ;set start melody flag.
+   1015                 ;ASB	br      key_h_end2
+   1016                 ;ASB
+   1017                 ;ASBkey_h_end:
+   1018                 ;ASB	;
+   1019                 ;ASB	;handle system key i.e. mute, on/off
+   1020                 ;ASB	;
+   1021                 ;ASB;        bset    uart_info1,#4
+   1022                 ;ASB
+   1023                 ;ASB	call    save_screen
+   1024                 ;ASB;        push    r0
+   1025                 ;ASB;        call    restore_isr
+   1026                 ;ASB;        pop     r0
+   1027                 ;ASB	call    SysKeyHandler
+   1028                 ;ASB	push    r0
+   1029                 ;ASB;        call    init_isr
+   1030                 ;ASB	bbc     0bch,#5,key_h_endx
+   1031                 ;ASB	bclr    sgc,#7
+   1032                 ;ASBkey_h_endx:
+   1033                 ;ASB	pop     r0
+   1034                 ;ASB
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   27
+
+
+   1035                 ;ASBkey_h_end2:
+   1036                 ;ASB
+   1037                 ;ASB	call    restore_screen
+   1038                 ;ASB	bclr    sp_control,#5           ;enable time_out
+   1039                 ;ASB	mov     r6,i_sysflag
+   1040                 ;ASB	bmov    bf,SYSFLAG,#5
+   1041                 ;ASB	bmov    r6,#5,bf
+   1042                 ;ASB	mov     i_sysflag,r6
+   1043                 ;ASB
+   1044                 ;ASB	;
+   1045                 ;ASB	;check menu key
+   1046                 ;ASB	;
+   1047                 ;ASB
+   1048                 ;ASBkey_h_next:
+   1049                 ;ASB	mov     r0,cur_key
+   1050                 ;ASB	cmp     r0,#87h
+   1051                 ;ASB	br      ne,key_handle2
+   1052                 ;ASB
+   1053                 ;ASB;        mov     r6,spec_flag
+   1054                 ;ASB;        bbs     r6,#0,key_handle2
+   1055                 ;ASB
+   1056                 ;ASB;ÚÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ¿
+   1057                 ;ASB;³      MENU KEY HANDLING        ³
+   1058                 ;ASB;ÀÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÙ
+   1059                 ;ASB;        bset    uart_info1,#4
+   1060                 ;ASB
+   1061                 ;ASB	call    Short_Beep
+   1062                 ;ASB;       call    stop_melody
+   1063                 ;ASBquit_anim:
+   1064                 ;ASB;        cmp     cur_page,#1
+   1065                 ;ASB;        br      ne,quit_anim1
+   1066                 ;ASB
+   1067                 ;ASB	call    save_screen
+   1068                 ;ASB	mov     r1,KBDFLAG
+   1069                 ;ASB	mov     i_kbdflag,r1
+   1070                 ;ASB
+   1071                 ;ASB	mov     r0,#enable_mem
+   1072                 ;ASB	call    CTRL_KBD
+   1073                 ;ASB
+   1074                 ;ASBquit_anim1:
+   1075                 ;ASB	mov     r2,#0
+   1076                 ;ASB	call    quit_box
+   1077                 ;ASBquit_clight:
+   1078                 ;ASB	mov     r2,#1
+   1079                 ;ASB	call    quit_box
+   1080                 ;ASB	br      c,quit_clight
+   1081                 ;ASB
+   1082                 ;ASB	mov     r1,i_kbdflag
+   1083                 ;ASB	mov     KBDFLAG,r1
+   1084                 ;ASB
+   1085                 ;ASB	cmp     r0,#0
+   1086                 ;ASBresume_clo:
+   1087                 ;ASB;        br      ne,key_handle2
+   1088                 ;ASB	br      eq,exit_all
+   1089                 ;ASB
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   28
+
+
+   1090                 ;ASB	call    Swap_page
+   1091                 ;ASB	br      key_handle2
+   1092                 ;ASB
+   1093                 ;ASBexit_all:
+   1094                 ;ASB	mov     r0,#1
+   1095                 ;ASB	mov     r1,#87h                 ;menu key
+   1096                 ;ASB	setc                            ;QUIT GAME !!
+   1097                 ;ASB	ret
+   1098                 ;ASB
+   1099                 ;ASBkey_handle2:
+   1100                 ;ASB	mov     r0,cur_key
+   1101                 ;ASB	cmp     r0,#89h                 ;mute
+   1102                 ;ASB	br      eq,key_loop
+   1103                 ;ASB	cmp     r0,#87h                 ;menu
+   1104                 ;ASB	br      eq,key_loop
+   1105                 ;ASB	cmp     r0,#8ah                 ;pause
+   1106                 ;ASB	br      ne,end_key_handle
+   1107                 ;ASB
+   1108                 ;ASBkey_loop:
+   1109                 ;ASB	call    GetUser
+   1110                 ;ASB	cmp     r0,#0
+   1111                 ;ASB	br      ne,key_loop
+   1112                 ;ASB
+   1113                 ;ASBend_key_handle:
+   1114                 ;ASB	clrc                    ;SAFE RET
+   1115                 ;ASB	ret
+   1116                 ;ASB
+   1117                 ;ASB
+   1118                 ;ASBsave_screen:
+   1119                 ;ASB	movw    rr8,#0
+   1120                 ;ASB	movw    rr10,#0c8a0h
+   1121                 ;ASB	movw    rr12,#0
+   1122                 ;ASB	mov     r14,#0
+   1123                 ;ASB	cmp     cur_page,#0
+   1124                 ;ASB	br      eq,act_a
+   1125                 ;ASBact_b:
+   1126                 ;ASB	mov     r15,#01h                ;page B->A
+   1127                 ;ASB	br      act_com
+   1128                 ;ASBact_a:
+   1129                 ;ASB	mov     r15,#02h                ;page A->B
+   1130                 ;ASB
+   1131                 ;ASBact_com:
+   1132                 ;ASB	call    Blk_mov_2
+   1133                 ;ASB	ret
+   1134                 ;ASB
+   1135                 ;ASBrestore_screen:
+   1136                 ;ASB	movw    rr8,#0
+   1137                 ;ASB	movw    rr10,#0c8a0h
+   1138                 ;ASB	movw    rr12,#0
+   1139                 ;ASB	mov     r14,#0
+   1140                 ;ASB	cmp     cur_page,#0
+   1141                 ;ASB	br      ne,act_a
+   1142                 ;ASB	br      act_b
+   1143                 ;ASB
+   1144                 ;ASB;map p1 mode stage number & game timer.
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   29
+
+
+   1145                 ;ASB
+   1146                 ;ASBmap_mode_misc:
+   1147                 ;ASB
+   1148                 ;ASB	mov     r1,Msel_ram
+   1149                 ;ASB	cmp     r1,#one_player_mode
+   1150                 ;ASB	jmp     eq,map_p1_modex
+   1151                 ;ASB	mov     r1,Msel_ram
+   1152                 ;ASB	cmp     r1,#survival_mode
+   1153                 ;ASB	br      ne,no_map_mode
+   1154                 ;ASB	call    p1_win_num
+   1155                 ;ASB	call    map_min_sec
+   1156                 ;ASB	ret
+   1157                 ;ASB
+   1158                 ;ASB;map_p2_win_num:
+   1159                 ;ASB;
+   1160                 ;ASB;        call    p2_win_num
+   1161                 ;ASB
+   1162                 ;ASBno_map_mode:
+   1163                 ;ASB
+   1164                 ;ASB	ret
+   1165                 ;ASB
+   1166                 ;ASB
+   1167                 ;ASB
+   1168                 ;ASB
+   1169                 ;ASB
+   1170                 ;ASBp1_win_num:
+   1171                 ;ASB
+   1172                 ;ASB	clr     r3
+   1173                 ;ASB	mov     r9,#140
+   1174                 ;ASB	mov     r4,p1_win_times
+   1175                 ;ASB	cmp     r4,#100
+   1176                 ;ASB	br      ult,p1_win_num10
+   1177                 ;ASB
+   1178                 ;ASBwin_num100:
+   1179                 ;ASB
+   1180                 ;ASB	sub     r4,#100
+   1181                 ;ASB	inc     r3
+   1182                 ;ASB	cmp     r4,#100
+   1183                 ;ASB	br      uge,win_num100
+   1184                 ;ASB	push    r4
+   1185                 ;ASB	mov     r8,#04
+   1186                 ;ASB	call    map_win_num
+   1187                 ;ASB	pop     r4
+   1188                 ;ASB
+   1189                 ;ASBp1_win_num10:
+   1190                 ;ASB
+   1191                 ;ASB	clr     r3
+   1192                 ;ASB	mov     r5,p1_win_times
+   1193                 ;ASB	cmp     r5,#10
+   1194                 ;ASB	br      ult,p1_win_num1
+   1195                 ;ASB	cmp     r4,#10
+   1196                 ;ASB	br      ult,win_num10a
+   1197                 ;ASB
+   1198                 ;ASBwin_num10:
+   1199                 ;ASB
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   30
+
+
+   1200                 ;ASB	sub     r4,#10
+   1201                 ;ASB	inc     r3
+   1202                 ;ASB	cmp     r4,#10
+   1203                 ;ASB	br      uge,win_num10
+   1204                 ;ASBwin_num10a:
+   1205                 ;ASB	push    r4
+   1206                 ;ASB	mov     r8,#12
+   1207                 ;ASB	call    map_win_num
+   1208                 ;ASB	pop     r4
+   1209                 ;ASB
+   1210                 ;ASBp1_win_num1:
+   1211                 ;ASB
+   1212                 ;ASB	mov     r3,r4
+   1213                 ;ASB	mov     r8,#20
+   1214                 ;ASB	call    map_win_num
+   1215                 ;ASB	mov     r3,p1_win_times
+   1216                 ;ASB	call    map_win_word
+   1217                 ;ASB	ret
+   1218                 ;ASB
+   1219                 ;ASB
+   1220                 ;ASB
+   1221                 ;ASBp2_win_num:
+   1222                 ;ASB
+   1223                 ;ASB	clr     r3
+   1224                 ;ASB	mov     r9,#140
+   1225                 ;ASB	mov     r4,p2_win_times
+   1226                 ;ASB	cmp     r4,#100
+   1227                 ;ASB	br      ult,p2_win_num10
+   1228                 ;ASB
+   1229                 ;ASBp2_win_num100:
+   1230                 ;ASB
+   1231                 ;ASB	sub     r4,#100
+   1232                 ;ASB	inc     r3
+   1233                 ;ASB	cmp     r4,#100
+   1234                 ;ASB	br      uge,p2_win_num100
+   1235                 ;ASB	push    r4
+   1236                 ;ASB	mov     r8,#125
+   1237                 ;ASB	call    map_win_num
+   1238                 ;ASB	pop     r4
+   1239                 ;ASB
+   1240                 ;ASBp2_win_num10:
+   1241                 ;ASB
+   1242                 ;ASB	clr     r3
+   1243                 ;ASB	mov     r5,p2_win_times
+   1244                 ;ASB	cmp     r5,#10
+   1245                 ;ASB	br      ult,p2_win_num1
+   1246                 ;ASB	cmp     r4,#10
+   1247                 ;ASB	br      ult,p2_win_num10a
+   1248                 ;ASB
+   1249                 ;ASBp2_win_num10x:
+   1250                 ;ASB
+   1251                 ;ASB	sub     r4,#10
+   1252                 ;ASB	inc     r3
+   1253                 ;ASB	cmp     r4,#10
+   1254                 ;ASB	br      uge,p2_win_num10x
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   31
+
+
+   1255                 ;ASB
+   1256                 ;ASBp2_win_num10a:
+   1257                 ;ASB
+   1258                 ;ASB	push    r4
+   1259                 ;ASB	mov     r8,#133
+   1260                 ;ASB	call    map_win_num
+   1261                 ;ASB	pop     r4
+   1262                 ;ASB
+   1263                 ;ASBp2_win_num1:
+   1264                 ;ASB
+   1265                 ;ASB	mov     r3,r4
+   1266                 ;ASB	mov     r8,#141
+   1267                 ;ASB	call    map_win_num
+   1268                 ;ASB	mov     r3,p2_win_times
+   1269                 ;ASB	call    map_win_word
+   1270                 ;ASB	ret
+   1271                 ;ASB
+   1272                 ;ASB
+   1273                 ;ASB
+   1274                 ;ASB
+   1275                 ;ASB
+   1276                 ;ASB;map how many times fighter's win game.
+   1277                 ;ASB
+   1278                 ;ASBmap_win_num:
+   1279                 ;ASB
+   1280                 ;ASB	push    mmu4
+   1281                 ;ASB	mov     mmu4,#misc_tbl
+   1282                 ;ASB	sll     r3
+   1283                 ;ASB	clr     r2
+   1284                 ;ASB;       movw    rr4,time_num_tbl(rr2)
+   1285                 ;ASB	call    map_rtn
+   1286                 ;ASB	pop     mmu4
+   1287                 ;ASB	ret
+   1288                 ;ASB
+   1289                 ;ASB
+   1290                 ;ASBmap_win_word:
+   1291                 ;ASB
+   1292                 ;ASB	push    mmu4
+   1293                 ;ASB	mov     mmu4,#misc_tbl
+   1294                 ;ASB	movw    rr4,#0 ;#IWIN_S
+   1295                 ;ASB	add     r8,#12
+   1296                 ;ASB	cmp     r3,#02
+   1297                 ;ASB	br      ult,map_win_num1
+   1298                 ;ASB	movw    rr4,#0 ;#IWINS_S
+   1299                 ;ASB
+   1300                 ;ASBmap_win_num1:
+   1301                 ;ASB
+   1302                 ;ASB	call    map_rtn
+   1303                 ;ASB
+   1304                 ;ASBno_win_num:
+   1305                 ;ASB
+   1306                 ;ASB	pop     mmu4
+   1307                 ;ASB	ret
+   1308                 ;ASB
+   1309                 ;ASB
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   32
+
+
+   1310                 ;ASB
+   1311                 ;ASBmap_p1_modex:
+   1312                 ;ASB
+   1313                 ;ASB	movw    rr4,#0 ;#ISTAGE
+   1314                 ;ASB	mov     r8,#20
+   1315                 ;ASB	mov     r9,#140
+   1316                 ;ASB	call    map_rtn
+   1317                 ;ASB	mov     r3,stage_num
+   1318                 ;ASB	inc     r3
+   1319                 ;ASB	sll     r3
+   1320                 ;ASB	clr     r2
+   1321                 ;ASB;       movw    rr4,time_num_tbl(rr2)
+   1322                 ;ASB	mov     r8,#62
+   1323                 ;ASB	mov     r9,#140
+   1324                 ;ASB	call    map_rtn
+   1325                 ;ASB
+   1326                 ;ASBmap_min_sec:
+   1327                 ;ASB
+   1328                 ;ASB	clr     r7
+   1329                 ;ASB	mov     r3,game_min
+   1330                 ;ASBmin_loop:
+   1331                 ;ASB	cmp     r3,#10
+   1332                 ;ASB	br      ult,map_min
+   1333                 ;ASB	sub     r3,#10
+   1334                 ;ASB	inc     r7
+   1335                 ;ASB	br      min_loop
+   1336                 ;ASB
+   1337                 ;ASBmap_min:
+   1338                 ;ASB
+   1339                 ;ASB	push    r3
+   1340                 ;ASB	sll     r7
+   1341                 ;ASB	clr     r6
+   1342                 ;ASB;       movw    rr4,time_num_tbl(rr6)
+   1343                 ;ASB	mov     r8,#155
+   1344                 ;ASB	mov     r9,#140
+   1345                 ;ASB	call    map_rtn
+   1346                 ;ASB	pop     r3
+   1347                 ;ASB
+   1348                 ;ASBmap_single_min:
+   1349                 ;ASB
+   1350                 ;ASB	sll     r3
+   1351                 ;ASB	clr     r2
+   1352                 ;ASB;       movw    rr4,time_num_tbl(rr2)
+   1353                 ;ASB	mov     r8,#163
+   1354                 ;ASB	mov     r9,#140
+   1355                 ;ASB	call    map_rtn
+   1356                 ;ASB	movw    rr4,#0 ;#IT_H
+   1357                 ;ASB	mov     r8,#172
+   1358                 ;ASB	mov     r9,#140
+   1359                 ;ASB	call    map_rtn
+   1360                 ;ASB
+   1361                 ;ASB	clr     r7
+   1362                 ;ASB	mov     r3,game_sec
+   1363                 ;ASBsec_loop:
+   1364                 ;ASB	cmp     r3,#10
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   33
+
+
+   1365                 ;ASB	br      ult,map_sec
+   1366                 ;ASB	sub     r3,#10
+   1367                 ;ASB	inc     r7
+   1368                 ;ASB	br      sec_loop
+   1369                 ;ASB
+   1370                 ;ASBmap_sec:
+   1371                 ;ASB
+   1372                 ;ASB	push    r3
+   1373                 ;ASB	sll     r7
+   1374                 ;ASB	clr     r6
+   1375                 ;ASB;       movw    rr4,time_num_tbl(rr6)
+   1376                 ;ASB	mov     r8,#178
+   1377                 ;ASB	mov     r9,#140
+   1378                 ;ASB	call    map_rtn
+   1379                 ;ASB	pop     r3
+   1380                 ;ASB
+   1381                 ;ASBmap_single_sec:
+   1382                 ;ASB
+   1383                 ;ASB	sll     r3
+   1384                 ;ASB	clr     r2
+   1385                 ;ASB;       movw    rr4,time_num_tbl(rr2)
+   1386                 ;ASB	mov     r8,#186
+   1387                 ;ASB	mov     r9,#140
+   1388                 ;ASB	jmp     map_rtn
+   1389                 ;ASB
+   1390                 ;ASB
+   1391                 ;ASB
+   1392                 ;ASB
+   1393                 ;ASB
+   1394                 ;ASB
+   1395                 ;ASB
+   1396                 ;ASB;map small armor body for armored character.
+   1397                 ;ASB
+   1398                 ;ASBmap_armor_body:
+   1399                 ;ASB
+   1400                 ;ASB	mov     r15,#decode_ptr1
+   1401                 ;ASB	call    armor_fighter
+   1402                 ;ASB	br      nc,chk_p2_armor
+   1403                 ;ASB	call    p1_armor_body
+   1404                 ;ASB	mov     r0,p1_armour1
+   1405                 ;ASB	cmp     r0,#00
+   1406                 ;ASB	br      ne,chk_p2_armor
+   1407                 ;ASB	movw    rr4,#0 ;#0 ;#IBAR05
+   1408                 ;ASB	call    p1_light_body
+   1409                 ;ASB
+   1410                 ;ASBchk_p2_armor:
+   1411                 ;ASB
+   1412                 ;ASB	mov     r15,#decode_ptr2
+   1413                 ;ASB	call    armor_fighter
+   1414                 ;ASB	br      nc,no_armor_body
+   1415                 ;ASB	call    p2_armor_body
+   1416                 ;ASB	mov     r0,p2_armour1
+   1417                 ;ASB	cmp     r0,#00
+   1418                 ;ASB	br      ne,no_armor_body
+   1419                 ;ASB	movw    rr4,#0 ;#IBAR05
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   34
+
+
+   1420                 ;ASB	call    p2_light_body
+   1421                 ;ASB
+   1422                 ;ASBno_armor_body:
+   1423                 ;ASB
+   1424                 ;ASB	ret
+   1425                 ;ASB
+   1426                 ;ASB;player 1 has armor.
+   1427                 ;ASB
+   1428                 ;ASBp1_armor_body:
+   1429                 ;ASB
+   1430                 ;ASB	mov     r0,p1_armour1
+   1431                 ;ASB	cmp     r0,#6
+   1432                 ;ASB	br      ugt,p1_solid_body
+   1433                 ;ASB	movw    rr4,#0 ;#IBAR05
+   1434                 ;ASB	movw    rr2,GAME_TIMER1A
+   1435                 ;ASB	cmp     r0,#03
+   1436                 ;ASB	br      ugt,p1_slow_flash
+   1437                 ;ASB	cmpw    rr2,#04
+   1438                 ;ASB	br      ult,p1_solid_body
+   1439                 ;ASB	cmpw    rr2,#08
+   1440                 ;ASB	br      ult,p1_light_body
+   1441                 ;ASB	cmpw    rr2,#0ch
+   1442                 ;ASB	br      ult,p1_solid_body
+   1443                 ;ASB
+   1444                 ;ASBp1_slow_flash:
+   1445                 ;ASB	cmpw    rr2,#8
+   1446                 ;ASB	br      ugt,p1_light_body
+   1447                 ;ASB
+   1448                 ;ASBp1_solid_body:
+   1449                 ;ASB
+   1450                 ;ASB	movw    rr4,#0 ;#IBAR06
+   1451                 ;ASB
+   1452                 ;ASBp1_light_body:
+   1453                 ;ASB
+   1454                 ;ASB	mov     r8,#6
+   1455                 ;ASB	mov     r9,#4
+   1456                 ;ASB	jmp     map_rtn3
+   1457                 ;ASB
+   1458                 ;ASB
+   1459                 ;ASB;player 2 has armor.
+   1460                 ;ASB
+   1461                 ;ASBp2_armor_body:
+   1462                 ;ASB
+   1463                 ;ASB	mov     r0,p2_armour1
+   1464                 ;ASB	cmp     r0,#5
+   1465                 ;ASB	br      ugt,p2_solid_body
+   1466                 ;ASB	movw    rr4,#0 ;#IBAR05
+   1467                 ;ASB	movw    rr2,GAME_TIMER1A
+   1468                 ;ASB	cmp     r0,#03
+   1469                 ;ASB	br      ugt,p2_slow_flash
+   1470                 ;ASB	cmpw    rr2,#04
+   1471                 ;ASB	br      ult,p2_solid_body
+   1472                 ;ASB	cmpw    rr2,#08
+   1473                 ;ASB	br      ult,p2_light_body
+   1474                 ;ASB	cmpw    rr2,#0ch
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   35
+
+
+   1475                 ;ASB	br      ult,p2_solid_body
+   1476                 ;ASB
+   1477                 ;ASBp2_slow_flash:
+   1478                 ;ASB
+   1479                 ;ASB	cmpw    rr2,#8
+   1480                 ;ASB	br      ugt,p2_light_body
+   1481                 ;ASB
+   1482                 ;ASBp2_solid_body:
+   1483                 ;ASB
+   1484                 ;ASB	movw    rr4,#0 ;#IBAR06
+   1485                 ;ASB
+   1486                 ;ASBp2_light_body:
+   1487                 ;ASB
+   1488                 ;ASB	mov     r8,#181
+   1489                 ;ASB	mov     r9,#4
+   1490                 ;ASB	jmp     map_rtn3
+   1491                 ;ASB
+   1492                 ;ASB
+   1493                 ;ASB
+   1494                 ;ASBcount_explose:
+   1495                 ;ASB
+   1496                 ;ASB	mov     r0,p1_explose
+   1497                 ;ASB	call    incr_explose
+   1498                 ;ASB	mov     p1_explose,r0
+   1499                 ;ASB	mov     r0,p2_explose
+   1500                 ;ASB	call    incr_explose
+   1501                 ;ASB	mov     p2_explose,r0
+   1502                 ;ASB	ret
+   1503                 ;ASB
+   1504                 ;ASB
+   1505                 ;ASB
+   1506                 ;ASBincr_explose:
+   1507                 ;ASB
+   1508                 ;ASB	cmp     r0,#00
+   1509                 ;ASB	br      eq,no_incr_explo
+   1510                 ;ASB	movw    rr2,GAME_TIMER1A
+   1511                 ;ASB	cmpw    rr2,#0ch
+   1512                 ;ASB	br      ult,incr_explose1
+   1513                 ;ASB	bbs     r0,#bit7,no_incr_explo
+   1514                 ;ASB	bset    r0,#bit7
+   1515                 ;ASB
+   1516                 ;ASBincr_explose2:
+   1517                 ;ASB
+   1518                 ;ASB	bset    decode_info,#bit0
+   1519                 ;ASB	inc     r0
+   1520                 ;ASB	mov     r1,r0
+   1521                 ;ASB	bclr    r1,#bit7
+   1522                 ;ASB	cmp     r1,#04
+   1523                 ;ASB	br      ult,no_incr_explo
+   1524                 ;ASB	clr     r0
+   1525                 ;ASB
+   1526                 ;ASBno_incr_explo:
+   1527                 ;ASB
+   1528                 ;ASB	ret
+   1529                 ;ASB
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   36
+
+
+   1530                 ;ASBincr_explose1:
+   1531                 ;ASB
+   1532                 ;ASB	bbc     r0,#bit7,no_incr_explo
+   1533                 ;ASB	bclr    r0,#bit7
+   1534                 ;ASB	br      incr_explose2
+   1535                 ;ASB
+   1536                 ;ASB
+   1537                 ;ASB;map armour explose.
+   1538                 ;ASB
+   1539                 ;ASBmap_explose:
+   1540                 ;ASB
+   1541                 ;ASB	mov     r0,plyr1_x
+   1542                 ;ASB	mov     r1,plyr1_y
+   1543                 ;ASB	sub     r1,#40
+   1544                 ;ASB	movw    temp_ram1,rr0
+   1545                 ;ASB	mov     r3,p1_explose
+   1546                 ;ASB	bclr    r3,#bit7
+   1547                 ;ASB	cmp     r3,#00
+   1548                 ;ASB	br      eq,chk_p2_explose
+   1549                 ;ASB	dec     r3
+   1550                 ;ASB;debug1:
+   1551                 ;ASB;        cmp     r3,#03
+   1552                 ;ASB;        br      uge,debug1
+   1553                 ;ASB	sll     r3
+   1554                 ;ASB	call    @explose_idx(r3)
+   1555                 ;ASB
+   1556                 ;ASBchk_p2_explose:
+   1557                 ;ASB
+   1558                 ;ASB	mov     r0,plyr2_x
+   1559                 ;ASB	mov     r1,plyr2_y
+   1560                 ;ASB	sub     r1,#40
+   1561                 ;ASB	movw    temp_ram1,rr0
+   1562                 ;ASB	mov     r3,p2_explose
+   1563                 ;ASB	bclr    r3,#bit7
+   1564                 ;ASB	cmp     r3,#00
+   1565                 ;ASB	br      eq,no_explose
+   1566                 ;ASB	dec     r3
+   1567                 ;ASBdebug2:
+   1568                 ;ASB	cmp     r3,#03
+   1569                 ;ASB	br      uge,debug2
+   1570                 ;ASB	sll     r3
+   1571                 ;ASB	call    @explose_idx(r3)
+   1572                 ;ASB
+   1573                 ;ASBno_explose:
+   1574                 ;ASB
+   1575                 ;ASB	ret
+   1576                 ;ASB
+   1577                 ;ASB
+   1578                 ;ASBexplose_idx:
+   1579                 ;ASB
+   1580                 ;ASB	dw      explose1
+   1581                 ;ASB	dw      explose2
+   1582                 ;ASB	dw      explose3
+   1583                 ;ASB
+   1584                 ;ASB
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   37
+
+
+   1585                 ;ASBexplose1:
+   1586                 ;ASB
+   1587                 ;ASB;       movw    rr2,#explose1_tbl
+   1588                 ;ASB	br      explose1a_loop
+   1589                 ;ASB
+   1590                 ;ASBexplose2:
+   1591                 ;ASB
+   1592                 ;ASB	sub     r1,#20
+   1593                 ;ASB;       movw    rr2,#explose2_tbl
+   1594                 ;ASB	br      explose1a_loop
+   1595                 ;ASB
+   1596                 ;ASBexplose3:
+   1597                 ;ASB
+   1598                 ;ASB	sub     r1,#30
+   1599                 ;ASB;       movw    rr2,#explose3_tbl
+   1600                 ;ASB
+   1601                 ;ASBexplose1a_loop:
+   1602                 ;ASB
+   1603                 ;ASB	movw    rr4,(rr2)+
+   1604                 ;ASB	cmpw    rr4,#00
+   1605                 ;ASB	br      eq,end_explose1a
+   1606                 ;ASB	mov     r0,(rr2)+
+   1607                 ;ASB	mov     r8,r0
+   1608                 ;ASB	mov     r0,(rr2)+
+   1609                 ;ASB	mov     r9,r0
+   1610                 ;ASB	movw    rr0,temp_ram1
+   1611                 ;ASB	add     r8,r0
+   1612                 ;ASB	cmp     r8,#193
+   1613                 ;ASB	br      ugt,explose1a_loop
+   1614                 ;ASB	add     r9,r1
+   1615                 ;ASB	cmp     r9,#153
+   1616                 ;ASB	br      ugt,explose1a_loop
+   1617                 ;ASB	pushw   rr2
+   1618                 ;ASB	call    map_rtn
+   1619                 ;ASB	popw    rr2
+   1620                 ;ASB	br      explose1a_loop
+   1621                 ;ASB
+   1622                 ;ASBend_explose1a:
+   1623                 ;ASB
+   1624                 ;ASB	ret
+   1625                 ;ASB
+   1626                 ;ASB
+   1627                 ;ASB
+   1628                 ;ASB
+   1629                 ;ASB
+   1630                 ;ASB
+   1631                 ;ASB
+   1632                 ;ASBpause_box:
+   1633                 ;ASB
+   1634                 ;ASB	movw    rr8,#0827h
+   1635                 ;ASB	mov     r10,#177
+   1636                 ;ASB	mov     r11,#81
+   1637                 ;ASB	call    Blk_cls
+   1638                 ;ASB	movw    rr8,#0827h
+   1639                 ;ASB	mov     r10,#177
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   38
+
+
+   1640                 ;ASB	mov     r11,#03
+   1641                 ;ASB	mov     r12,#04
+   1642                 ;ASB	mov     r14,#81
+   1643                 ;ASB	call    draw_rectx
+   1644                 ;ASB	call    text_abi
+   1645                 ;ASB	mov     R8, #1          ; 16 X 8 FONT
+   1646                 ;ASB	call    Sel_font        ; DISPLAY THE INSTRUCTION IN 16 * 8
+   1647                 ;ASB	movw    rr8,#0504h
+   1648                 ;ASB	movw    rr12,#pause_str
+   1649                 ;ASB	call    Str_abs
+   1650                 ;ASB	movw    rr8,#0805h
+   1651                 ;ASB	movw    rr12,#continue_str
+   1652                 ;ASB	call    Str_abs
+   1653                 ;ASB	ret
+   1654                 ;ASB
+   1655                 ;ASBpause_str:
+   1656                 ;ASB
+   1657                 ;ASB	defm    "Press PAUSE to"
+   1658                 ;ASB	db      00
+   1659                 ;ASB
+   1660                 ;ASBcontinue_str:
+   1661                 ;ASB
+   1662                 ;ASB	defm    "continue."
+   1663                 ;ASB	db      00
+   1664                 ;ASB
+   1665                 ;ASB
+   1666                 ;ASB
+   1667                 ;ASB;pass in parameters :   r8 - rectangle upper left x coordinate.
+   1668                 ;ASB;                       r9 - rectangle upper left y coordinate.
+   1669                 ;ASB;                       r10 - rectangle width
+   1670                 ;ASB;                       r11 - color
+   1671                 ;ASB;                       r12 - line width
+   1672                 ;ASB;                       r14 - rectangle height
+   1673                 ;ASB
+   1674                 ;ASB
+   1675                 ;ASBdraw_rectx:
+   1676                 ;ASB	push    r9
+   1677                 ;ASB	call    draw_linex
+   1678                 ;ASB	add     r9,r14
+   1679                 ;ASB	call    draw_linex
+   1680                 ;ASB	pop     r9
+   1681                 ;ASB	push    r10
+   1682                 ;ASB	mov     r10,r14
+   1683                 ;ASB	call    draw_v_line
+   1684                 ;ASB	pop     r10
+   1685                 ;ASB	add     r8,r10
+   1686                 ;ASB	sub     r8,r12
+   1687                 ;ASB	mov     r10,r14
+   1688                 ;ASB	call    draw_v_line
+   1689                 ;ASB	ret
+   1690                 ;ASB
+   1691                 ;ASB
+   1692                 ;ASBdraw_v_line:
+   1693                 ;ASB
+   1694                 ;ASB	mov     r13,#00
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   39
+
+
+   1695                 ;ASB	bbc     cur_page,#0,map_v_line
+   1696                 ;ASB	mov     r13,#01
+   1697                 ;ASB
+   1698                 ;ASBmap_v_line:
+   1699                 ;ASB
+   1700                 ;ASB	call    Draw_line_v
+   1701                 ;ASB	ret
+   1702                 ;ASB
+   1703                 ;ASB
+   1704                 ;ASBdraw_linex:
+   1705                 ;ASB	mov     r13,#00
+   1706                 ;ASB	bbc     cur_page,#0,map_line
+   1707                 ;ASB	mov     r13,#01
+   1708                 ;ASBmap_line:
+   1709                 ;ASB	call    Draw_line_h
+   1710                 ;ASB	ret
+   1711                 ;ASB
+   1712                 ;ASB
+   1713                 ;ASB
+   1714                 ;ASBpause_wait:
+   1715                 ;ASB
+   1716                 ;ASB	call    GetUser
+   1717                 ;ASB	cmp     r0,#pause_key
+   1718                 ;ASB	br      eq,pause_again
+   1719                 ;ASB	cmp     r0,#00
+   1720                 ;ASB	br      eq,pause_wait
+   1721                 ;ASB	cmp     r0,#b_key
+   1722                 ;ASB	br      eq,chk_code_b
+   1723                 ;ASB	cmp     r0,#a_key
+   1724                 ;ASB	br      eq,chk_code_a
+   1725                 ;ASB	cmp     r0,#d_key
+   1726                 ;ASB	br      ne,wrong_code
+   1727                 ;ASB
+   1728                 ;ASBchk_code_d:
+   1729                 ;ASB
+   1730                 ;ASB	mov     r1,cheat_code
+   1731                 ;ASB	cmp     r1,#02
+   1732                 ;ASB	br      eq,accept_code
+   1733                 ;ASB	cmp     r1,#03
+   1734                 ;ASB	br      eq,accept_code
+   1735                 ;ASB	cmp     r1,#00
+   1736                 ;ASB	br      eq,accept_code2
+   1737                 ;ASB	cmp     r1,#81h
+   1738                 ;ASB	br      ult,pause_wait
+   1739                 ;ASB	cmp     r1,#84h
+   1740                 ;ASB	br      ule,accept_code2
+   1741                 ;ASB
+   1742                 ;ASBwrong_code:
+   1743                 ;ASB
+   1744                 ;ASB	mov     r1,#00
+   1745                 ;ASB	mov     cheat_code,r1
+   1746                 ;ASB	br      pause_wait
+   1747                 ;ASB
+   1748                 ;ASBpause_again:
+   1749                 ;ASB
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   40
+
+
+   1750                 ;ASB	ret
+   1751                 ;ASB
+   1752                 ;ASB
+   1753                 ;ASBchk_code_b:
+   1754                 ;ASB
+   1755                 ;ASB	mov     r1,#00
+   1756                 ;ASB	mov     cheat_code,r1
+   1757                 ;ASB	br      accept_code
+   1758                 ;ASB;        mov     r1,cheat_code
+   1759                 ;ASB;        cmp     r1,#00
+   1760                 ;ASB;        br      eq,accept_code
+   1761                 ;ASB;        br      wrong_code
+   1762                 ;ASB
+   1763                 ;ASBchk_code_a:
+   1764                 ;ASB
+   1765                 ;ASB	mov     r1,cheat_code
+   1766                 ;ASB	cmp     r1,#85h
+   1767                 ;ASB	br      eq,accept_code2
+   1768                 ;ASB	cmp     r1,#01
+   1769                 ;ASB	br      ne,wrong_code
+   1770                 ;ASB
+   1771                 ;ASBaccept_code:
+   1772                 ;ASB
+   1773                 ;ASB	bbs     game_info,#bit0,wrong_code
+   1774                 ;ASB	bbs     game_info,#bit6,wrong_code
+   1775                 ;ASB	mov     r2,cheat_flag
+   1776                 ;ASB	bbs     r2,#bit0,wrong_code
+   1777                 ;ASB	mov     r2,internet_flag
+   1778                 ;ASB	bbc     r2,#bit0,wrong_code
+   1779                 ;ASB	inc     r1
+   1780                 ;ASB	mov     cheat_code,r1
+   1781                 ;ASB	cmp     r1,#4
+   1782                 ;ASB	br      ne,pause_wait
+   1783                 ;ASB	mov     r5,#new_screen
+   1784                 ;ASB;       call    speech
+   1785                 ;ASB	mov     r0,#full_energy
+   1786                 ;ASB	mov     p1_energy,r0
+   1787                 ;ASB	mov     r0,cheat_flag
+   1788                 ;ASB	bset    r0,#bit0
+   1789                 ;ASB	mov     cheat_flag,r0
+   1790                 ;ASB	clr     r0
+   1791                 ;ASB	mov     cheat_code,r0
+   1792                 ;ASB	jmp     pause_wait
+   1793                 ;ASB
+   1794                 ;ASB
+   1795                 ;ASB
+   1796                 ;ASBaccept_code2:
+   1797                 ;ASB
+   1798                 ;ASB	bbs     game_info,#bit0,wrong_code
+   1799                 ;ASB	bbs     game_info,#bit6,wrong_code
+   1800                 ;ASB	mov     r2,cheat_flag
+   1801                 ;ASB	bbs     r2,#bit1,wrong_code
+   1802                 ;ASB	mov     r2,internet_flag
+   1803                 ;ASB	bbc     r2,#bit1,wrong_code
+   1804                 ;ASB	bset    r1,#bit7
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   41
+
+
+   1805                 ;ASB	inc     r1
+   1806                 ;ASB	mov     cheat_code,r1
+   1807                 ;ASB	cmp     r1,#86h
+   1808                 ;ASB	jmp     ne,pause_wait
+   1809                 ;ASB	mov     r5,#new_screen
+   1810                 ;ASB;       call    speech
+   1811                 ;ASB	mov     r0,p2_energy
+   1812                 ;ASB	clrc
+   1813                 ;ASB	srl     r0
+   1814                 ;ASB	mov     p2_energy,r0
+   1815                 ;ASB	mov     r0,cheat_flag
+   1816                 ;ASB	bset    r0,#bit1
+   1817                 ;ASB	mov     cheat_flag,r0
+   1818                 ;ASB	clr     r0
+   1819                 ;ASB	mov     cheat_code,r0
+   1820                 ;ASB	jmp     pause_wait
+   1821                 ;ASB
+   1822                 ;ASB
+   1823                 ;ASB
+   1824                 ;ASB;in one player mode, final winner's picture show.
+   1825                 ;ASB
+   1826                 ;ASBwin_picture:
+   1827                 ;ASB
+   1828                 ;ASB	ret
+   1829                 ;ASB
+   1830                 ;ASB
+   1831                 ;ASBWin_show_name:
+   1832                 ;ASB	push    mmu4
+   1833                 ;ASB	mov     mmu4,#table2_bank
+   1834                 ;ASB	mov     r0,graph_flag
+   1835                 ;ASB	bset    r0,#1
+   1836                 ;ASB	mov     graph_flag,r0
+   1837                 ;ASB	mov     r8,#40
+   1838                 ;ASB	mov     r9,#120
+   1839                 ;ASB	clr     r2
+   1840                 ;ASB	mov     r3,plyr1_id
+   1841                 ;ASB	mult    rr2,#2
+   1842                 ;ASB	movw    rr6,NAME_WIN(rr2)
+   1843                 ;ASB	call    DIS_word
+   1844                 ;ASB	mov     r0,graph_flag
+   1845                 ;ASB	bclr    r0,#1
+   1846                 ;ASB	mov     graph_flag,r0
+   1847                 ;ASB	pop     mmu4
+   1848                 ;ASB	ret
+   1849                 ;ASB
+   1850                 ;ASB
+   1851                 ;ASBIDOUBLE:
+   1852                 ;ASB	defb    71,14,0,160,bankno_legal1      ;double
+   1853                 ;ASB
+   1854                 ;ASB;IKIDS:
+   1855                 ;ASB;        defb    47,7,0,174,bankno_legal1       ;kids
+   1856                 ;ASB
+   1857                 ;ASBROM_SIGN_1b:
+   1858                 ;ASB	 ds     995h
+   1859                 ;ASBROM_SIGN_2b:
+
+
+
+FIGHTER  SM8521 Assembler V1.10            Wed Dec 23 17:35:35 1998  Page   42
+
+
+   1860                 ;ASB	 db     0
+   1861                 	 
+   1862 0000             	 end

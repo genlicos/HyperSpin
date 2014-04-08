@@ -1,0 +1,83 @@
+* Last Modified: [11-10-98 10:12:40]
+
+-plusops 1
+
+**************************************************
+*
+*   initialize stuff
+
+    &maxlngth = 32767
+    &trim = 1
+
+**************************************************
+*
+*   constants
+
+    null = ''
+    a  = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    nu = '0123456789'
+    an = '_' nu a
+    blank = ' '
+    tabchar = char(9)
+    white = blank tabchar
+    x = '='
+    $'TALK'  = 'TALK     '
+    $'SERIE' = 'SERIES   '
+    $'SPECL' = 'SPECIAL  '
+    $'MISC'  = 'MISC     '
+
+**************************************************
+*
+*   patterns
+
+	space	= span(white)
+	cut		= (span(white) | null)
+	name	= (span(an) . label | null)
+	number	= span(nu)
+
+	cmtpat	= cut (';' arb) . cmt rpos(0)
+
+	structpat = pos(0) space 'struct' rpos(0)
+	wordpat	= (name (':' | null) space) . front 'word' space number . value rpos(0)
+	bytepat	= (name (':' | null) space) . front 'byte' space number . value rpos(0)
+	sizepat	= (name (':' | null) space) . front 'size' rpos(0)
+
+**************************************************
+*
+*   program
+
+	offset	= 0
+
+loop
+	line = input :f(end)
+	oline = line
+	cmt =
+	label = ';'
+	line cmtpat =
+	line structpat :s(struct)
+	line wordpat :s(word)
+	line bytepat :s(byte)
+	line sizepat :s(sizeof)
+	output = oline
+	:(loop)
+
+struct
+	offset = 0
+	output = dupl(' ',25) ';' dupl(' ',17) 'struct  ' dupl(' ',4) cmp
+	:(loop)
+
+byte
+	output = rpad(label,17) 'equ ' rpad(offset,4) ';' rpad(label,17) 'byte    ' rpad(value,4) cmt
+	offset = offset + value
+	:(loop)
+
+word
+	output = rpad(label,17) 'equ ' rpad(offset,4) ';' rpad(label,17) 'word    ' rpad(value,4) cmt
+	offset = offset + (2 * value)
+	:(loop)
+
+sizeof
+	output = rpad(label,17) 'equ ' rpad(offset,4) ';' rpad(label,17) 'size    ' dupl(' ',4) cmt
+	:(loop)
+
+end

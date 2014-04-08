@@ -1,0 +1,32 @@
+
+What I need is simple:
+ 
+An object module that can be linked into the game with the following entry
+points:
+ 
+Play a sound effect (passed as a number in a register)
+Play a song (passed as a number in a register)
+kill current sound effect(s)
+Kill current song
+Pause all sound effects and songs
+Unpause all sound effects and songs (continue from where paused)
+ 
+If there will be a need for some songs to be programmatically repeated, then
+I also need an entry point to test if a song is still playing.
+ 
+If there will be a need for some sound effects to be programmatically
+repeated, then I also need an entry point to test if a sound effect is still
+playing.
+ 
+Besides that I need a list of numbered songs.  Loading the corresponding
+number into the correct register and calling the play song routine would
+play that song until replaced with another song or the kill song routine is
+called.
+ 
+I also need a list of numbered sound effects. Loading the corresponding
+number into the correct register and calling the play sound effect routine
+would play that sound effect until it ends, is replaced with another song or
+the kill sound effect routine is called.
+ 
+ 
+Al
