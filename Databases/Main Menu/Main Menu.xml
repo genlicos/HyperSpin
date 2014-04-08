@@ -1,0 +1,22 @@
+<menu>
+  <game name="MAME"/>
+  <game name="Atari 5200"/>
+  <game name="Atari Lynx"/>
+  <game name="Nintendo Entertainment System"/>
+  <game name="Super Nintendo Entertainment System"/>
+  <game name="Nintendo 64"/>
+  <game name="Nintendo Game Boy Advance"/>
+  <game name="Sega Master System"/>
+  <game name="Sega Genesis"/>
+  <game name="Sega CD"/>
+  <game name="Sega 32X"/>
+  <game name="Sega Dreamcast"/>
+  <game name="Sega Game Gear"/>
+  <game name="Sega Model 2"/>
+  <game name="NEC TurboGrafx-16"/>
+  <game name="SNK Neo Geo"/>
+  <game name="SNK Neo Geo Pocket Color"/>
+  <game name="Panasonic 3DO"/>
+  <game name="Sony PlayStation"/>
+  <game name="Daphne"/>
+</menu>
